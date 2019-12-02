@@ -19,7 +19,9 @@ var WaitAction = /** @class */ (function (_super) {
     function WaitAction(actor) {
         return _super.call(this, actor) || this;
     }
-    WaitAction.prototype.perform = function (world) { };
+    WaitAction.prototype.perform = function (world) {
+        // Do nothing. Just wait.
+    };
     return WaitAction;
 }(Action_1.Action));
 exports.WaitAction = WaitAction;

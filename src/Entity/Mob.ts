@@ -7,8 +7,6 @@ import { World } from '../world';
 
 export class Mob extends Actor {
 
-    private nextAction: Action;
-
     constructor(x: number, y: number, tile: Tile) {
         super(x, y, tile);
         this.nextAction = new WaitAction(this);

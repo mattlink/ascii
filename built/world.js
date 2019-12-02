@@ -19,6 +19,7 @@ var World = /** @class */ (function () {
         this.width = width;
         this.height = height;
         this.tiles = [];
+        this.objects = [];
         // this.mobs = [];
         this.actors = [];
     }
@@ -50,7 +51,8 @@ var World = /** @class */ (function () {
         var botRight = new tile_1.Tile('&#9565;', 'black', 'white');
         var topLeft = new tile_1.Tile('&#9556;', 'black', 'white');
         var topRight = new tile_1.Tile('&#9559;', 'black', 'white');
-        var horizontal = new tile_1.Tile('&#9552;', 'black', 'white');
+        // let horizontal = new Tile('&#9552;&#9552;', 'black', 'white');
+        var horizontal = new tile_1.Tile('==', 'black', 'white');
         var vertical = new tile_1.Tile('&#9553;', 'black', 'white');
         for (var i = 0; i < this.height; i++) {
             this.tiles[i] = [];

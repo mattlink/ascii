@@ -22,6 +22,7 @@ export class World {
     private width: number;
     private height: number;
     private tiles: Tile[][];
+    private objects: GameObject[][];
     // private mobs: Mob[];
     private actors: Actor[];
 
@@ -31,6 +32,7 @@ export class World {
         this.width = width;
         this.height = height;
         this.tiles = [];
+        this.objects = [];
         // this.mobs = [];
         this.actors = [];
 
@@ -69,7 +71,8 @@ export class World {
         let botRight = new Tile('&#9565;', 'black', 'white');
         let topLeft = new Tile('&#9556;', 'black', 'white');
         let topRight = new Tile('&#9559;', 'black', 'white');
-        let horizontal = new Tile('&#9552;', 'black', 'white');
+        // let horizontal = new Tile('&#9552;&#9552;', 'black', 'white');
+        let horizontal = new Tile('==', 'black', 'white');
         let vertical = new Tile('&#9553;', 'black', 'white');
 
         for (let i = 0; i < this.height; i++) {

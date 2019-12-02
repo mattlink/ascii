@@ -7,5 +7,7 @@ export class WaitAction extends Action {
         super(actor);
     }
 
-    perform(world: World) {}
+    perform(world: World) {
+        // Do nothing. Just wait.
+    }
 }

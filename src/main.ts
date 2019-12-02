@@ -31,6 +31,8 @@ world.addActor(mob3);
 let player = new Player(10, 10, new Tile('@', 'red', 'white'));
 world.addActor(player);
 
+
+
 IO.genericKeyBinding(function(key: string) {
     //console.log(key);
     player.receiveKeyInput(key);
