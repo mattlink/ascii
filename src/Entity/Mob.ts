@@ -7,9 +7,11 @@ import { World } from '../world';
 
 export class Mob extends Actor {
 
-    constructor(x: number, y: number, tile: Tile) {
-        super(x, y, tile);
+    constructor(name: string, x: number, y: number, tile: Tile) {
+        super(name, x, y, tile);
         this.nextAction = new WaitAction(this);
+        
+        this.collides = true;
     }
 
     takeTurn(world: World) {

@@ -12,6 +12,7 @@ Notes about what this World class could or should be:
 
 */
 exports.__esModule = true;
+var Environment_1 = require("./Entity/Environment");
 var tile_1 = require("./tile");
 var World = /** @class */ (function () {
     // private tree: Tile = new Tile('&#2510;', 'green', 'white');
@@ -31,6 +32,7 @@ var World = /** @class */ (function () {
     };
     World.prototype.addActor = function (actor) {
         this.actors.push(actor);
+        // this.objects[actor.x][actor.y] = actor;
     };
     World.prototype.getActors = function () {
         return this.actors;
@@ -43,9 +45,18 @@ var World = /** @class */ (function () {
     };
     // init generates the initial world state
     World.prototype.init = function () {
+        var floors = [
+            new tile_1.Tile('&#8283;', 'black', 'white'),
+            new tile_1.Tile('&#775;', 'black', 'white'),
+            new tile_1.Tile('&#803;', 'black', 'white'),
+            new tile_1.Tile('&#856;', 'black', 'white')
+        ];
+        var trees = [
+            new tile_1.Tile('&#8483;', 'green', 'white')
+        ];
+        // SHIM:
         var floorChars = ['&#8283;', '&#775;', '&#803;', '&#856;'];
         var treeChars = ['&#8483;'];
-        //let chars: any[] = ['&#856;'];//'&#8283;'];//, '&#8483;', '&#775;', '&#803;', '&#856;'];
         // set up wall tiles
         var botLeft = new tile_1.Tile('&#9562;', 'black', 'white');
         var botRight = new tile_1.Tile('&#9565;', 'black', 'white');
@@ -54,58 +65,54 @@ var World = /** @class */ (function () {
         // let horizontal = new Tile('&#9552;&#9552;', 'black', 'white');
         var horizontal = new tile_1.Tile('==', 'black', 'white');
         var vertical = new tile_1.Tile('&#9553;', 'black', 'white');
-        for (var i = 0; i < this.height; i++) {
+        for (var i = 0; i < this.width; i++) {
             this.tiles[i] = [];
-            for (var j = 0; j < this.width; j++) {
+            this.objects[i] = [];
+            for (var j = 0; j < this.height; j++) {
                 if (i == 0 && j == this.width - 1) {
-                    this.tiles[i][j] = topRight;
+                    this.tiles[i][j] = botLeft;
+                    this.objects[i][j] = new Environment_1.Wall(i, j, botLeft);
                     continue;
                 }
                 if (i == 0 && j == 0) {
                     this.tiles[i][j] = topLeft;
-                    continue;
-                }
-                if (i == 0) {
-                    this.tiles[i][j] = horizontal;
+                    this.objects[i][j] = new Environment_1.Wall(i, j, topLeft);
                     continue;
                 }
                 if (i == this.height - 1 && j == this.width - 1) {
                     this.tiles[i][j] = botRight;
+                    this.objects[i][j] = new Environment_1.Wall(i, j, botRight);
                     continue;
                 }
                 if (i == this.height - 1 && j == 0) {
-                    this.tiles[i][j] = botLeft;
+                    this.tiles[i][j] = topRight;
+                    this.objects[i][j] = new Environment_1.Wall(i, j, topRight);
                     continue;
                 }
-                if (i == this.height - 1) {
-                    this.tiles[i][j] = horizontal;
+                if (i == 0 || i == this.height - 1) {
+                    this.tiles[i][j] = vertical;
+                    this.objects[i][j] = new Environment_1.Wall(i, j, vertical);
                     continue;
                 }
                 if (j == 0 || j == this.width - 1) {
-                    this.tiles[i][j] = vertical;
+                    this.tiles[i][j] = horizontal;
+                    this.objects[i][j] = new Environment_1.Wall(i, j, horizontal);
                     continue;
                 }
                 var rand = Math.floor(Math.random() * 10);
                 if (rand > 6) {
                     this.tiles[i][j] = new tile_1.Tile(treeChars[0], 'green', 'white');
+                    this.objects[i][j] = new Environment_1.Tree(i, j, trees[0]);
                 }
                 else {
                     this.tiles[i][j] = new tile_1.Tile(floorChars[Math.floor(Math.random() * 4)], 'black', 'white');
+                    this.objects[i][j] = new Environment_1.Floor(i, j, floors[Math.floor(Math.random() * 4)]);
                 }
             }
         }
     };
-    World.prototype.getTile = function (x, y) {
-        return this.tiles[y][x];
-    };
-    World.prototype.getTileASCII = function (x, y) {
-        return this.tiles[x][y].ascii;
-    };
-    World.prototype.getTileBg = function (x, y) {
-        return this.tiles[x][y].bg;
-    };
-    World.prototype.getTileFg = function (x, y) {
-        return this.tiles[x][y].fg;
+    World.prototype.getObject = function (x, y) {
+        return this.objects[x][y]; // IS THIS RIGHT?
     };
     return World;
 }());

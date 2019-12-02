@@ -1,4 +1,5 @@
 import { World } from "./world";
+import { Player } from "./Entity/Player";
 import { Tile } from "./tile";
 import { GameObject } from "./Entity/GameObject";
 
@@ -48,17 +49,29 @@ export class Renderer {
     public renderLocalContexts(objs: GameObject[]){//objx: number, objy: number) {
          // Update all locations around the game object to their initial world state
         for (let n = 0; n < objs.length; n++){
-            this.updateTile(objs[n].x - 1, objs[n].y, this.world.getTile(objs[n].x - 1, objs[n].y));
-            this.updateTile(objs[n].x + 1, objs[n].y, this.world.getTile(objs[n].x + 1, objs[n].y));
-            this.updateTile(objs[n].x, objs[n].y - 1, this.world.getTile(objs[n].x, objs[n].y - 1));
-            this.updateTile(objs[n].x, objs[n].y + 1, this.world.getTile(objs[n].x, objs[n].y + 1));
-            // new Tile(this.world.getTile(i, j).ascii, this.world.getTile(i, j).fg, 'green')
+
+            // If the player is in debug render their movements and local contexts in yellow
+            if (objs[n] instanceof Player && (<Player>objs[n]).debug) {
+                this.updateTile(objs[n].x - 1, objs[n].y, new Tile(this.world.getObject(objs[n].x - 1, objs[n].y).getTile().ascii, this.world.getObject(objs[n].x - 1, objs[n].y).getTile().fg, 'yellow'));
+                this.updateTile(objs[n].x + 1, objs[n].y, new Tile(this.world.getObject(objs[n].x + 1, objs[n].y).getTile().ascii, this.world.getObject(objs[n].x + 1, objs[n].y).getTile().fg, 'yellow'));
+                this.updateTile(objs[n].x, objs[n].y - 1, new Tile(this.world.getObject(objs[n].x, objs[n].y - 1).getTile().ascii, this.world.getObject(objs[n].x, objs[n].y - 1).getTile().fg, 'yellow'));
+                this.updateTile(objs[n].x, objs[n].y + 1, new Tile(this.world.getObject(objs[n].x, objs[n].y + 1).getTile().ascii, this.world.getObject(objs[n].x, objs[n].y + 1).getTile().fg, 'yellow'));
+            }
+            else {
+                this.updateTile(objs[n].x - 1, objs[n].y, this.world.getObject(objs[n].x - 1, objs[n].y).getTile());
+                this.updateTile(objs[n].x + 1, objs[n].y, this.world.getObject(objs[n].x + 1, objs[n].y).getTile());
+                this.updateTile(objs[n].x, objs[n].y - 1, this.world.getObject(objs[n].x, objs[n].y - 1).getTile());
+                this.updateTile(objs[n].x, objs[n].y + 1, this.world.getObject(objs[n].x, objs[n].y + 1).getTile());
+            }
+            
+            // // new Tile(this.world.getTile(i, j).ascii, this.world.getTile(i, j).fg, 'green')
 
             // Uncomment below to leave a green actor movement path: 
             // this.updateTile(objs[n].x - 1, objs[n].y, new Tile(this.world.getTile(objs[n].x - 1, objs[n].y).ascii, this.world.getTile(objs[n].x - 1, objs[n].y).fg, 'green'));
             // this.updateTile(objs[n].x + 1, objs[n].y, new Tile(this.world.getTile(objs[n].x + 1, objs[n].y).ascii, this.world.getTile(objs[n].x + 1, objs[n].y).fg, 'green'));
             // this.updateTile(objs[n].x, objs[n].y - 1, new Tile(this.world.getTile(objs[n].x, objs[n].y - 1).ascii, this.world.getTile(objs[n].x, objs[n].y - 1).fg, 'green'));
             // this.updateTile(objs[n].x, objs[n].y + 1, new Tile(this.world.getTile(objs[n].x, objs[n].y + 1).ascii, this.world.getTile(objs[n].x, objs[n].y + 1).fg, 'green'));
+            
         }
         
     }
@@ -82,9 +95,13 @@ export class Renderer {
                 element.style.userSelect = 'none';
 
                 
-                element.innerHTML = world.getTileASCII(i,j);
-                element.style.backgroundColor = world.getTileBg(i, j);
-                element.style.color = world.getTileFg(i, j);                
+                element.innerHTML = world.getObject(j, i).getTile().ascii;
+                element.style.backgroundColor = world.getObject(j, i).getTile().bg;
+                element.style.color = world.getObject(j, i).getTile().fg;
+
+                // element.innerHTML = world.getTileASCII(i,j);
+                // element.style.backgroundColor = world.getTileBg(i, j);
+                // element.style.color = world.getTileFg(i, j);                
                 // element.id = i+'-'+j;
         
                 rowDiv.appendChild(element);

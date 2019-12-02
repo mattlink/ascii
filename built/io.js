@@ -3,6 +3,15 @@ exports.__esModule = true;
 var IO = /** @class */ (function () {
     function IO() {
     }
+    IO.validControl = function (key) {
+        if (key == 'w' ||
+            key == 'a' ||
+            key == 's' ||
+            key == 'd' ||
+            key == 'j') // j - wait
+            return true;
+        return false;
+    };
     IO.initKeyBindings = function () {
         document.addEventListener('keypress', function (event) {
             if (event.key == 'w') {

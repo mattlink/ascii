@@ -5,6 +5,7 @@ var GameObject = /** @class */ (function () {
         this.x = x;
         this.y = y;
         this.tile = tile;
+        this.collides = false;
     }
     GameObject.prototype.getTile = function () {
         return this.tile;

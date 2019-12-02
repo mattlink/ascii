@@ -55,6 +55,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 exports.__esModule = true;
 var Action_1 = require("./Action");
+var Environment_1 = require("../../Entity/Environment");
 var WalkDirection;
 (function (WalkDirection) {
     WalkDirection[WalkDirection["Up"] = 0] = "Up";
@@ -70,25 +71,73 @@ var WalkAction = /** @class */ (function (_super) {
         return _this;
     }
     WalkAction.prototype.perform = function (world) {
-        // TODO: We want to handle collisions here
+        var fromObject = world.getObject(this.actor.x, this.actor.y);
         if (this.dir == WalkDirection.Up) {
-            if (!(this.actor.y - 1 <= 0)) {
+            var object = world.getObject(this.actor.x, this.actor.y - 1);
+            if (!object.collides) {
+                if (fromObject instanceof Environment_1.Floor) {
+                    world.objects[this.actor.x][this.actor.y].removeOccupation();
+                }
                 this.actor.y = this.actor.y - 1;
+                if (object instanceof Environment_1.Floor) {
+                    world.objects[this.actor.x][this.actor.y].setOccupation(this.actor);
+                }
+            }
+            else {
+                if (this.actor.debug) {
+                    console.log('COLLISION: ', this.actor);
+                }
             }
         }
         else if (this.dir == WalkDirection.Down) {
-            if (this.actor.y + 1 < world.getHeight() - 1) {
+            var object = world.getObject(this.actor.x, this.actor.y + 1);
+            if (!object.collides) {
+                if (fromObject instanceof Environment_1.Floor) {
+                    world.objects[this.actor.x][this.actor.y].removeOccupation();
+                }
                 this.actor.y = this.actor.y + 1;
+                if (object instanceof Environment_1.Floor) {
+                    world.objects[this.actor.x][this.actor.y].setOccupation(this.actor);
+                }
+            }
+            else {
+                if (this.actor.debug) {
+                    console.log('COLLISION: ', this.actor);
+                }
             }
         }
         else if (this.dir == WalkDirection.Left) {
-            if (!(this.actor.x - 1 <= 0)) {
+            var object = world.getObject(this.actor.x - 1, this.actor.y);
+            if (!object.collides) {
+                if (fromObject instanceof Environment_1.Floor) {
+                    world.objects[this.actor.x][this.actor.y].removeOccupation();
+                }
                 this.actor.x = this.actor.x - 1;
+                if (object instanceof Environment_1.Floor) {
+                    world.objects[this.actor.x][this.actor.y].setOccupation(this.actor);
+                }
+            }
+            else {
+                if (this.actor.debug) {
+                    console.log('COLLISION: ', this.actor);
+                }
             }
         }
         else if (this.dir == WalkDirection.Right) {
-            if (this.actor.x + 1 < world.getWidth() - 1) {
+            var object = world.getObject(this.actor.x + 1, this.actor.y);
+            if (!object.collides) {
+                if (fromObject instanceof Environment_1.Floor) {
+                    world.objects[this.actor.x][this.actor.y].removeOccupation();
+                }
                 this.actor.x = this.actor.x + 1;
+                if (object instanceof Environment_1.Floor) {
+                    world.objects[this.actor.x][this.actor.y].setOccupation(this.actor);
+                }
+            }
+            else {
+                if (this.actor.debug) {
+                    console.log('COLLISION: ', this.actor);
+                }
             }
         }
         // In theory, if we DONT do the rendering update here, then the movement is completely independent of the renderer which is ideal
@@ -97,7 +146,7 @@ var WalkAction = /** @class */ (function (_super) {
 }(Action_1.Action));
 exports.WalkAction = WalkAction;
 
-},{"./Action":1}],4:[function(require,module,exports){
+},{"../../Entity/Environment":5,"./Action":1}],4:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -114,17 +163,77 @@ var __extends = (this && this.__extends) || (function () {
 })();
 exports.__esModule = true;
 var GameObject_1 = require("./GameObject");
-// essentially, "Actors" are GameObjects that are allowed to takeTurns.
+// essentially, "Actors" are GameObjects that are allowed to takeTurns and have names.
 var Actor = /** @class */ (function (_super) {
     __extends(Actor, _super);
-    function Actor(x, y, tile) {
-        return _super.call(this, x, y, tile) || this;
+    function Actor(name, x, y, tile) {
+        var _this = _super.call(this, x, y, tile) || this;
+        _this.debug = false;
+        _this.name = name;
+        return _this;
     }
     return Actor;
 }(GameObject_1.GameObject));
 exports.Actor = Actor;
 
-},{"./GameObject":5}],5:[function(require,module,exports){
+},{"./GameObject":6}],5:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var GameObject_1 = require("./GameObject");
+var Tree = /** @class */ (function (_super) {
+    __extends(Tree, _super);
+    function Tree(x, y, tile) {
+        var _this = _super.call(this, x, y, tile) || this;
+        _this.collides = true;
+        return _this;
+    }
+    return Tree;
+}(GameObject_1.GameObject));
+exports.Tree = Tree;
+var Floor = /** @class */ (function (_super) {
+    __extends(Floor, _super);
+    function Floor(x, y, tile) {
+        var _this = _super.call(this, x, y, tile) || this;
+        _this.occupiedBy = null;
+        _this.collides = false;
+        return _this;
+    }
+    Floor.prototype.setOccupation = function (actor) {
+        this.occupiedBy = actor;
+        this.collides = true;
+    };
+    Floor.prototype.removeOccupation = function () {
+        this.occupiedBy = null;
+        this.collides = false;
+    };
+    return Floor;
+}(GameObject_1.GameObject));
+exports.Floor = Floor;
+var Wall = /** @class */ (function (_super) {
+    __extends(Wall, _super);
+    function Wall(x, y, tile) {
+        var _this = _super.call(this, x, y, tile) || this;
+        _this.collides = true;
+        return _this;
+    }
+    return Wall;
+}(GameObject_1.GameObject));
+exports.Wall = Wall;
+
+},{"./GameObject":6}],6:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
 var GameObject = /** @class */ (function () {
@@ -132,6 +241,7 @@ var GameObject = /** @class */ (function () {
         this.x = x;
         this.y = y;
         this.tile = tile;
+        this.collides = false;
     }
     GameObject.prototype.getTile = function () {
         return this.tile;
@@ -140,7 +250,7 @@ var GameObject = /** @class */ (function () {
 }());
 exports.GameObject = GameObject;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -161,9 +271,10 @@ var WalkAction_1 = require("../Components/Actions/WalkAction");
 var WaitAction_1 = require("../Components/Actions/WaitAction");
 var Mob = /** @class */ (function (_super) {
     __extends(Mob, _super);
-    function Mob(x, y, tile) {
-        var _this = _super.call(this, x, y, tile) || this;
+    function Mob(name, x, y, tile) {
+        var _this = _super.call(this, name, x, y, tile) || this;
         _this.nextAction = new WaitAction_1.WaitAction(_this);
+        _this.collides = true;
         return _this;
     }
     Mob.prototype.takeTurn = function (world) {
@@ -182,7 +293,7 @@ var Mob = /** @class */ (function (_super) {
 }(Actor_1.Actor));
 exports.Mob = Mob;
 
-},{"../Components/Actions/WaitAction":2,"../Components/Actions/WalkAction":3,"./Actor":4}],7:[function(require,module,exports){
+},{"../Components/Actions/WaitAction":2,"../Components/Actions/WalkAction":3,"./Actor":4}],8:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -204,7 +315,8 @@ var WalkAction_1 = require("../Components/Actions/WalkAction");
 var Player = /** @class */ (function (_super) {
     __extends(Player, _super);
     function Player(x0, y0, tile) {
-        var _this = _super.call(this, x0, y0, tile) || this;
+        var _this = _super.call(this, "Player", x0, y0, tile) || this;
+        _this.debug = false;
         _this.nextAction = new WaitAction_1.WaitAction(_this);
         return _this;
     }
@@ -232,12 +344,21 @@ var Player = /** @class */ (function (_super) {
 }(Actor_1.Actor));
 exports.Player = Player;
 
-},{"../Components/Actions/WaitAction":2,"../Components/Actions/WalkAction":3,"./Actor":4}],8:[function(require,module,exports){
+},{"../Components/Actions/WaitAction":2,"../Components/Actions/WalkAction":3,"./Actor":4}],9:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
 var IO = /** @class */ (function () {
     function IO() {
     }
+    IO.validControl = function (key) {
+        if (key == 'w' ||
+            key == 'a' ||
+            key == 's' ||
+            key == 'd' ||
+            key == 'j') // j - wait
+            return true;
+        return false;
+    };
     IO.initKeyBindings = function () {
         document.addEventListener('keypress', function (event) {
             if (event.key == 'w') {
@@ -266,7 +387,7 @@ var IO = /** @class */ (function () {
 }());
 exports.IO = IO;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
 var world_1 = require("./world");
@@ -282,19 +403,24 @@ var world = new world_1.World(WORLD_WIDTH, WORLD_HEIGHT);
 world.init();
 var renderer = new renderer_1.Renderer();
 renderer.init(world);
+var player = new Player_1.Player(10, 10, new tile_1.Tile('@', 'red', 'white'));
+world.addActor(player);
 // add two test mobs to the world
-var mob1 = new Mob_1.Mob(20, 6, new tile_1.Tile('F', 'blue', 'white'));
-var mob2 = new Mob_1.Mob(6, 34, new tile_1.Tile('Q', 'blue', 'white'));
-var mob3 = new Mob_1.Mob(20, 20, new tile_1.Tile('A', 'purple', 'white'));
+var mob1 = new Mob_1.Mob("Mob1 (F)", 20, 6, new tile_1.Tile('F', 'blue', 'white'));
+var mob2 = new Mob_1.Mob("Mob2 (O)", 6, 34, new tile_1.Tile('O', 'blue', 'white'));
+var mob3 = new Mob_1.Mob("Mob3 (A)", 20, 20, new tile_1.Tile('A', 'purple', 'white'));
 world.addActor(mob1);
 world.addActor(mob2);
 world.addActor(mob3);
-var player = new Player_1.Player(10, 10, new tile_1.Tile('@', 'red', 'white'));
-world.addActor(player);
+/**
+ *  __TODO__:
+ * replace this with a more robust turn system, or a main game loop sort of thing
+                                            */
 io_1.IO.genericKeyBinding(function (key) {
-    //console.log(key);
+    if (!io_1.IO.validControl(key))
+        return;
     player.receiveKeyInput(key);
-    renderer.renderLocalContexts(world.getActors());
+    // renderer.renderLocalContexts(world.getActors());
     world.handleActorTurns();
     var actors = world.getActors();
     renderer.renderLocalContexts(actors);
@@ -303,9 +429,11 @@ io_1.IO.genericKeyBinding(function (key) {
     });
 });
 
-},{"./Entity/Mob":6,"./Entity/Player":7,"./io":8,"./renderer":10,"./tile":11,"./world":12}],10:[function(require,module,exports){
+},{"./Entity/Mob":7,"./Entity/Player":8,"./io":9,"./renderer":11,"./tile":12,"./world":13}],11:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
+var Player_1 = require("./Entity/Player");
+var tile_1 = require("./tile");
 var Renderer = /** @class */ (function () {
     function Renderer() {
         this.elementSize = 15;
@@ -342,11 +470,20 @@ var Renderer = /** @class */ (function () {
     Renderer.prototype.renderLocalContexts = function (objs) {
         // Update all locations around the game object to their initial world state
         for (var n = 0; n < objs.length; n++) {
-            this.updateTile(objs[n].x - 1, objs[n].y, this.world.getTile(objs[n].x - 1, objs[n].y));
-            this.updateTile(objs[n].x + 1, objs[n].y, this.world.getTile(objs[n].x + 1, objs[n].y));
-            this.updateTile(objs[n].x, objs[n].y - 1, this.world.getTile(objs[n].x, objs[n].y - 1));
-            this.updateTile(objs[n].x, objs[n].y + 1, this.world.getTile(objs[n].x, objs[n].y + 1));
-            // new Tile(this.world.getTile(i, j).ascii, this.world.getTile(i, j).fg, 'green')
+            // If the player is in debug render their movements and local contexts in yellow
+            if (objs[n] instanceof Player_1.Player && objs[n].debug) {
+                this.updateTile(objs[n].x - 1, objs[n].y, new tile_1.Tile(this.world.getObject(objs[n].x - 1, objs[n].y).getTile().ascii, this.world.getObject(objs[n].x - 1, objs[n].y).getTile().fg, 'yellow'));
+                this.updateTile(objs[n].x + 1, objs[n].y, new tile_1.Tile(this.world.getObject(objs[n].x + 1, objs[n].y).getTile().ascii, this.world.getObject(objs[n].x + 1, objs[n].y).getTile().fg, 'yellow'));
+                this.updateTile(objs[n].x, objs[n].y - 1, new tile_1.Tile(this.world.getObject(objs[n].x, objs[n].y - 1).getTile().ascii, this.world.getObject(objs[n].x, objs[n].y - 1).getTile().fg, 'yellow'));
+                this.updateTile(objs[n].x, objs[n].y + 1, new tile_1.Tile(this.world.getObject(objs[n].x, objs[n].y + 1).getTile().ascii, this.world.getObject(objs[n].x, objs[n].y + 1).getTile().fg, 'yellow'));
+            }
+            else {
+                this.updateTile(objs[n].x - 1, objs[n].y, this.world.getObject(objs[n].x - 1, objs[n].y).getTile());
+                this.updateTile(objs[n].x + 1, objs[n].y, this.world.getObject(objs[n].x + 1, objs[n].y).getTile());
+                this.updateTile(objs[n].x, objs[n].y - 1, this.world.getObject(objs[n].x, objs[n].y - 1).getTile());
+                this.updateTile(objs[n].x, objs[n].y + 1, this.world.getObject(objs[n].x, objs[n].y + 1).getTile());
+            }
+            // // new Tile(this.world.getTile(i, j).ascii, this.world.getTile(i, j).fg, 'green')
             // Uncomment below to leave a green actor movement path: 
             // this.updateTile(objs[n].x - 1, objs[n].y, new Tile(this.world.getTile(objs[n].x - 1, objs[n].y).ascii, this.world.getTile(objs[n].x - 1, objs[n].y).fg, 'green'));
             // this.updateTile(objs[n].x + 1, objs[n].y, new Tile(this.world.getTile(objs[n].x + 1, objs[n].y).ascii, this.world.getTile(objs[n].x + 1, objs[n].y).fg, 'green'));
@@ -368,9 +505,12 @@ var Renderer = /** @class */ (function () {
                 element.style.width = this.pxs(this.elementSize);
                 element.style.textAlign = 'center';
                 element.style.userSelect = 'none';
-                element.innerHTML = world.getTileASCII(i, j);
-                element.style.backgroundColor = world.getTileBg(i, j);
-                element.style.color = world.getTileFg(i, j);
+                element.innerHTML = world.getObject(j, i).getTile().ascii;
+                element.style.backgroundColor = world.getObject(j, i).getTile().bg;
+                element.style.color = world.getObject(j, i).getTile().fg;
+                // element.innerHTML = world.getTileASCII(i,j);
+                // element.style.backgroundColor = world.getTileBg(i, j);
+                // element.style.color = world.getTileFg(i, j);                
                 // element.id = i+'-'+j;
                 rowDiv.appendChild(element);
             }
@@ -389,7 +529,7 @@ var Renderer = /** @class */ (function () {
 }());
 exports.Renderer = Renderer;
 
-},{}],11:[function(require,module,exports){
+},{"./Entity/Player":8,"./tile":12}],12:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
 var Tile = /** @class */ (function () {
@@ -414,7 +554,7 @@ var Tile = /** @class */ (function () {
 }());
 exports.Tile = Tile;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 /* This is sort of kind of a world "system"
 
@@ -429,6 +569,7 @@ Notes about what this World class could or should be:
 
 */
 exports.__esModule = true;
+var Environment_1 = require("./Entity/Environment");
 var tile_1 = require("./tile");
 var World = /** @class */ (function () {
     // private tree: Tile = new Tile('&#2510;', 'green', 'white');
@@ -448,6 +589,7 @@ var World = /** @class */ (function () {
     };
     World.prototype.addActor = function (actor) {
         this.actors.push(actor);
+        // this.objects[actor.x][actor.y] = actor;
     };
     World.prototype.getActors = function () {
         return this.actors;
@@ -460,9 +602,18 @@ var World = /** @class */ (function () {
     };
     // init generates the initial world state
     World.prototype.init = function () {
+        var floors = [
+            new tile_1.Tile('&#8283;', 'black', 'white'),
+            new tile_1.Tile('&#775;', 'black', 'white'),
+            new tile_1.Tile('&#803;', 'black', 'white'),
+            new tile_1.Tile('&#856;', 'black', 'white')
+        ];
+        var trees = [
+            new tile_1.Tile('&#8483;', 'green', 'white')
+        ];
+        // SHIM:
         var floorChars = ['&#8283;', '&#775;', '&#803;', '&#856;'];
         var treeChars = ['&#8483;'];
-        //let chars: any[] = ['&#856;'];//'&#8283;'];//, '&#8483;', '&#775;', '&#803;', '&#856;'];
         // set up wall tiles
         var botLeft = new tile_1.Tile('&#9562;', 'black', 'white');
         var botRight = new tile_1.Tile('&#9565;', 'black', 'white');
@@ -471,61 +622,57 @@ var World = /** @class */ (function () {
         // let horizontal = new Tile('&#9552;&#9552;', 'black', 'white');
         var horizontal = new tile_1.Tile('==', 'black', 'white');
         var vertical = new tile_1.Tile('&#9553;', 'black', 'white');
-        for (var i = 0; i < this.height; i++) {
+        for (var i = 0; i < this.width; i++) {
             this.tiles[i] = [];
-            for (var j = 0; j < this.width; j++) {
+            this.objects[i] = [];
+            for (var j = 0; j < this.height; j++) {
                 if (i == 0 && j == this.width - 1) {
-                    this.tiles[i][j] = topRight;
+                    this.tiles[i][j] = botLeft;
+                    this.objects[i][j] = new Environment_1.Wall(i, j, botLeft);
                     continue;
                 }
                 if (i == 0 && j == 0) {
                     this.tiles[i][j] = topLeft;
-                    continue;
-                }
-                if (i == 0) {
-                    this.tiles[i][j] = horizontal;
+                    this.objects[i][j] = new Environment_1.Wall(i, j, topLeft);
                     continue;
                 }
                 if (i == this.height - 1 && j == this.width - 1) {
                     this.tiles[i][j] = botRight;
+                    this.objects[i][j] = new Environment_1.Wall(i, j, botRight);
                     continue;
                 }
                 if (i == this.height - 1 && j == 0) {
-                    this.tiles[i][j] = botLeft;
+                    this.tiles[i][j] = topRight;
+                    this.objects[i][j] = new Environment_1.Wall(i, j, topRight);
                     continue;
                 }
-                if (i == this.height - 1) {
-                    this.tiles[i][j] = horizontal;
+                if (i == 0 || i == this.height - 1) {
+                    this.tiles[i][j] = vertical;
+                    this.objects[i][j] = new Environment_1.Wall(i, j, vertical);
                     continue;
                 }
                 if (j == 0 || j == this.width - 1) {
-                    this.tiles[i][j] = vertical;
+                    this.tiles[i][j] = horizontal;
+                    this.objects[i][j] = new Environment_1.Wall(i, j, horizontal);
                     continue;
                 }
                 var rand = Math.floor(Math.random() * 10);
                 if (rand > 6) {
                     this.tiles[i][j] = new tile_1.Tile(treeChars[0], 'green', 'white');
+                    this.objects[i][j] = new Environment_1.Tree(i, j, trees[0]);
                 }
                 else {
                     this.tiles[i][j] = new tile_1.Tile(floorChars[Math.floor(Math.random() * 4)], 'black', 'white');
+                    this.objects[i][j] = new Environment_1.Floor(i, j, floors[Math.floor(Math.random() * 4)]);
                 }
             }
         }
     };
-    World.prototype.getTile = function (x, y) {
-        return this.tiles[y][x];
-    };
-    World.prototype.getTileASCII = function (x, y) {
-        return this.tiles[x][y].ascii;
-    };
-    World.prototype.getTileBg = function (x, y) {
-        return this.tiles[x][y].bg;
-    };
-    World.prototype.getTileFg = function (x, y) {
-        return this.tiles[x][y].fg;
+    World.prototype.getObject = function (x, y) {
+        return this.objects[x][y]; // IS THIS RIGHT?
     };
     return World;
 }());
 exports.World = World;
 
-},{"./tile":11}]},{},[9]);
+},{"./Entity/Environment":5,"./tile":12}]},{},[10]);

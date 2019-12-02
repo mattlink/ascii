@@ -8,8 +8,10 @@ import { World } from '../world';
 
 export class Player extends Actor {
     
+    public debug: boolean = false;
+
     constructor(x0: number, y0: number, tile: Tile) {
-        super(x0, y0, tile);
+        super("Player", x0, y0, tile);
         this.nextAction = new WaitAction(this);
     }
 

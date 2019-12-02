@@ -13,19 +13,24 @@ var world = new world_1.World(WORLD_WIDTH, WORLD_HEIGHT);
 world.init();
 var renderer = new renderer_1.Renderer();
 renderer.init(world);
+var player = new Player_1.Player(10, 10, new tile_1.Tile('@', 'red', 'white'));
+world.addActor(player);
 // add two test mobs to the world
-var mob1 = new Mob_1.Mob(20, 6, new tile_1.Tile('F', 'blue', 'white'));
-var mob2 = new Mob_1.Mob(6, 34, new tile_1.Tile('Q', 'blue', 'white'));
-var mob3 = new Mob_1.Mob(20, 20, new tile_1.Tile('A', 'purple', 'white'));
+var mob1 = new Mob_1.Mob("Mob1 (F)", 20, 6, new tile_1.Tile('F', 'blue', 'white'));
+var mob2 = new Mob_1.Mob("Mob2 (O)", 6, 34, new tile_1.Tile('O', 'blue', 'white'));
+var mob3 = new Mob_1.Mob("Mob3 (A)", 20, 20, new tile_1.Tile('A', 'purple', 'white'));
 world.addActor(mob1);
 world.addActor(mob2);
 world.addActor(mob3);
-var player = new Player_1.Player(10, 10, new tile_1.Tile('@', 'red', 'white'));
-world.addActor(player);
+/**
+ *  __TODO__:
+ * replace this with a more robust turn system, or a main game loop sort of thing
+                                            */
 io_1.IO.genericKeyBinding(function (key) {
-    //console.log(key);
+    if (!io_1.IO.validControl(key))
+        return;
     player.receiveKeyInput(key);
-    renderer.renderLocalContexts(world.getActors());
+    // renderer.renderLocalContexts(world.getActors());
     world.handleActorTurns();
     var actors = world.getActors();
     renderer.renderLocalContexts(actors);

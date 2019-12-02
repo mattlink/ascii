@@ -14,11 +14,14 @@ var __extends = (this && this.__extends) || (function () {
 })();
 exports.__esModule = true;
 var GameObject_1 = require("./GameObject");
-// essentially, "Actors" are GameObjects that are allowed to takeTurns.
+// essentially, "Actors" are GameObjects that are allowed to takeTurns and have names.
 var Actor = /** @class */ (function (_super) {
     __extends(Actor, _super);
-    function Actor(x, y, tile) {
-        return _super.call(this, x, y, tile) || this;
+    function Actor(name, x, y, tile) {
+        var _this = _super.call(this, x, y, tile) || this;
+        _this.debug = false;
+        _this.name = name;
+        return _this;
     }
     return Actor;
 }(GameObject_1.GameObject));

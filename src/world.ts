@@ -21,8 +21,8 @@ import { Actor } from './Entity/Actor';
 export class World {
     private width: number;
     private height: number;
-    private tiles: Tile[][];
-    private objects: GameObject[][];
+    public tiles: Tile[][];
+    public objects: GameObject[][];
     // private mobs: Mob[];
     private actors: Actor[];
 
@@ -46,6 +46,7 @@ export class World {
 
     addActor(actor: Actor) {
         this.actors.push(actor);
+        // this.objects[actor.x][actor.y] = actor;
     }
 
     getActors() {
@@ -62,9 +63,20 @@ export class World {
 
     // init generates the initial world state
     init() {              // 4 part,  2 part, blank,     single raised
+        let floors = [
+            new Tile('&#8283;', 'black', 'white'), 
+            new Tile('&#775;', 'black', 'white'), 
+            new Tile('&#803;', 'black', 'white'), 
+            new Tile('&#856;', 'black', 'white')
+        ];
+
+        let trees = [
+            new Tile('&#8483;', 'green', 'white')
+        ];
+
+        // SHIM:
         let floorChars = ['&#8283;', '&#775;', '&#803;', '&#856;'];
         let treeChars = ['&#8483;'];
-        //let chars: any[] = ['&#856;'];//'&#8283;'];//, '&#8483;', '&#775;', '&#803;', '&#856;'];
 
         // set up wall tiles
         let botLeft = new Tile('&#9562;', 'black', 'white');
@@ -75,46 +87,72 @@ export class World {
         let horizontal = new Tile('==', 'black', 'white');
         let vertical = new Tile('&#9553;', 'black', 'white');
 
-        for (let i = 0; i < this.height; i++) {
+        for (let i = 0; i < this.width; i++) {
             this.tiles[i] = [];
-            for (let j = 0; j < this.width; j++) {
+            this.objects[i] = [];
+            for (let j = 0; j < this.height; j++) {
 
-                if (i == 0 && j == this.width - 1) { this.tiles[i][j] = topRight; continue; }
-                if (i == 0 && j == 0) { this.tiles[i][j] = topLeft; continue; }
-                if (i == 0) { this.tiles[i][j] = horizontal; continue; }
+                if (i == 0 && j == this.width - 1) { 
+                    this.tiles[i][j] = botLeft; 
+                    this.objects[i][j] = new Wall(i, j, botLeft);
+                    continue; 
+                }
+                if (i == 0 && j == 0) { 
+                    this.tiles[i][j] = topLeft; 
+                    this.objects[i][j] = new Wall(i, j, topLeft);
+                    continue; 
+                }
+                
 
-                if (i == this.height - 1 && j == this.width - 1) { this.tiles[i][j] = botRight; continue; }
-                if (i == this.height - 1 && j == 0) { this.tiles[i][j] = botLeft; continue; }
-                if (i == this.height - 1) { this.tiles[i][j] = horizontal; continue; }
+                if (i == this.height - 1 && j == this.width - 1) { 
+                    this.tiles[i][j] = botRight;
+                    this.objects[i][j] = new Wall(i, j, botRight); 
+                    continue; 
+                }
+                if (i == this.height - 1 && j == 0) { 
+                    this.tiles[i][j] = topRight; 
+                    this.objects[i][j] = new Wall(i, j, topRight);
+                    continue; 
+                }
+                if (i == 0 || i == this.height - 1) { 
+                    this.tiles[i][j] = vertical;
+                    this.objects[i][j] = new Wall(i, j, vertical); 
+                    continue; 
+                }
 
-                if (j == 0 || j == this.width - 1) { this.tiles[i][j] = vertical; continue; }
+                if (j == 0 || j == this.width - 1) { 
+                    this.tiles[i][j] = horizontal; 
+                    this.objects[i][j] = new Wall(i, j, horizontal);
+                    continue; 
+                }
 
                 let rand = Math.floor(Math.random() * 10);
                 if (rand > 6) {
                     this.tiles[i][j] = new Tile(treeChars[0], 'green', 'white');
+                    this.objects[i][j] = new Tree(i, j, trees[0]);
                 } else {
                     this.tiles[i][j] = new Tile(floorChars[Math.floor(Math.random() * 4)], 'black', 'white');
+                    this.objects[i][j] = new Floor(i, j, floors[Math.floor(Math.random() * 4)]);
                 }
                 
             }
         }
-
-        
-
-
-
     }
 
-    getTile(x: number, y: number) {
-        return this.tiles[y][x];
+    getObject(x: number, y:number) {
+        return this.objects[x][y]; // IS THIS RIGHT?
     }
-    getTileASCII(x: number, y: number): string {
-        return this.tiles[x][y].ascii;
-    }
-    getTileBg(x: number, y: number): string {
-        return this.tiles[x][y].bg;
-    }
-    getTileFg(x: number, y: number): string {
-        return this.tiles[x][y].fg;
-    }
+
+    // getTile(x: number, y: number) {
+    //     return this.tiles[x][y];
+    // }
+    // getTileASCII(x: number, y: number): string {
+    //     return this.tiles[x][y].ascii;
+    // }
+    // getTileBg(x: number, y: number): string {
+    //     return this.tiles[x][y].bg;
+    // }
+    // getTileFg(x: number, y: number): string {
+    //     return this.tiles[x][y].fg;
+    // }
 }

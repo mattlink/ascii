@@ -17,7 +17,9 @@ var GameObject_1 = require("./GameObject");
 var Tree = /** @class */ (function (_super) {
     __extends(Tree, _super);
     function Tree(x, y, tile) {
-        return _super.call(this, x, y, tile) || this;
+        var _this = _super.call(this, x, y, tile) || this;
+        _this.collides = true;
+        return _this;
     }
     return Tree;
 }(GameObject_1.GameObject));
@@ -25,15 +27,28 @@ exports.Tree = Tree;
 var Floor = /** @class */ (function (_super) {
     __extends(Floor, _super);
     function Floor(x, y, tile) {
-        return _super.call(this, x, y, tile) || this;
+        var _this = _super.call(this, x, y, tile) || this;
+        _this.occupiedBy = null;
+        _this.collides = false;
+        return _this;
     }
+    Floor.prototype.setOccupation = function (actor) {
+        this.occupiedBy = actor;
+        this.collides = true;
+    };
+    Floor.prototype.removeOccupation = function () {
+        this.occupiedBy = null;
+        this.collides = false;
+    };
     return Floor;
 }(GameObject_1.GameObject));
 exports.Floor = Floor;
 var Wall = /** @class */ (function (_super) {
     __extends(Wall, _super);
     function Wall(x, y, tile) {
-        return _super.call(this, x, y, tile) || this;
+        var _this = _super.call(this, x, y, tile) || this;
+        _this.collides = true;
+        return _this;
     }
     return Wall;
 }(GameObject_1.GameObject));

@@ -1,6 +1,18 @@
 export class IO {
     
+    public static validControl(key: string): boolean {
+        if (
+            key == 'w' || 
+            key == 'a' || 
+            key == 's' || 
+            key == 'd' || 
+            key == 'j') // j - wait
+            return true;
+        return false;
+    }
+
     public static initKeyBindings() {
+        
         document.addEventListener('keypress', function(event){
     
             if (event.key == 'w') { 

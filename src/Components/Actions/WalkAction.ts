@@ -1,6 +1,8 @@
 import { Action } from "./Action";
 import { Actor }  from "../../Entity/Actor";
 import { World } from "../../world";
+import { Floor } from "../../Entity/Environment";
+import { GameObject } from "../../Entity/GameObject";
 
 export enum WalkDirection {
     Up,
@@ -19,26 +21,85 @@ export class WalkAction extends Action {
     }
 
     perform(world: World) {
-        // TODO: We want to handle collisions here
+
+        let fromObject = world.getObject(this.actor.x, this.actor.y);
 
         if (this.dir == WalkDirection.Up) {
-            if (!(this.actor.y - 1 <= 0)) {
+            let object = world.getObject(this.actor.x, this.actor.y - 1);
+            if (!object.collides) {
+
+                if (fromObject instanceof Floor) {
+                    (<Floor>world.objects[this.actor.x][this.actor.y]).removeOccupation();
+                }
+
                 this.actor.y = this.actor.y - 1;
+
+                if (object instanceof Floor) {
+                    (<Floor>world.objects[this.actor.x][this.actor.y]).setOccupation(this.actor);
+                }
+                
+            } else {
+                if (this.actor.debug) {
+                    console.log('COLLISION: ', this.actor);
+                }
             }
         }
         else if (this.dir == WalkDirection.Down) {
-            if (this.actor.y + 1 < world.getHeight() - 1) {
+            let object = world.getObject(this.actor.x, this.actor.y + 1);
+            if (!object.collides) {           
+                
+                if (fromObject instanceof Floor) {
+                    (<Floor>world.objects[this.actor.x][this.actor.y]).removeOccupation();
+                }
+
                 this.actor.y = this.actor.y + 1;
+
+                if (object instanceof Floor) {
+                    (<Floor>world.objects[this.actor.x][this.actor.y]).setOccupation(this.actor);
+                }
+            } else {
+                if (this.actor.debug) {
+                    console.log('COLLISION: ', this.actor);
+                }
             }
         }
         else if (this.dir == WalkDirection.Left) {
-            if (!(this.actor.x - 1 <= 0)) {
+            let object = world.getObject(this.actor.x - 1, this.actor.y);
+            if (!object.collides) {
+                if (fromObject instanceof Floor) {
+                    (<Floor>world.objects[this.actor.x][this.actor.y]).removeOccupation();
+                }
+
                 this.actor.x = this.actor.x - 1;
+
+                if (object instanceof Floor) {
+                    (<Floor>world.objects[this.actor.x][this.actor.y]).setOccupation(this.actor);
+                }
+                
+            } else {
+                if (this.actor.debug) {
+                    console.log('COLLISION: ', this.actor);
+                }
             }
         }
         else if (this.dir == WalkDirection.Right) {
-            if (this.actor.x + 1 < world.getWidth() - 1) {
+            
+            let object = world.getObject(this.actor.x + 1, this.actor.y);
+            if (!object.collides) {
+                if (fromObject instanceof Floor) {
+                    (<Floor>world.objects[this.actor.x][this.actor.y]).removeOccupation();
+                }
+
                 this.actor.x = this.actor.x + 1;
+
+                if (object instanceof Floor) {
+                    (<Floor>world.objects[this.actor.x][this.actor.y]).setOccupation(this.actor);
+                }
+                
+            } else {
+                if (this.actor.debug) {
+                    console.log('COLLISION: ', this.actor);
+                }
             }
         }
 
@@ -46,3 +107,4 @@ export class WalkAction extends Action {
 
     }
 }
+

@@ -14,6 +14,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 exports.__esModule = true;
 var Action_1 = require("./Action");
+var Environment_1 = require("../../Entity/Environment");
 var WalkDirection;
 (function (WalkDirection) {
     WalkDirection[WalkDirection["Up"] = 0] = "Up";
@@ -29,25 +30,73 @@ var WalkAction = /** @class */ (function (_super) {
         return _this;
     }
     WalkAction.prototype.perform = function (world) {
-        // TODO: We want to handle collisions here
+        var fromObject = world.getObject(this.actor.x, this.actor.y);
         if (this.dir == WalkDirection.Up) {
-            if (!(this.actor.y - 1 <= 0)) {
+            var object = world.getObject(this.actor.x, this.actor.y - 1);
+            if (!object.collides) {
+                if (fromObject instanceof Environment_1.Floor) {
+                    world.objects[this.actor.x][this.actor.y].removeOccupation();
+                }
                 this.actor.y = this.actor.y - 1;
+                if (object instanceof Environment_1.Floor) {
+                    world.objects[this.actor.x][this.actor.y].setOccupation(this.actor);
+                }
+            }
+            else {
+                if (this.actor.debug) {
+                    console.log('COLLISION: ', this.actor);
+                }
             }
         }
         else if (this.dir == WalkDirection.Down) {
-            if (this.actor.y + 1 < world.getHeight() - 1) {
+            var object = world.getObject(this.actor.x, this.actor.y + 1);
+            if (!object.collides) {
+                if (fromObject instanceof Environment_1.Floor) {
+                    world.objects[this.actor.x][this.actor.y].removeOccupation();
+                }
                 this.actor.y = this.actor.y + 1;
+                if (object instanceof Environment_1.Floor) {
+                    world.objects[this.actor.x][this.actor.y].setOccupation(this.actor);
+                }
+            }
+            else {
+                if (this.actor.debug) {
+                    console.log('COLLISION: ', this.actor);
+                }
             }
         }
         else if (this.dir == WalkDirection.Left) {
-            if (!(this.actor.x - 1 <= 0)) {
+            var object = world.getObject(this.actor.x - 1, this.actor.y);
+            if (!object.collides) {
+                if (fromObject instanceof Environment_1.Floor) {
+                    world.objects[this.actor.x][this.actor.y].removeOccupation();
+                }
                 this.actor.x = this.actor.x - 1;
+                if (object instanceof Environment_1.Floor) {
+                    world.objects[this.actor.x][this.actor.y].setOccupation(this.actor);
+                }
+            }
+            else {
+                if (this.actor.debug) {
+                    console.log('COLLISION: ', this.actor);
+                }
             }
         }
         else if (this.dir == WalkDirection.Right) {
-            if (this.actor.x + 1 < world.getWidth() - 1) {
+            var object = world.getObject(this.actor.x + 1, this.actor.y);
+            if (!object.collides) {
+                if (fromObject instanceof Environment_1.Floor) {
+                    world.objects[this.actor.x][this.actor.y].removeOccupation();
+                }
                 this.actor.x = this.actor.x + 1;
+                if (object instanceof Environment_1.Floor) {
+                    world.objects[this.actor.x][this.actor.y].setOccupation(this.actor);
+                }
+            }
+            else {
+                if (this.actor.debug) {
+                    console.log('COLLISION: ', this.actor);
+                }
             }
         }
         // In theory, if we DONT do the rendering update here, then the movement is completely independent of the renderer which is ideal
