@@ -15,13 +15,10 @@ exports.__esModule = true;
 var Environment_1 = require("./Entity/Environment");
 var tile_1 = require("./tile");
 var World = /** @class */ (function () {
-    // private tree: Tile = new Tile('&#2510;', 'green', 'white');
     function World(width, height) {
         this.width = width;
         this.height = height;
-        this.tiles = [];
         this.objects = [];
-        // this.mobs = [];
         this.actors = [];
     }
     World.prototype.handleActorTurns = function () {
@@ -55,8 +52,8 @@ var World = /** @class */ (function () {
             new tile_1.Tile('&#8483;', 'green', 'white')
         ];
         // SHIM:
-        var floorChars = ['&#8283;', '&#775;', '&#803;', '&#856;'];
-        var treeChars = ['&#8483;'];
+        // let floorChars = ['&#8283;', '&#775;', '&#803;', '&#856;'];
+        // let treeChars = ['&#8483;'];
         // set up wall tiles
         var botLeft = new tile_1.Tile('&#9562;', 'black', 'white');
         var botRight = new tile_1.Tile('&#9565;', 'black', 'white');
@@ -66,53 +63,44 @@ var World = /** @class */ (function () {
         var horizontal = new tile_1.Tile('==', 'black', 'white');
         var vertical = new tile_1.Tile('&#9553;', 'black', 'white');
         for (var i = 0; i < this.width; i++) {
-            this.tiles[i] = [];
             this.objects[i] = [];
             for (var j = 0; j < this.height; j++) {
                 if (i == 0 && j == this.width - 1) {
-                    this.tiles[i][j] = botLeft;
                     this.objects[i][j] = new Environment_1.Wall(i, j, botLeft);
                     continue;
                 }
                 if (i == 0 && j == 0) {
-                    this.tiles[i][j] = topLeft;
                     this.objects[i][j] = new Environment_1.Wall(i, j, topLeft);
                     continue;
                 }
                 if (i == this.height - 1 && j == this.width - 1) {
-                    this.tiles[i][j] = botRight;
                     this.objects[i][j] = new Environment_1.Wall(i, j, botRight);
                     continue;
                 }
                 if (i == this.height - 1 && j == 0) {
-                    this.tiles[i][j] = topRight;
                     this.objects[i][j] = new Environment_1.Wall(i, j, topRight);
                     continue;
                 }
                 if (i == 0 || i == this.height - 1) {
-                    this.tiles[i][j] = vertical;
                     this.objects[i][j] = new Environment_1.Wall(i, j, vertical);
                     continue;
                 }
                 if (j == 0 || j == this.width - 1) {
-                    this.tiles[i][j] = horizontal;
                     this.objects[i][j] = new Environment_1.Wall(i, j, horizontal);
                     continue;
                 }
                 var rand = Math.floor(Math.random() * 10);
                 if (rand > 6) {
-                    this.tiles[i][j] = new tile_1.Tile(treeChars[0], 'green', 'white');
                     this.objects[i][j] = new Environment_1.Tree(i, j, trees[0]);
                 }
                 else {
-                    this.tiles[i][j] = new tile_1.Tile(floorChars[Math.floor(Math.random() * 4)], 'black', 'white');
                     this.objects[i][j] = new Environment_1.Floor(i, j, floors[Math.floor(Math.random() * 4)]);
                 }
             }
         }
     };
     World.prototype.getObject = function (x, y) {
-        return this.objects[x][y]; // IS THIS RIGHT?
+        return this.objects[x][y];
     };
     return World;
 }());

@@ -37,23 +37,4 @@ export class Player extends Actor {
     takeTurn(world: World) {
         this.nextAction.perform(world);        
     }
-    
-   /* move(x1: number, y1: number) {
-        this.x = x1;
-        this.y = y1;
-    }
-
-    moveUp() {
-        this.move(this.x, this.y - 1);
-    }
-    moveDown() {
-        this.move(this.x, this.y + 1);
-    }
-    moveLeft() {
-        this.move(this.x - 1, this.y);
-    }
-    moveRight() {
-        this.move(this.x + 1, this.y);
-    }*/
-    
 }
