@@ -1,4 +1,5 @@
 import { World } from './world';
+import { Window } from './window';
 import { Renderer } from './renderer';
 import { Tile } from './tile';
 import { IO } from './io';
@@ -17,6 +18,9 @@ world.init();
 let renderer = new Renderer();
 renderer.init(world);
 
+// let gameWorldWindow = new Window(0, 0, world.getHeight(), world.getWidth(), world.getTiles());
+// renderer.addWindow(gameWorldWindow);
+
 let player = new Player(10, 10, new Tile('@', 'red', 'white'));
 world.addActor(player);
 
@@ -29,17 +33,17 @@ world.addActor(mob1);
 world.addActor(mob2);
 world.addActor(mob3);
 
+
 /** 
  *  __TODO__: 
- * replace this with a more robust turn system, or a main game loop sort of thing 
-                                            */
+ * replace this with a more robust turn system, or a main game loop sort of thing  
+                                             */
+
 IO.genericKeyBinding(function(key: string) {
     
     if (!IO.validControl(key)) return;
 
     player.receiveKeyInput(key);
-
-    // renderer.renderLocalContexts(world.getActors());
 
     world.handleActorTurns();
 
@@ -50,8 +54,18 @@ IO.genericKeyBinding(function(key: string) {
     });
 });
 
+/* Testing the window system:
+let winTiles: Tile[][] = [
+    [new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white')],
+    [new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white')],
+    [new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white')],
+    [new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white')],
+    [new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white')],
+];
 
-
+let testWin = new Window(0, 0, 5, 5, winTiles);
+renderer.addWindow(testWin);
+console.log(testWin);*/
 
 
 

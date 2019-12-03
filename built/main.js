@@ -13,6 +13,8 @@ var world = new world_1.World(WORLD_WIDTH, WORLD_HEIGHT);
 world.init();
 var renderer = new renderer_1.Renderer();
 renderer.init(world);
+// let gameWorldWindow = new Window(0, 0, world.getHeight(), world.getWidth(), world.getTiles());
+// renderer.addWindow(gameWorldWindow);
 var player = new Player_1.Player(10, 10, new tile_1.Tile('@', 'red', 'white'));
 world.addActor(player);
 // add two test mobs to the world
@@ -25,12 +27,11 @@ world.addActor(mob3);
 /**
  *  __TODO__:
  * replace this with a more robust turn system, or a main game loop sort of thing
-                                            */
+                                             */
 io_1.IO.genericKeyBinding(function (key) {
     if (!io_1.IO.validControl(key))
         return;
     player.receiveKeyInput(key);
-    // renderer.renderLocalContexts(world.getActors());
     world.handleActorTurns();
     var actors = world.getActors();
     renderer.renderLocalContexts(actors);
@@ -38,3 +39,15 @@ io_1.IO.genericKeyBinding(function (key) {
         renderer.updateGameObject(actor);
     });
 });
+/* Testing the window system:
+let winTiles: Tile[][] = [
+    [new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white')],
+    [new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white')],
+    [new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white')],
+    [new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white')],
+    [new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white')],
+];
+
+let testWin = new Window(0, 0, 5, 5, winTiles);
+renderer.addWindow(testWin);
+console.log(testWin);*/

@@ -49,7 +49,8 @@ var World = /** @class */ (function () {
             new tile_1.Tile('&#856;', 'black', 'white')
         ];
         var trees = [
-            new tile_1.Tile('&#8483;', 'green', 'white')
+            // new Tile('&#8483;', 'green', 'white')
+            new tile_1.Tile('Y', 'green', 'white')
         ];
         // SHIM:
         // let floorChars = ['&#8283;', '&#775;', '&#803;', '&#856;'];
@@ -101,6 +102,16 @@ var World = /** @class */ (function () {
     };
     World.prototype.getObject = function (x, y) {
         return this.objects[x][y];
+    };
+    World.prototype.getTiles = function () {
+        var tiles = [];
+        for (var i = 0; i < this.height; i++) {
+            tiles[i] = [];
+            for (var j = 0; j < this.width; j++) {
+                tiles[i][j] = this.getObject(i, j).getTile();
+            }
+        }
+        return tiles;
     };
     return World;
 }());

@@ -65,7 +65,8 @@ export class World {
         ];
 
         let trees = [
-            new Tile('&#8483;', 'green', 'white')
+            // new Tile('&#8483;', 'green', 'white')
+            new Tile('Y', 'green', 'white')
         ];
 
         // SHIM:
@@ -126,5 +127,16 @@ export class World {
 
     getObject(x: number, y:number) {
         return this.objects[x][y];
+    }
+
+    getTiles() {
+        let tiles: Tile[][] = [];
+        for (let i = 0; i < this.height; i++) {
+            tiles[i] = [];
+            for (let j = 0; j < this.width; j++) {
+                tiles[i][j] = this.getObject(i, j).getTile();
+            }
+        }
+        return tiles;
     }
 }
