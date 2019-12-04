@@ -271,6 +271,7 @@ var WalkAction_1 = require("../Components/Actions/WalkAction");
 var WaitAction_1 = require("../Components/Actions/WaitAction");
 var Mob = /** @class */ (function (_super) {
     __extends(Mob, _super);
+    // public debug: boolean = true;
     function Mob(name, x, y, tile) {
         var _this = _super.call(this, name, x, y, tile) || this;
         _this.nextAction = new WaitAction_1.WaitAction(_this);
@@ -314,9 +315,9 @@ var WaitAction_1 = require("../Components/Actions/WaitAction");
 var WalkAction_1 = require("../Components/Actions/WalkAction");
 var Player = /** @class */ (function (_super) {
     __extends(Player, _super);
+    // public debug: boolean = true;
     function Player(x0, y0, tile) {
         var _this = _super.call(this, "Player", x0, y0, tile) || this;
-        _this.debug = false;
         _this.nextAction = new WaitAction_1.WaitAction(_this);
         return _this;
     }
@@ -391,6 +392,7 @@ exports.IO = IO;
 "use strict";
 exports.__esModule = true;
 var world_1 = require("./world");
+var window_1 = require("./window");
 var renderer_1 = require("./renderer");
 var tile_1 = require("./tile");
 var io_1 = require("./io");
@@ -401,10 +403,6 @@ var WORLD_HEIGHT = 50;
 var WORLD_WIDTH = 50;
 var world = new world_1.World(WORLD_WIDTH, WORLD_HEIGHT);
 world.init();
-var renderer = new renderer_1.Renderer();
-renderer.init(world);
-// let gameWorldWindow = new Window(0, 0, world.getHeight(), world.getWidth(), world.getTiles());
-// renderer.addWindow(gameWorldWindow);
 var player = new Player_1.Player(10, 10, new tile_1.Tile('@', 'red', 'white'));
 world.addActor(player);
 // add two test mobs to the world
@@ -414,6 +412,10 @@ var mob3 = new Mob_1.Mob("Mob3 (A)", 20, 20, new tile_1.Tile('A', 'purple', 'whi
 world.addActor(mob1);
 world.addActor(mob2);
 world.addActor(mob3);
+// Set up rendering and create a game window to render the world to
+var renderer = new renderer_1.Renderer();
+var gameWindow = new window_1.Window(-1, -1, world.getHeight(), world.getWidth(), world.getTiles());
+renderer.addWindow(gameWindow);
 /**
  *  __TODO__:
  * replace this with a more robust turn system, or a main game loop sort of thing
@@ -424,120 +426,72 @@ io_1.IO.genericKeyBinding(function (key) {
     player.receiveKeyInput(key);
     world.handleActorTurns();
     var actors = world.getActors();
-    renderer.renderLocalContexts(actors);
+    renderer.renderLocalWorldContexts(actors, world, gameWindow.getContext());
     actors.forEach(function (actor) {
-        renderer.updateGameObject(actor);
+        renderer.updateGameObject(actor, gameWindow.getContext());
     });
 });
-/* Testing the window system:
-let winTiles: Tile[][] = [
-    [new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white')],
-    [new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white')],
-    [new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white')],
-    [new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white')],
-    [new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white'), new Tile('*', 'black', 'white')],
+// Testing the window system by creating a new window:
+var winTiles = [
+    [new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white')],
+    [new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white')],
+    [new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white')],
+    [new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white')],
+    [new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white')],
+    [new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white')],
+    [new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white')],
+    [new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white'), new tile_1.Tile('*', 'black', 'white')],
 ];
-
-let testWin = new Window(0, 0, 5, 5, winTiles);
+var testWin = new window_1.Window(50, 800, 5, 5, winTiles);
 renderer.addWindow(testWin);
-console.log(testWin);*/
+console.log(testWin);
+// let colors = ['purple', 'green', 'red', 'yellow', 'orange', 'blue']
+// for (let i = 0; i < 10; i++) {
+//     let color = colors[Math.floor(Math.random() * 4)];
+//     let x = Math.floor(Math.random() * testWin.localWidth);
+//     let y = Math.floor(Math.random() * testWin.localHeight);
+//     renderer.updateTile(x, y, new Tile('*', color, 'white'), testWin.getContext())
+// }
 
-},{"./Entity/Mob":7,"./Entity/Player":8,"./io":9,"./renderer":11,"./tile":12,"./world":13}],11:[function(require,module,exports){
+},{"./Entity/Mob":7,"./Entity/Player":8,"./io":9,"./renderer":11,"./tile":12,"./window":13,"./world":14}],11:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
-var Player_1 = require("./Entity/Player");
+var Actor_1 = require("./Entity/Actor");
 var tile_1 = require("./tile");
 var Renderer = /** @class */ (function () {
     function Renderer() {
-        this.elementSize = 15;
-        this.context = document.createElement('div');
     }
-    Renderer.prototype.init = function (world) {
-        this.world = world;
-        // initialize the rendering context
-        this.initializeContext(world);
-        // bind context to body
-        this.bind(this.context);
-    };
-    Renderer.prototype.updateGameObject = function (obj) {
+    Renderer.prototype.updateGameObject = function (obj, context) {
         // Render the game object in its position
-        this.updateTile(obj.x, obj.y, obj.getTile(), this.context);
+        this.updateTile(obj.x, obj.y, obj.getTile(), context);
     };
     // "Re-render a specific tile"
     Renderer.prototype.updateTile = function (x, y, tile, context) {
         context.children[y].children[x].innerHTML = tile.ascii;
-        // (<HTMLElement>document.querySelector('#'+x+'-'+y)).style.backgroundColor = tile.bg;
         context.children[y].children[x].style.backgroundColor = tile.bg;
         context.children[y].children[x].style.color = tile.fg;
     };
-    Renderer.prototype.renderLocalContexts = function (objs, context) {
-        if (context === void 0) { context = this.context; }
+    Renderer.prototype.renderLocalWorldContexts = function (objs, world, context) {
         // Update all locations around the game object to their initial world state
         for (var n = 0; n < objs.length; n++) {
             // If the player is in debug render their movements and local contexts in yellow
-            if (objs[n] instanceof Player_1.Player && objs[n].debug) {
-                this.updateTile(objs[n].x - 1, objs[n].y, new tile_1.Tile(this.world.getObject(objs[n].x - 1, objs[n].y).getTile().ascii, this.world.getObject(objs[n].x - 1, objs[n].y).getTile().fg, 'yellow'), context);
-                this.updateTile(objs[n].x + 1, objs[n].y, new tile_1.Tile(this.world.getObject(objs[n].x + 1, objs[n].y).getTile().ascii, this.world.getObject(objs[n].x + 1, objs[n].y).getTile().fg, 'yellow'), context);
-                this.updateTile(objs[n].x, objs[n].y - 1, new tile_1.Tile(this.world.getObject(objs[n].x, objs[n].y - 1).getTile().ascii, this.world.getObject(objs[n].x, objs[n].y - 1).getTile().fg, 'yellow'), context);
-                this.updateTile(objs[n].x, objs[n].y + 1, new tile_1.Tile(this.world.getObject(objs[n].x, objs[n].y + 1).getTile().ascii, this.world.getObject(objs[n].x, objs[n].y + 1).getTile().fg, 'yellow'), context);
+            if (objs[n] instanceof Actor_1.Actor && objs[n].debug) {
+                this.updateTile(objs[n].x - 1, objs[n].y, new tile_1.Tile(world.getObject(objs[n].x - 1, objs[n].y).getTile().ascii, world.getObject(objs[n].x - 1, objs[n].y).getTile().fg, 'yellow'), context);
+                this.updateTile(objs[n].x + 1, objs[n].y, new tile_1.Tile(world.getObject(objs[n].x + 1, objs[n].y).getTile().ascii, world.getObject(objs[n].x + 1, objs[n].y).getTile().fg, 'yellow'), context);
+                this.updateTile(objs[n].x, objs[n].y - 1, new tile_1.Tile(world.getObject(objs[n].x, objs[n].y - 1).getTile().ascii, world.getObject(objs[n].x, objs[n].y - 1).getTile().fg, 'yellow'), context);
+                this.updateTile(objs[n].x, objs[n].y + 1, new tile_1.Tile(world.getObject(objs[n].x, objs[n].y + 1).getTile().ascii, world.getObject(objs[n].x, objs[n].y + 1).getTile().fg, 'yellow'), context);
             }
             else {
-                this.updateTile(objs[n].x - 1, objs[n].y, this.world.getObject(objs[n].x - 1, objs[n].y).getTile(), context);
-                this.updateTile(objs[n].x + 1, objs[n].y, this.world.getObject(objs[n].x + 1, objs[n].y).getTile(), context);
-                this.updateTile(objs[n].x, objs[n].y - 1, this.world.getObject(objs[n].x, objs[n].y - 1).getTile(), context);
-                this.updateTile(objs[n].x, objs[n].y + 1, this.world.getObject(objs[n].x, objs[n].y + 1).getTile(), context);
+                this.updateTile(objs[n].x - 1, objs[n].y, world.getObject(objs[n].x - 1, objs[n].y).getTile(), context);
+                this.updateTile(objs[n].x + 1, objs[n].y, world.getObject(objs[n].x + 1, objs[n].y).getTile(), context);
+                this.updateTile(objs[n].x, objs[n].y - 1, world.getObject(objs[n].x, objs[n].y - 1).getTile(), context);
+                this.updateTile(objs[n].x, objs[n].y + 1, world.getObject(objs[n].x, objs[n].y + 1).getTile(), context);
             }
-        }
-    };
-    Renderer.prototype.initializeContext = function (world) {
-        this.context.style.height = Renderer.pxs(world.getHeight() * this.elementSize);
-        this.context.style.width = Renderer.pxs(world.getWidth() * this.elementSize);
-        this.context.style.margin = 'auto';
-        for (var i = 0; i < world.getHeight(); i++) {
-            var rowDiv = document.createElement('div');
-            rowDiv.style.height = Renderer.pxs(this.elementSize);
-            rowDiv.style.display = 'flex';
-            for (var j = 0; j < world.getWidth(); j++) {
-                var element = document.createElement('div');
-                element.style.height = Renderer.pxs(this.elementSize);
-                element.style.width = Renderer.pxs(this.elementSize);
-                element.style.textAlign = 'center';
-                element.style.userSelect = 'none';
-                element.innerHTML = world.getObject(j, i).getTile().ascii;
-                element.style.backgroundColor = world.getObject(j, i).getTile().bg;
-                element.style.color = world.getObject(j, i).getTile().fg;
-                rowDiv.appendChild(element);
-            }
-            this.context.appendChild(rowDiv);
         }
     };
     Renderer.prototype.addWindow = function (window) {
-        var context = this.initWindow(window);
+        var context = window.getContext();
         this.bind(context);
-    };
-    Renderer.prototype.initWindow = function (window) {
-        var windowContext = document.createElement('div');
-        windowContext.style.height = Renderer.pxs(window.localHeight);
-        windowContext.style.width = Renderer.pxs(window.localWidth);
-        windowContext.style.margin = 'auto';
-        for (var i = 0; i < window.localHeight; i++) {
-            var rowDiv = document.createElement('div');
-            rowDiv.style.height = Renderer.pxs(this.elementSize);
-            rowDiv.style.display = 'flex';
-            for (var j = 0; j < window.localWidth; j++) {
-                var element = document.createElement('div');
-                element.style.height = Renderer.pxs(this.elementSize);
-                element.style.width = Renderer.pxs(this.elementSize);
-                element.style.textAlign = 'center';
-                element.style.userSelect = 'none';
-                element.innerHTML = window.getTile(i, j).ascii;
-                element.style.backgroundColor = window.getTile(i, j).bg;
-                element.style.color = window.getTile(i, j).fg;
-                rowDiv.appendChild(element);
-            }
-            windowContext.appendChild(rowDiv);
-        }
-        return windowContext;
     };
     // public updateWindow(window: Window, tiles: Tile[][]) {
     //     for (let i = 0; i < window.localHeight; i++) {
@@ -554,11 +508,12 @@ var Renderer = /** @class */ (function () {
     Renderer.pxs = function (x) {
         return x.toString() + 'px';
     };
+    Renderer.elementSize = 15;
     return Renderer;
 }());
 exports.Renderer = Renderer;
 
-},{"./Entity/Player":8,"./tile":12}],12:[function(require,module,exports){
+},{"./Entity/Actor":4,"./tile":12}],12:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
 var Tile = /** @class */ (function () {
@@ -584,6 +539,65 @@ var Tile = /** @class */ (function () {
 exports.Tile = Tile;
 
 },{}],13:[function(require,module,exports){
+"use strict";
+exports.__esModule = true;
+var renderer_1 = require("./renderer");
+// NOTE: windows should not contain gameobject representations, only tile based representations
+// CONSIDERATION: do we want the windowing code to handle outlining the window itself?
+var Window = /** @class */ (function () {
+    function Window(startX, startY, localWidth, localHeight, tiles) {
+        this.startX = startX;
+        this.startY = startY;
+        this.localWidth = localWidth;
+        this.localHeight = localHeight;
+        this.tiles = tiles;
+        this.initContext(tiles);
+    }
+    Window.prototype.getTile = function (x, y) {
+        return this.tiles[x][y];
+    };
+    Window.prototype.getContext = function () {
+        return this.context;
+    };
+    Window.prototype.initContext = function (tiles) {
+        // Loop over localWidth and localHeight to initialize the literal html elements that will be in this window
+        this.context = document.createElement('div');
+        this.context.style.height = renderer_1.Renderer.pxs(this.localHeight * renderer_1.Renderer.elementSize);
+        this.context.style.width = renderer_1.Renderer.pxs(this.localWidth * renderer_1.Renderer.elementSize);
+        if (this.startX == -1 && this.startY == -1) {
+            this.context.style.margin = 'auto';
+        }
+        else {
+            this.context.style.position = 'absolute';
+            this.context.style.left = renderer_1.Renderer.pxs(this.startX);
+            this.context.style.top = renderer_1.Renderer.pxs(this.startY);
+        }
+        for (var i = 0; i < this.localHeight; i++) {
+            var rowDiv = document.createElement('div');
+            rowDiv.style.height = renderer_1.Renderer.pxs(renderer_1.Renderer.elementSize);
+            rowDiv.style.display = 'flex';
+            for (var j = 0; j < this.localWidth; j++) {
+                var element = document.createElement('div');
+                element.style.height = renderer_1.Renderer.pxs(renderer_1.Renderer.elementSize);
+                element.style.width = renderer_1.Renderer.pxs(renderer_1.Renderer.elementSize);
+                element.style.textAlign = 'center';
+                element.style.userSelect = 'none';
+                /**
+                 * TODO: figure out how to pass in the data that we want to display in this window
+                                                                        */
+                element.innerHTML = tiles[j][i].ascii;
+                element.style.backgroundColor = tiles[j][i].bg;
+                element.style.color = tiles[j][i].fg;
+                rowDiv.appendChild(element);
+            }
+            this.context.appendChild(rowDiv);
+        }
+    };
+    return Window;
+}());
+exports.Window = Window;
+
+},{"./renderer":11}],14:[function(require,module,exports){
 "use strict";
 /* This is sort of kind of a world "system"
 
@@ -638,9 +652,6 @@ var World = /** @class */ (function () {
             // new Tile('&#8483;', 'green', 'white')
             new tile_1.Tile('Y', 'green', 'white')
         ];
-        // SHIM:
-        // let floorChars = ['&#8283;', '&#775;', '&#803;', '&#856;'];
-        // let treeChars = ['&#8483;'];
         // set up wall tiles
         var botLeft = new tile_1.Tile('&#9562;', 'black', 'white');
         var botRight = new tile_1.Tile('&#9565;', 'black', 'white');
@@ -649,9 +660,9 @@ var World = /** @class */ (function () {
         // let horizontal = new Tile('&#9552;&#9552;', 'black', 'white');
         var horizontal = new tile_1.Tile('==', 'black', 'white');
         var vertical = new tile_1.Tile('&#9553;', 'black', 'white');
-        for (var i = 0; i < this.width; i++) {
+        for (var i = 0; i < this.height; i++) {
             this.objects[i] = [];
-            for (var j = 0; j < this.height; j++) {
+            for (var j = 0; j < this.width; j++) {
                 if (i == 0 && j == this.width - 1) {
                     this.objects[i][j] = new Environment_1.Wall(i, j, botLeft);
                     continue;
@@ -677,7 +688,7 @@ var World = /** @class */ (function () {
                     continue;
                 }
                 var rand = Math.floor(Math.random() * 10);
-                if (rand > 6) {
+                if (rand > 7) {
                     this.objects[i][j] = new Environment_1.Tree(i, j, trees[0]);
                 }
                 else {

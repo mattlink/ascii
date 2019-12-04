@@ -69,10 +69,6 @@ export class World {
             new Tile('Y', 'green', 'white')
         ];
 
-        // SHIM:
-        // let floorChars = ['&#8283;', '&#775;', '&#803;', '&#856;'];
-        // let treeChars = ['&#8483;'];
-
         // set up wall tiles
         let botLeft = new Tile('&#9562;', 'black', 'white');
         let botRight = new Tile('&#9565;', 'black', 'white');
@@ -82,9 +78,9 @@ export class World {
         let horizontal = new Tile('==', 'black', 'white');
         let vertical = new Tile('&#9553;', 'black', 'white');
 
-        for (let i = 0; i < this.width; i++) {
+        for (let i = 0; i < this.height; i++) {
             this.objects[i] = [];
-            for (let j = 0; j < this.height; j++) {
+            for (let j = 0; j < this.width; j++) {
 
                 if (i == 0 && j == this.width - 1) { 
                     this.objects[i][j] = new Wall(i, j, botLeft);
@@ -115,7 +111,7 @@ export class World {
                 }
 
                 let rand = Math.floor(Math.random() * 10);
-                if (rand > 6) {
+                if (rand > 7) {
                     this.objects[i][j] = new Tree(i, j, trees[0]);
                 } else {
                     this.objects[i][j] = new Floor(i, j, floors[Math.floor(Math.random() * 4)]);

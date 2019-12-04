@@ -18,9 +18,9 @@ var WaitAction_1 = require("../Components/Actions/WaitAction");
 var WalkAction_1 = require("../Components/Actions/WalkAction");
 var Player = /** @class */ (function (_super) {
     __extends(Player, _super);
+    // public debug: boolean = true;
     function Player(x0, y0, tile) {
         var _this = _super.call(this, "Player", x0, y0, tile) || this;
-        _this.debug = false;
         _this.nextAction = new WaitAction_1.WaitAction(_this);
         return _this;
     }

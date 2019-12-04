@@ -52,9 +52,6 @@ var World = /** @class */ (function () {
             // new Tile('&#8483;', 'green', 'white')
             new tile_1.Tile('Y', 'green', 'white')
         ];
-        // SHIM:
-        // let floorChars = ['&#8283;', '&#775;', '&#803;', '&#856;'];
-        // let treeChars = ['&#8483;'];
         // set up wall tiles
         var botLeft = new tile_1.Tile('&#9562;', 'black', 'white');
         var botRight = new tile_1.Tile('&#9565;', 'black', 'white');
@@ -63,9 +60,9 @@ var World = /** @class */ (function () {
         // let horizontal = new Tile('&#9552;&#9552;', 'black', 'white');
         var horizontal = new tile_1.Tile('==', 'black', 'white');
         var vertical = new tile_1.Tile('&#9553;', 'black', 'white');
-        for (var i = 0; i < this.width; i++) {
+        for (var i = 0; i < this.height; i++) {
             this.objects[i] = [];
-            for (var j = 0; j < this.height; j++) {
+            for (var j = 0; j < this.width; j++) {
                 if (i == 0 && j == this.width - 1) {
                     this.objects[i][j] = new Environment_1.Wall(i, j, botLeft);
                     continue;
@@ -91,7 +88,7 @@ var World = /** @class */ (function () {
                     continue;
                 }
                 var rand = Math.floor(Math.random() * 10);
-                if (rand > 6) {
+                if (rand > 7) {
                     this.objects[i][j] = new Environment_1.Tree(i, j, trees[0]);
                 }
                 else {
