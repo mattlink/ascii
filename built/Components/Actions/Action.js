@@ -1,9 +1,0 @@
-"use strict";
-exports.__esModule = true;
-var Action = /** @class */ (function () {
-    function Action(actor) {
-        this.actor = actor;
-    }
-    return Action;
-}());
-exports.Action = Action;
