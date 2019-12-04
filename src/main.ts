@@ -27,7 +27,7 @@ world.addActor(mob1);
 world.addActor(mob2);
 world.addActor(mob3);
 
-// Set up rendering and create a game window to render the world to
+
 let renderer = new Renderer();
 
 let gameWindow = new Window(-1, -1, world.getHeight(), world.getWidth(), world.getTiles());

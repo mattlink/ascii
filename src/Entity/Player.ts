@@ -7,8 +7,6 @@ import { IO } from '../io';
 import { World } from '../world';
 
 export class Player extends Actor {
-    
-    // public debug: boolean = true;
 
     constructor(x0: number, y0: number, tile: Tile) {
         super("Player", x0, y0, tile);

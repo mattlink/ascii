@@ -64,15 +64,10 @@ export class Window {
                 element.style.textAlign = 'center';
                 element.style.userSelect = 'none';
 
-                
-                /** 
-                 * TODO: figure out how to pass in the data that we want to display in this window
-                                                                        */
                 element.innerHTML = tiles[j][i].ascii;
                 element.style.backgroundColor = tiles[j][i].bg;
                 element.style.color = tiles[j][i].fg;
 
-        
                 rowDiv.appendChild(element);
             }
             this.context.appendChild(rowDiv);
