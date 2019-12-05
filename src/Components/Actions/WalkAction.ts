@@ -1,21 +1,21 @@
-import { Action } from "./Action";
+import { Action, Direction } from "./Action";
 import { Actor }  from "../../Entity/Actor";
 import { World } from "../../world";
 import { Floor } from "../../Entity/Environment";
 import { GameObject } from "../../Entity/GameObject";
 
-export enum WalkDirection {
-    Up,
-    Down,
-    Left,
-    Right
-}
+// export enum WalkDirection {
+//     Up,
+//     Down,
+//     Left,
+//     Right
+// }
 
 export class WalkAction extends Action {
     
-    private dir: WalkDirection;
+    private dir: Direction;
 
-    constructor(dir: WalkDirection, actor: Actor) {
+    constructor(dir: Direction, actor: Actor) {
         super(actor);
         this.dir = dir;
     }
@@ -24,7 +24,7 @@ export class WalkAction extends Action {
 
         let fromObject = world.getObject(this.actor.x, this.actor.y);
 
-        if (this.dir == WalkDirection.Up) {
+        if (this.dir == Direction.Up) {
             let object = world.getObject(this.actor.x, this.actor.y - 1);
             if (!object.collides) {
 
@@ -44,7 +44,7 @@ export class WalkAction extends Action {
                 }
             }
         }
-        else if (this.dir == WalkDirection.Down) {
+        else if (this.dir == Direction.Down) {
             let object = world.getObject(this.actor.x, this.actor.y + 1);
             if (!object.collides) {           
                 
@@ -63,7 +63,7 @@ export class WalkAction extends Action {
                 }
             }
         }
-        else if (this.dir == WalkDirection.Left) {
+        else if (this.dir == Direction.Left) {
             let object = world.getObject(this.actor.x - 1, this.actor.y);
             if (!object.collides) {
                 if (fromObject instanceof Floor) {
@@ -82,7 +82,7 @@ export class WalkAction extends Action {
                 }
             }
         }
-        else if (this.dir == WalkDirection.Right) {
+        else if (this.dir == Direction.Right) {
             
             let object = world.getObject(this.actor.x + 1, this.actor.y);
             if (!object.collides) {

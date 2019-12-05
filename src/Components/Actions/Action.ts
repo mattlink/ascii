@@ -1,6 +1,13 @@
 import { Actor } from "../../Entity/Actor";
 import { World } from "../../world";
 
+export enum Direction {
+    Up,
+    Down,
+    Left,
+    Right
+}
+
 export abstract class Action {
     actor: Actor;
     constructor(actor: Actor) {
