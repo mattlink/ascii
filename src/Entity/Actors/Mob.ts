@@ -1,10 +1,10 @@
 import { Actor } from './Actor';
-import { Direction } from '../Components/Actions/Action';
-import { WalkAction } from '../Components/Actions/WalkAction';
-import { WaitAction } from '../Components/Actions/WaitAction';
-import { Tile } from '../tile';
-import { Action } from '../Components/Actions/Action';
-import { World } from '../world';
+import { Direction } from '../../Components/Actions/Action';
+import { WalkAction } from '../../Components/Actions/WalkAction';
+import { WaitAction } from '../../Components/Actions/WaitAction';
+import { Tile } from '../../tile';
+import { Action } from '../../Components/Actions/Action';
+import { Room } from '../Rooms/Room';
 
 export class Mob extends Actor {
 
@@ -15,7 +15,7 @@ export class Mob extends Actor {
         this.collides = true;
     }
 
-    takeTurn(world: World) {
+    takeTurn(room: Room) {
 
         let actionList: Action[] = [
             new WaitAction(this),
@@ -28,7 +28,7 @@ export class Mob extends Actor {
         let r = Math.floor(Math.random() * (actionList.length));
 
         
-        actionList[r].perform(world);
+        actionList[r].perform(room);
         // actionList[0].perform();
     }
 }

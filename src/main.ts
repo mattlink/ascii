@@ -4,34 +4,45 @@ import { Renderer } from './renderer';
 import { Tile } from './tile';
 import { IO } from './io';
 
-import { Player } from './Entity/Player';
-import { Mob } from './Entity/Mob';
+import { Player } from './Entity/Actors/Player';
+import { Mob } from './Entity/Actors/Mob';
+
+import { Forest } from './Entity/Rooms/Forest';
 
 
 // TODO - load in a world config (parse a json file?) then pass it into the World constructor
-const WORLD_HEIGHT = 50;
-const WORLD_WIDTH = 50;
 
-let world = new World(WORLD_WIDTH, WORLD_HEIGHT);
-world.init();
+let world = new World();
 
+const FOREST_HEIGHT = 50;
+const FOREST_WIDTH = 50;
+
+let forest = new Forest(FOREST_WIDTH, FOREST_HEIGHT);
+forest.init();
+
+// Add our forest to the world
+world.addRoom(forest);
+
+// Add a player to the forest
 let player = new Player(10, 10, new Tile('@', 'red', 'white'));
-world.addActor(player);
+forest.addActor(player);
 
 // add two test mobs to the world
 let mob1 = new Mob("Mob1 (F)", 20, 6, new Tile('F', 'blue', 'white'));
 let mob2 = new Mob("Mob2 (O)", 6, 34, new Tile('O', 'blue', 'white'));
 let mob3 = new Mob("Mob3 (A)", 20, 20, new Tile('A', 'purple', 'white'));
 
-world.addActor(mob1);
-world.addActor(mob2);
-world.addActor(mob3);
+forest.addActor(mob1);
+forest.addActor(mob2);
+forest.addActor(mob3);
 
 
 let renderer = new Renderer();
 
-let gameWindow = new Window(-1, -1, world.getHeight(), world.getWidth(), world.getTiles());
+let gameWindow = new Window(-1, -1, forest.getHeight(), forest.getWidth(), forest.getTiles());
 renderer.addWindow(gameWindow);
+
+// world.addRoom(forest)
 
 /** 
  *  __TODO__: 
@@ -43,13 +54,10 @@ IO.genericKeyBinding(function(key: string) {
 
     player.receiveKeyInput(key);
 
-    world.handleActorTurns();
+    world.takeTurn();
 
-    let actors = world.getActors();
-    renderer.renderLocalWorldContexts(actors, world, gameWindow.getContext());
-    actors.forEach(actor => {
-        renderer.updateGameObject(actor, gameWindow.getContext());
-    });
+    let actors = world.getActiveRoom().getActors();
+    renderer.renderLocalRoomContexts(actors, world.getActiveRoom(), gameWindow.getContext());
 });
 
 // Testing the window system by creating a new window:

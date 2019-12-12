@@ -1,10 +1,9 @@
 import { Actor } from './Actor';
-import { Direction } from '../Components/Actions/Action';
-import { WaitAction } from '../Components/Actions/WaitAction';
-import { WalkAction } from '../Components/Actions/WalkAction';
-import { Tile } from '../tile';
-import { IO } from '../io';
-import { World } from '../world';
+import { Direction } from '../../Components/Actions/Action';
+import { WaitAction } from '../../Components/Actions/WaitAction';
+import { WalkAction } from '../../Components/Actions/WalkAction';
+import { Tile } from '../../tile';
+import { Room } from '../Rooms/Room';
 
 export class Player extends Actor {
 
@@ -32,7 +31,7 @@ export class Player extends Actor {
         }
     }
 
-    takeTurn(world: World) {
-        this.nextAction.perform(world);        
+    takeTurn(room: Room) {
+        this.nextAction.perform(room);        
     }
 }

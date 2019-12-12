@@ -1,15 +1,7 @@
 import { Action, Direction } from "./Action";
-import { Actor }  from "../../Entity/Actor";
-import { World } from "../../world";
+import { Actor }  from "../../Entity/Actors/Actor";
+import { Room } from "../../Entity/Rooms/Room";
 import { Floor } from "../../Entity/Environment";
-import { GameObject } from "../../Entity/GameObject";
-
-// export enum WalkDirection {
-//     Up,
-//     Down,
-//     Left,
-//     Right
-// }
 
 export class WalkAction extends Action {
     
@@ -20,22 +12,22 @@ export class WalkAction extends Action {
         this.dir = dir;
     }
 
-    perform(world: World) {
+    perform(room: Room) {
 
-        let fromObject = world.getObject(this.actor.x, this.actor.y);
+        let fromObject = room.getObject(this.actor.x, this.actor.y);
 
         if (this.dir == Direction.Up) {
-            let object = world.getObject(this.actor.x, this.actor.y - 1);
+            let object = room.getObject(this.actor.x, this.actor.y - 1);
             if (!object.collides) {
 
                 if (fromObject instanceof Floor) {
-                    (<Floor>world.objects[this.actor.x][this.actor.y]).removeOccupation();
+                    (<Floor>room.objects[this.actor.x][this.actor.y]).removeOccupation();
                 }
 
                 this.actor.y = this.actor.y - 1;
 
                 if (object instanceof Floor) {
-                    (<Floor>world.objects[this.actor.x][this.actor.y]).setOccupation(this.actor);
+                    (<Floor>room.objects[this.actor.x][this.actor.y]).setOccupation(this.actor);
                 }
                 
             } else {
@@ -45,17 +37,17 @@ export class WalkAction extends Action {
             }
         }
         else if (this.dir == Direction.Down) {
-            let object = world.getObject(this.actor.x, this.actor.y + 1);
+            let object = room.getObject(this.actor.x, this.actor.y + 1);
             if (!object.collides) {           
                 
                 if (fromObject instanceof Floor) {
-                    (<Floor>world.objects[this.actor.x][this.actor.y]).removeOccupation();
+                    (<Floor>room.objects[this.actor.x][this.actor.y]).removeOccupation();
                 }
 
                 this.actor.y = this.actor.y + 1;
 
                 if (object instanceof Floor) {
-                    (<Floor>world.objects[this.actor.x][this.actor.y]).setOccupation(this.actor);
+                    (<Floor>room.objects[this.actor.x][this.actor.y]).setOccupation(this.actor);
                 }
             } else {
                 if (this.actor.debug) {
@@ -64,16 +56,16 @@ export class WalkAction extends Action {
             }
         }
         else if (this.dir == Direction.Left) {
-            let object = world.getObject(this.actor.x - 1, this.actor.y);
+            let object = room.getObject(this.actor.x - 1, this.actor.y);
             if (!object.collides) {
                 if (fromObject instanceof Floor) {
-                    (<Floor>world.objects[this.actor.x][this.actor.y]).removeOccupation();
+                    (<Floor>room.objects[this.actor.x][this.actor.y]).removeOccupation();
                 }
 
                 this.actor.x = this.actor.x - 1;
 
                 if (object instanceof Floor) {
-                    (<Floor>world.objects[this.actor.x][this.actor.y]).setOccupation(this.actor);
+                    (<Floor>room.objects[this.actor.x][this.actor.y]).setOccupation(this.actor);
                 }
                 
             } else {
@@ -84,16 +76,16 @@ export class WalkAction extends Action {
         }
         else if (this.dir == Direction.Right) {
             
-            let object = world.getObject(this.actor.x + 1, this.actor.y);
+            let object = room.getObject(this.actor.x + 1, this.actor.y);
             if (!object.collides) {
                 if (fromObject instanceof Floor) {
-                    (<Floor>world.objects[this.actor.x][this.actor.y]).removeOccupation();
+                    (<Floor>room.objects[this.actor.x][this.actor.y]).removeOccupation();
                 }
 
                 this.actor.x = this.actor.x + 1;
 
                 if (object instanceof Floor) {
-                    (<Floor>world.objects[this.actor.x][this.actor.y]).setOccupation(this.actor);
+                    (<Floor>room.objects[this.actor.x][this.actor.y]).setOccupation(this.actor);
                 }
                 
             } else {
