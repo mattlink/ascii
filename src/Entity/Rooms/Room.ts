@@ -1,9 +1,6 @@
 import { GameObject } from '../GameObject';
-// import { Tree, Wall, Floor } from '../Environment';
 import { Tile } from '../../tile';
 import { Actor } from '../Actors/Actor';
-// import { Mob } from './Entity/Mob';
-// import { Player } from './Entity/Player';
 
 export abstract class Room {
     private width: number;
@@ -20,6 +17,11 @@ export abstract class Room {
     }
     
     // NOTE: leave turn handling code out of the Room class (?)
+
+
+    /* The init method is what defines how a type of room will get generated. */
+    abstract init(): void;
+
 
     handleActorTurns() {
         this.actors.forEach(actor => {
@@ -56,6 +58,4 @@ export abstract class Room {
         }
         return tiles;
     }
-
-    abstract init(): void;
 }

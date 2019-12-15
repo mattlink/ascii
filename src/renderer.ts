@@ -1,5 +1,3 @@
-import { World } from "./world";
-import { Player } from "./Entity/Actors/Player";
 import { Actor } from "./Entity/Actors/Actor";
 import { Tile } from "./tile";
 import { GameObject } from "./Entity/GameObject";
@@ -41,10 +39,6 @@ export class Renderer {
                 this.updateTile(objs[n].x, objs[n].y - 1, room.getObject(objs[n].x, objs[n].y - 1).getTile(), context);
                 this.updateTile(objs[n].x, objs[n].y + 1, room.getObject(objs[n].x, objs[n].y + 1).getTile(), context);
             }
-
-            if (objs[n] instanceof Actor) {
-                this.updateGameObject(objs[n], context);
-            }
         }
         
     }
@@ -53,14 +47,6 @@ export class Renderer {
         let context = window.getContext();
         this.bind(context);
     }
-
-    // public updateWindow(window: Window, tiles: Tile[][]) {
-    //     for (let i = 0; i < window.localHeight; i++) {
-    //         for (let j = 0; j < window.localWidth; j++) {
-    //             this.updateTile(i, j, tiles[i][j], window.getContext());
-    //         }
-    //     }
-    // }
 
     private bind(windowContext: HTMLElement) {
         let body = document.body;

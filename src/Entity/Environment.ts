@@ -38,6 +38,13 @@ export class Floor extends GameObject {
             new Tile('&#803;', 'black', 'white'), 
             new Tile('&#856;', 'black', 'white')
     ]
+
+    public static caveFloor = [
+            new Tile('&#8283;', 'black', '#995e06'), 
+            new Tile('&#775;', 'black', '#995e06'), 
+            new Tile('&#803;', 'black', '#995e06'), 
+            new Tile('&#856;', 'black', '#995e06')
+    ]
 }
 
 export class Wall extends GameObject {
@@ -46,12 +53,28 @@ export class Wall extends GameObject {
         this.collides = true;
     }
 
-    public static botLeft = new Tile('&#9562;', 'black', 'white');
-    public static botRight = new Tile('&#9565;', 'black', 'white');
-    public static topLeft = new Tile('&#9556;', 'black', 'white');
-    public static topRight = new Tile('&#9559;', 'black', 'white');
+    /* BIG TODO:
+        Walls should be able to contain "doors" that let you travel from room to room....
+    */ 
+
+    static wallFg = 'black';
+    static wallBg = 'white';
+    
+    // static botLeft = new Tile('&#9562;', Wall.wallFg, Wall.wallBg);
+    static botLeft = new Tile('&#9492;', Wall.wallFg, Wall.wallBg);
+    // static botRight = new Tile('&#9565;', Wall.wallFg, Wall.wallBg);
+    static botRight = new Tile('&#9496;', Wall.wallFg, Wall.wallBg);
+
+    // static topLeft = new Tile('&#9556;', Wall.wallFg, Wall.wallBg);
+    static topLeft = new Tile('&#9484;', Wall.wallFg, Wall.wallBg);
+
+    // static topRight = new Tile('&#9559;', Wall.wallFg, Wall.wallBg);
+    static topRight = new Tile('&#9488;', Wall.wallFg, Wall.wallBg);
+
     // let horizontal = new Tile('&#9552;&#9552;', 'black', 'white');
-    public static horizontal = new Tile('==', 'black', 'white');
-    public static vertical = new Tile('&#9553;', 'black', 'white');
+    // static horizontal = new Tile('==', Wall.wallFg, Wall.wallBg);
+    // static vertical = new Tile('&#9553;', Wall.wallFg, Wall.wallBg);
+    static vertical = new Tile('&#9474;', Wall.wallFg, Wall.wallBg);
+    static horizontal = new Tile('&#9472;&#9472;', Wall.wallFg, Wall.wallBg);
 
 }

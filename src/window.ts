@@ -13,6 +13,8 @@ export class Window {
     public startX: number;
     public startY: number;
 
+    public bordered: boolean = false;
+
     private tiles: Tile[][];
 
     private context: HTMLElement;
@@ -45,12 +47,17 @@ export class Window {
 
         if (this.startX == -1 && this.startY == -1) {
             this.context.style.margin = 'auto';
+            this.context.style.marginTop = Renderer.pxs(5);
         }else {
             this.context.style.position = 'absolute';
             this.context.style.left = Renderer.pxs(this.startX);
             this.context.style.top = Renderer.pxs(this.startY);
         }
-        
+
+        if (this.bordered) {
+            this.context.style.border = 'solid';
+            this.context.style.borderWidth = Renderer.pxs(2);
+        }
 
         for (let i = 0; i < this.localHeight; i++) {
             let rowDiv = document.createElement('div');
