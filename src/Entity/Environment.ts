@@ -40,14 +40,17 @@ export class Floor extends GameObject {
     ]
 
     public static caveFloor = [
-            new Tile('&#8283;', 'black', '#995e06'), 
-            new Tile('&#775;', 'black', '#995e06'), 
-            new Tile('&#803;', 'black', '#995e06'), 
-            new Tile('&#856;', 'black', '#995e06')
+            new Tile('&#8283;', '#995e06', 'black'), // 4 dots
+            new Tile('&#775;', '#995e06', 'black'), // single dot
+            new Tile('&#803;', '#995e06', 'black'), // space (we want more spaces)
+            // new Tile('&#803;', '#995e06', 'black'), 
+            // new Tile('&#803;', '#995e06', 'black'), 
+            new Tile('&#856;', '#995e06', 'black') // other single dot
     ]
 }
 
 export class Wall extends GameObject {
+
     constructor(x: number, y: number, tile: Tile) {
         super(x, y, tile);
         this.collides = true;

@@ -2,8 +2,9 @@ import { Actor } from './Actor';
 import { Direction } from '../../Components/Actions/Action';
 import { WaitAction } from '../../Components/Actions/WaitAction';
 import { WalkAction } from '../../Components/Actions/WalkAction';
+import { DoorAction } from '../../Components/Actions/DoorAction';
 import { Tile } from '../../tile';
-import { Room } from '../Rooms/Room';
+import { World } from '../../world';
 
 export class Player extends Actor {
 
@@ -26,12 +27,16 @@ export class Player extends Actor {
             this.nextAction = new WalkAction(Direction.Right, this);
         }
 
+        else if (key == '>') {
+            this.nextAction = new DoorAction(this);
+        }
+
         else  {
             this.nextAction = new WaitAction(this);
         }
     }
 
-    takeTurn(room: Room) {
-        this.nextAction.perform(room);        
+    takeTurn(world: World) {
+        this.nextAction.perform(world);        
     }
 }

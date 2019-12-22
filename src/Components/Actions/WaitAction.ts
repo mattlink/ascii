@@ -1,13 +1,13 @@
 import { Actor } from "../../Entity/Actors/Actor";
 import { Action } from "./Action";
-import { Room } from "../../Entity/Rooms/Room";
+import { World } from "../../world";
 
 export class WaitAction extends Action {
     constructor(actor: Actor) {
         super(actor);
     }
 
-    perform(room: Room) {
+    perform(world: World) {
         // Do nothing. Just wait.
     }
 }

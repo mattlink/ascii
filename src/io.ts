@@ -6,7 +6,12 @@ export class IO {
             key == 'a' || 
             key == 's' || 
             key == 'd' || 
-            key == 'j') // j - wait
+
+            // j - wait
+            key == 'j' || 
+
+            // > - travel through door
+            key == '>' ) 
             return true;
         return false;
     }

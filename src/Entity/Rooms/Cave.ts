@@ -1,5 +1,6 @@
 import { Wall, Floor } from '../Environment';
 import { Room } from './Room';
+import { Door, DoorType } from '../Door';
 import { Tile } from '../../tile';
 
 export class Cave extends Room {
@@ -7,8 +8,8 @@ export class Cave extends Room {
     private static caveBrown = '#995e06';
     public static roomBg = 'black';
 
-    constructor(width: number, height: number) {
-        super(width, height);
+    constructor(width: number, height: number, name: string) {
+        super(width, height, name);
     }
 
     init () {
@@ -48,6 +49,7 @@ export class Cave extends Room {
 
                 /* Floor Placement */
                 this.objects[i][j] = new Floor(i, j, new Tile('-', Cave.caveBrown, Cave.roomBg));
+                // this.objects[i][j] = new Floor(i, j, Floor.caveFloor[Math.floor(Math.random() * Floor.caveFloor.length)]);
             }
         }
     }

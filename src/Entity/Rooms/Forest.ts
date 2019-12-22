@@ -1,9 +1,11 @@
 import { Tree, Wall, Floor } from '../Environment';
 import { Room } from "./room";
+import { Door, DoorType } from '../Door';
+import { Tile } from '../../tile';
 
 export class Forest extends Room {
-    constructor(width: number, height: number) {
-        super(width, height);
+    constructor(width: number, height: number, name: string) {
+        super(width, height, name);
     }
 
     init() {
@@ -38,6 +40,7 @@ export class Forest extends Room {
                     this.objects[i][j] = new Wall(i, j, Wall.horizontal);
                     continue; 
                 }
+
 
                 let rand = Math.floor(Math.random() * 10);
                 if (rand > 7) {

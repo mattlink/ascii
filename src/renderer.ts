@@ -22,6 +22,14 @@ export class Renderer {
         (<HTMLElement>context.children[y].children[x]).style.color = tile.fg;
     }
 
+    public renderRoom(room: Room, context: HTMLElement) {
+        for (let i = 0; i < room.getHeight(); i++) {
+            for (let j = 0; j < room.getWidth(); j++) {
+                this.updateTile(i, j, room.getObject(i, j).getTile(), context);
+            }
+        }
+    }
+
     public renderLocalRoomContexts(objs: GameObject[], room: Room, context: HTMLElement){
          // Update all locations around the game object to their initial world state
         for (let n = 0; n < objs.length; n++){

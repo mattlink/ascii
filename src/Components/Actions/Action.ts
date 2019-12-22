@@ -1,5 +1,5 @@
 import { Actor } from "../../Entity/Actors/Actor";
-import { Room } from "../../Entity/Rooms/Room";
+import { World } from "../../world";
 
 export enum Direction {
     Up,
@@ -13,5 +13,5 @@ export abstract class Action {
     constructor(actor: Actor) {
         this.actor = actor;
     }
-    abstract perform(room: Room): void;
+    abstract perform(world: World): void;
 }

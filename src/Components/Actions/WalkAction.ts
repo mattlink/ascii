@@ -1,7 +1,7 @@
 import { Action, Direction } from "./Action";
 import { Actor }  from "../../Entity/Actors/Actor";
-import { Room } from "../../Entity/Rooms/Room";
 import { Floor } from "../../Entity/Environment";
+import { World } from "../../world";
 
 export class WalkAction extends Action {
     
@@ -12,12 +12,15 @@ export class WalkAction extends Action {
         this.dir = dir;
     }
 
-    perform(room: Room) {
+    perform(world: World) {
+
+        let room = world.getActiveRoom();
 
         let fromObject = room.getObject(this.actor.x, this.actor.y);
 
         if (this.dir == Direction.Up) {
             let object = room.getObject(this.actor.x, this.actor.y - 1);
+            // IF OBJECT IS A DOOR, PERFORM A DoorAction (or something similar) ON THIS ACTOR, and return.
             if (!object.collides) {
 
                 if (fromObject instanceof Floor) {

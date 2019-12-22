@@ -1,6 +1,6 @@
 import { GameObject } from '../GameObject'; 
 import { Tile } from '../../tile';
-import { Room } from '../../Entity/Rooms/Room';
+import { World } from '../../world';
 import { Action } from '../../Components/Actions/Action';
 
 // essentially, "Actors" are GameObjects that are allowed to takeTurns and have names.
@@ -17,5 +17,5 @@ export abstract class Actor extends GameObject {
         this.name = name;
     }
 
-    abstract takeTurn(room: Room): void;
+    abstract takeTurn(world: World): void;
 }

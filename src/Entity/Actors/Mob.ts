@@ -4,7 +4,7 @@ import { WalkAction } from '../../Components/Actions/WalkAction';
 import { WaitAction } from '../../Components/Actions/WaitAction';
 import { Tile } from '../../tile';
 import { Action } from '../../Components/Actions/Action';
-import { Room } from '../Rooms/Room';
+import { World } from '../../world';
 
 export class Mob extends Actor {
 
@@ -15,7 +15,9 @@ export class Mob extends Actor {
         this.collides = true;
     }
 
-    takeTurn(room: Room) {
+    takeTurn(world: World) {
+
+        if (this.debug) console.log('DEBUG:', this.name, "taking turn.", this.x, this.y);
 
         let actionList: Action[] = [
             new WaitAction(this),
@@ -27,8 +29,7 @@ export class Mob extends Actor {
 
         let r = Math.floor(Math.random() * (actionList.length));
 
-        
-        actionList[r].perform(room);
+        actionList[r].perform(world);
         // actionList[0].perform();
     }
 }
