@@ -3,7 +3,26 @@ import { Tile } from '../../tile';
 import { Actor } from '../Actors/Actor';
 import { World } from '../../world';
 import { Door, DoorType } from '../Door';
-import { Wall, Floor } from '../Environment';
+import { Wall, Floor, CaveEnv } from '../Environment';
+import { BSPTree } from '../../util';
+
+// An instance of Area represents some area of a Room, usually walled off
+// Generally we apply our proc gen algorithms to Areas rather than direction to Rooms
+export class Area {
+    public x: number;
+    public y: number;
+    public height: number;
+    public width: number;
+    // public cx: number;
+    // public cy: number;
+
+    constructor(x: number, y: number, width: number, height: number) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height; 
+    }
+}
 
 export abstract class Room {
 
@@ -154,5 +173,246 @@ export abstract class Room {
             }
         }
         return tiles;
+    }
+
+    /********
+     *  Various algorithms and room generation helpers 
+     */
+
+    generateCA(iterations: number, area: Area) {
+        // Assume that we get an initially randomized area, instead of a totally plain one
+
+        if (iterations == 0) return;
+
+        //let newArea = new Area(area.x, area.y, area.width, area.height);
+        let newObjects = [];
+        for (let i = area.x+1; i < area.width+area.x-1; i++) {
+            newObjects[i] = [];
+        }
+
+        for (let i = area.x+1; i < area.width+area.x-1; i++) {
+           for (let j = area.y+1; j < area.height+area.y-1; j++) {
+            if (this.getNeighboringWalls(i, j) > 4 && (this.objects[i][j] instanceof Wall)
+                || this.getNeighboringWalls(i, j) > 5 && !(this.objects[i][j] instanceof Wall)) {
+                    
+                newObjects[i][j] = new Wall(i, j, new Tile('#', CaveEnv.caveBrown, CaveEnv.roomBg));
+            }
+            else {
+                newObjects[i][j] = new Floor(i, j, new Tile('-', CaveEnv.caveBrown, CaveEnv.roomBg));
+            }
+           }
+        } 
+
+        // redraw the new objects
+        for (let i = area.x+1; i < area.width+area.x-1; i++) {
+            for (let j = area.y+1; j < area.height+area.y-1; j++) {
+                this.objects[i][j] = newObjects[i][j];
+            }
+        }
+
+
+       iterations--;
+
+       this.generateCA(iterations, area);
+
+    }
+
+    getNeighboringWalls(x: number, y: number) {
+        let wallCount = 0;
+        for (let i = x - 1; i <= x + 1; i++) {
+            for (let j = y - 1; j <= y + 1; j++) {
+                if (this.objects[i][j] instanceof Wall) {
+                    wallCount++;
+                }
+            }
+        }
+        return wallCount;
+    }
+
+    generateSymmetricBSPTreeVertical(iterationsLeft: number, tree: BSPTree<Area>) {
+        if (iterationsLeft == 0) return;
+
+        let baseArea = tree.value;
+
+        let x_offset = 0;
+        let y_offset = 0;
+
+        let leftWidth = baseArea.width;
+        let leftHeight = baseArea.height;
+
+        let rightWidth = baseArea.width;
+        let rightHeight = baseArea.height;
+
+        // do the vertical split
+        x_offset = Math.floor(baseArea.width / 2);
+        leftWidth = x_offset;
+        rightWidth = baseArea.width - x_offset;
+
+        tree.left = new BSPTree<Area>(null, null, new Area(baseArea.x, baseArea.y, leftWidth, leftHeight));
+        tree.right = new BSPTree<Area>(null, null, new Area(baseArea.x + x_offset, baseArea.y + y_offset, rightWidth, rightHeight));
+
+        iterationsLeft--;
+
+        this.generateSymmetricBSPTreeHorizontal(iterationsLeft, tree.left);
+        this.generateSymmetricBSPTreeHorizontal(iterationsLeft, tree.right);
+
+    }
+
+    generateSymmetricBSPTreeHorizontal(iterationsLeft: number, tree: BSPTree<Area>) {
+        if (iterationsLeft == 0) return;
+
+        let baseArea = tree.value;
+
+        let x_offset = 0;
+        let y_offset = 0;
+
+        let leftWidth = baseArea.width;
+        let leftHeight = baseArea.height;
+
+        let rightWidth = baseArea.width;
+        let rightHeight = baseArea.height;
+
+        // do the horizontal split
+        y_offset = Math.floor(baseArea.height / 2);
+        leftHeight = y_offset;
+        rightHeight = baseArea.height - y_offset;
+
+        tree.left = new BSPTree<Area>(null, null, new Area(baseArea.x, baseArea.y, leftWidth, leftHeight));
+        tree.right = new BSPTree<Area>(null, null, new Area(baseArea.x + x_offset, baseArea.y + y_offset, rightWidth, rightHeight)); 
+
+        iterationsLeft--;
+
+        this.generateSymmetricBSPTreeVertical(iterationsLeft, tree.left);
+        this.generateSymmetricBSPTreeVertical(iterationsLeft, tree.right);
+    }
+
+    generateBSPTree(iterationsLeft: number, tree: BSPTree<Area>) {
+        if (iterationsLeft == 0) return;
+
+        let baseArea = tree.value;
+
+        let dir = Math.floor(Math.random() * 2);
+
+        let x_offset = 0;
+        let y_offset = 0;
+
+        let leftWidth = baseArea.width;
+        let leftHeight = baseArea.height;
+
+        let rightWidth = baseArea.width;
+        let rightHeight = baseArea.height;
+
+        if (dir == 0) { // vertical split
+            //x_offset = Math.max(Math.floor(Math.random() * (baseArea.width / 2)), Math.floor(Math.random() * (baseArea.width)));
+            x_offset = Math.floor(baseArea.width / 2);
+            console.log("Vertical split w x_offset:", x_offset);
+            leftWidth = x_offset;
+            rightWidth = baseArea.width - x_offset;
+        }
+        if (dir == 1){ // horizontal split
+            // y_offset = Math.max(Math.floor(Math.random() * (baseArea.height / 2)), Math.floor(Math.random() * (baseArea.height)));
+            y_offset = Math.floor(baseArea.height / 2);
+            console.log("Horizontal split w y_offset", y_offset);
+            leftHeight = y_offset;
+            rightHeight = baseArea.height - y_offset;
+        } 
+
+
+        tree.left = new BSPTree<Area>(null, null, new Area(baseArea.x, baseArea.y, leftWidth, leftHeight));
+        tree.right = new BSPTree<Area>(null, null, new Area(baseArea.x + x_offset, baseArea.y + y_offset, rightWidth, rightHeight));
+
+        iterationsLeft--;
+
+        this.generateBSPTree(iterationsLeft, tree.left);
+        this.generateBSPTree(iterationsLeft, tree.right);
+
+    }
+
+    applyCAtoBSPLeaves(tree: BSPTree<Area>, iterations: number) {
+        if (tree.left == null && tree.right == null) {
+            this.generateCA(iterations, tree.value);
+        }
+
+        if (tree.left != null) {
+            this.applyCAtoBSPLeaves(tree.left, iterations);
+        }
+
+        if (tree.right != null) {
+            this.applyCAtoBSPLeaves(tree.right, iterations);
+        }
+    }
+
+    /**
+     * Method for recursively drawing all Area leaves in a BSPTree
+     */
+    initAreas(tree: BSPTree<Area>, random?: boolean) {
+        if (tree.left == null && tree.right == null) {
+        // draw this area
+        this.initArea(tree.value, random);
+        }
+
+        if (tree.left != null) {
+            this.initAreas(tree.left, random);
+        }
+        if (tree.right != null) {
+            this.initAreas(tree.right, random);
+        }
+    }
+
+    // Draws an area with walls, TODO: more sophisticated area drawing (subarea drawing, etc)
+    initArea(area: Area, random?: boolean) {
+
+        let x = area.x;
+        let y = area.y;
+        let l = area.width;//area.width - 1;
+        let h = area.height;//area.height - 1;
+
+
+        for (let i = x; i < x+l; i++) {
+            for (let j = y; j < y+h; j++) {
+                if (i == x && j == (y+h) - 1) {
+                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.botLeft.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    continue;
+                }
+
+                if (i == x && j == y) {
+                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.topLeft.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    continue;
+                }
+
+                if (i == (x+l) - 1 && j == (y+h) - 1) {
+                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.botRight.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    continue;
+                }
+
+                if (i == (x+l) - 1 && j == y) {
+                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.topRight.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    continue;
+                }
+
+                if (i == x || i == (x+l) - 1) {
+                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.vertical.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    continue;
+                }
+
+                if (j == y || j == (y+h) - 1) {
+                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.horizontal.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    continue;
+                }
+
+
+                if (random) {
+                    let r = Math.floor(Math.random() * 2);
+                    if (r == 0) this.objects[i][j] = new Floor(i, j, new Tile('-', CaveEnv.caveBrown, CaveEnv.roomBg));
+                    else if (r == 1) this.objects[i][j] = new Wall(i, j, new Tile('#', CaveEnv.caveBrown, CaveEnv.roomBg));
+                }
+                else {
+                    // Otherwise, place a Floor object tile
+                    this.objects[i][j] = new Floor(i, j, new Tile('-', CaveEnv.caveBrown, CaveEnv.roomBg));
+                }
+
+            }
+        }
+
     }
 }

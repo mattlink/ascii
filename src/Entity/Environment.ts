@@ -81,3 +81,8 @@ export class Wall extends GameObject {
     static horizontal = new Tile('&#9472;&#9472;', Wall.wallFg, Wall.wallBg);
 
 }
+
+export class CaveEnv extends GameObject {
+    public static caveBrown = '#995e06';
+    public static roomBg = 'black';
+}
