@@ -32,20 +32,11 @@ export class Floor extends GameObject {
         this.collides = false;
     }
 
-    public static floors = [
+    public static forestTiles = [
             new Tile('&#8283;', 'black', 'white'), 
             new Tile('&#775;', 'black', 'white'), 
             new Tile('&#803;', 'black', 'white'), 
             new Tile('&#856;', 'black', 'white')
-    ]
-
-    public static caveFloor = [
-            new Tile('&#8283;', '#995e06', 'black'), // 4 dots
-            new Tile('&#775;', '#995e06', 'black'), // single dot
-            new Tile('&#803;', '#995e06', 'black'), // space (we want more spaces)
-            // new Tile('&#803;', '#995e06', 'black'), 
-            // new Tile('&#803;', '#995e06', 'black'), 
-            new Tile('&#856;', '#995e06', 'black') // other single dot
     ]
 }
 
@@ -62,27 +53,28 @@ export class Wall extends GameObject {
 
     static wallFg = 'black';
     static wallBg = 'white';
+
+   // static basicTile = new Tile('#', Wall.wallFg, Wall.wallBg);
     
     // static botLeft = new Tile('&#9562;', Wall.wallFg, Wall.wallBg);
     static botLeft = new Tile('&#9492;', Wall.wallFg, Wall.wallBg);
+    // static botLeft = Wall.basicTile; 
+
     // static botRight = new Tile('&#9565;', Wall.wallFg, Wall.wallBg);
     static botRight = new Tile('&#9496;', Wall.wallFg, Wall.wallBg);
+    // static botRight = Wall.basicTile;
 
     // static topLeft = new Tile('&#9556;', Wall.wallFg, Wall.wallBg);
     static topLeft = new Tile('&#9484;', Wall.wallFg, Wall.wallBg);
+    // static topLeft = Wall.basicTile;
 
     // static topRight = new Tile('&#9559;', Wall.wallFg, Wall.wallBg);
     static topRight = new Tile('&#9488;', Wall.wallFg, Wall.wallBg);
+    // static topRight = Wall.basicTile;
 
-    // let horizontal = new Tile('&#9552;&#9552;', 'black', 'white');
-    // static horizontal = new Tile('==', Wall.wallFg, Wall.wallBg);
-    // static vertical = new Tile('&#9553;', Wall.wallFg, Wall.wallBg);
     static vertical = new Tile('&#9474;', Wall.wallFg, Wall.wallBg);
     static horizontal = new Tile('&#9472;&#9472;', Wall.wallFg, Wall.wallBg);
+    // static vertical = Wall.basicTile;
+    // static horizontal = Wall.basicTile;
 
-}
-
-export class CaveEnv extends GameObject {
-    public static caveBrown = '#995e06';
-    public static roomBg = 'black';
 }

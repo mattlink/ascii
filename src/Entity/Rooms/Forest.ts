@@ -1,7 +1,9 @@
 import { Tree, Wall, Floor } from '../Environment';
-import { Room } from "./room";
+import { Room, Area } from "./Room";
 import { Door, DoorType } from '../Door';
 import { Tile } from '../../tile';
+import { GameObject } from '../GameObject';
+import { BSPTree } from '../../util';
 
 export class Forest extends Room {
     constructor(width: number, height: number, name: string) {
@@ -9,6 +11,12 @@ export class Forest extends Room {
     }
 
     init() {
+        this.init_();
+        // let baseArea = new Area(0, 0, this.getHeight(), this.getWidth());
+        // this.initArea(baseArea);
+    }
+
+    init_() {
         for (let i = 0; i < this.getHeight(); i++) {
             this.objects[i] = [];
             for (let j = 0; j < this.getWidth(); j++) {
@@ -46,10 +54,13 @@ export class Forest extends Room {
                 if (rand > 7) {
                     this.objects[i][j] = new Tree(i, j, Tree.trees[0]);
                 } else {
-                    this.objects[i][j] = new Floor(i, j, Floor.floors[Math.floor(Math.random() * 4)]);
+                    this.objects[i][j] = new Floor(i, j, Floor.forestTiles[Math.floor(Math.random() * 4)]);
                 }
                 
             }
         }
+
+        //let baseArea = new Area(0, 0, this.getHeight(), this.getWidth());
+        //this.generateCA(3, baseArea);
     }
 }

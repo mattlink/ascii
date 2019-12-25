@@ -1,4 +1,4 @@
-import { Wall, Floor, Tree, CaveEnv } from '../Environment';
+import { Wall, Floor, Tree } from '../Environment';
 import { Room, Area } from './Room';
 import { Door, DoorType } from '../Door';
 import { Tile } from '../../tile';
@@ -7,8 +7,14 @@ import { BSPTree } from '../../util';
 
 export class Cave extends Room {
 
+    private caveBrown = '#995e06';
+
     constructor(width: number, height: number, name: string) {
         super(width, height, name);
+
+        // Set up Cave-specific tile info
+        this.wallTile = new Tile('#', this.caveBrown, this.defaultBgColor);
+        this.floorTile = new Tile('-', this.caveBrown, this.defaultBgColor);
     }
 
     init() {
@@ -24,8 +30,8 @@ export class Cave extends Room {
         let baseArea = new Area(0, 0, this.getHeight(), this.getWidth());
         let tree = new BSPTree<Area>(null, null, baseArea);
 
-        let BSPiterations = 4;
-        let CAiterations = 4;
+        let BSPiterations = 2;
+        let CAiterations = 3;
 
         // Generate a Symmetric BSP Tree
         this.generateSymmetricBSPTreeHorizontal(BSPiterations, tree);
@@ -40,7 +46,7 @@ export class Cave extends Room {
          * Example of just CA (without BSP): 
          */
         // initialize the area with random walls as a starting point for CA
-        //this.initArea(baseArea, true);
+        //this.initArea(baseArea, true); // sets random flag to true
         //this.generateCA(5, baseArea);
     }
 
@@ -53,36 +59,37 @@ export class Cave extends Room {
 
                 /* Wall Placement */
                 if (i == 0 && j == this.getWidth() - 1) { 
-                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.botLeft.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.botLeft.ascii, this.caveBrown, this.defaultBgColor));
                     continue; 
                 }
                 if (i == 0 && j == 0) { 
-                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.topLeft.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.topLeft.ascii, this.caveBrown, this.defaultBgColor));
                     continue; 
                 }
                 
 
                 if (i == this.getHeight() - 1 && j == this.getWidth() - 1) { 
-                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.botRight.ascii, CaveEnv.caveBrown, CaveEnv.roomBg)); 
+                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.botRight.ascii, this.caveBrown, this.defaultBgColor));
                     continue;
                 }
                 if (i == this.getHeight() - 1 && j == 0) { 
-                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.topRight.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.topRight.ascii, this.caveBrown, this.defaultBgColor));
                     continue; 
                 }
                 if (i == 0 || i == this.getHeight() - 1) { 
-                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.vertical.ascii, CaveEnv.caveBrown, CaveEnv.roomBg)); 
+                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.vertical.ascii, this.caveBrown, this.defaultBgColor));
                     continue; 
                 }
 
                 if (j == 0 || j == this.getWidth() - 1) { 
-                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.horizontal.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.horizontal.ascii, this.caveBrown, this.defaultBgColor));
                     continue; 
                 }
 
 
                 /* Floor Placement */
-                this.objects[i][j] = new Floor(i, j, new Tile('-', CaveEnv.caveBrown, CaveEnv.roomBg));
+                // this.objects[i][j] = new Floor(i, j, new Tile('-', this.caveBrown, this.defaultBgColor));
+                this.objects[i][j] = new Floor(i, j, this.floorTile);
                 // this.objects[i][j] = new Floor(i, j, Floor.caveFloor[Math.floor(Math.random() * Floor.caveFloor.length)]);
             }
         }

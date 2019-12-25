@@ -3,7 +3,7 @@ import { Tile } from '../../tile';
 import { Actor } from '../Actors/Actor';
 import { World } from '../../world';
 import { Door, DoorType } from '../Door';
-import { Wall, Floor, CaveEnv } from '../Environment';
+import { Wall, Floor, Tree } from '../Environment';
 import { BSPTree } from '../../util';
 
 // An instance of Area represents some area of a Room, usually walled off
@@ -13,8 +13,6 @@ export class Area {
     public y: number;
     public height: number;
     public width: number;
-    // public cx: number;
-    // public cy: number;
 
     constructor(x: number, y: number, width: number, height: number) {
         this.x = x;
@@ -24,10 +22,9 @@ export class Area {
     }
 }
 
-export abstract class Room {
-
+export abstract class Room { 
     public name: string;
-
+    
     private width: number;
     private height: number;
 
@@ -42,6 +39,11 @@ export abstract class Room {
     private wallDoorTile: Tile = new Tile('*', 'orange', 'black');
     private trapDoorTile: Tile = new Tile('#', 'orange', 'black');
     private ladderDoorTile: Tile = new Tile('\\', 'orange', 'black');
+
+    public defaultBgColor = 'black';
+    public defaultFgColor = 'white'; 
+    public floorTile = new Tile('.', this.defaultFgColor, this.defaultBgColor);
+    public wallTile = new Tile('#', this.defaultFgColor, this.defaultBgColor);
 
     constructor(width: number, height: number, name: string) {
         this.width = width;
@@ -184,7 +186,6 @@ export abstract class Room {
 
         if (iterations == 0) return;
 
-        //let newArea = new Area(area.x, area.y, area.width, area.height);
         let newObjects = [];
         for (let i = area.x+1; i < area.width+area.x-1; i++) {
             newObjects[i] = [];
@@ -192,13 +193,13 @@ export abstract class Room {
 
         for (let i = area.x+1; i < area.width+area.x-1; i++) {
            for (let j = area.y+1; j < area.height+area.y-1; j++) {
-            if (this.getNeighboringWalls(i, j) > 4 && (this.objects[i][j] instanceof Wall)
-                || this.getNeighboringWalls(i, j) > 5 && !(this.objects[i][j] instanceof Wall)) {
-                    
-                newObjects[i][j] = new Wall(i, j, new Tile('#', CaveEnv.caveBrown, CaveEnv.roomBg));
+            if (this.getNeighboringWalls(i, j) > 4 && (this.objects[i][j] instanceof Wall || this.objects[i][j] instanceof Tree)
+                || this.getNeighboringWalls(i, j) > 5 && !(this.objects[i][j] instanceof Wall || this.objects[i][j] instanceof Tree)) {
+                 
+                newObjects[i][j] = new Wall(i, j, this.wallTile);//new Tile('#', CaveEnv.caveBrown, CaveEnv.roomBg));
             }
             else {
-                newObjects[i][j] = new Floor(i, j, new Tile('-', CaveEnv.caveBrown, CaveEnv.roomBg));
+                newObjects[i][j] = new Floor(i, j, this.floorTile);//new Tile('-', CaveEnv.caveBrown, CaveEnv.roomBg));
             }
            }
         } 
@@ -359,7 +360,7 @@ export abstract class Room {
         }
     }
 
-    // Draws an area with walls, TODO: more sophisticated area drawing (subarea drawing, etc)
+    // Draws an area with wall around it, TODO: more sophisticated area drawing (subarea drawing, etc)
     initArea(area: Area, random?: boolean) {
 
         let x = area.x;
@@ -371,44 +372,50 @@ export abstract class Room {
         for (let i = x; i < x+l; i++) {
             for (let j = y; j < y+h; j++) {
                 if (i == x && j == (y+h) - 1) {
-                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.botLeft.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    // this.objects[i][j] = new Wall(i, j, new Tile(Wall.botLeft.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    this.objects[i][j] = new Wall(i, j, this.wallTile); 
                     continue;
                 }
 
                 if (i == x && j == y) {
-                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.topLeft.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    // this.objects[i][j] = new Wall(i, j, new Tile(Wall.topLeft.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    this.objects[i][j] = new Wall(i, j, this.wallTile);
                     continue;
                 }
 
                 if (i == (x+l) - 1 && j == (y+h) - 1) {
-                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.botRight.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    // this.objects[i][j] = new Wall(i, j, new Tile(Wall.botRight.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    this.objects[i][j] = new Wall(i, j, this.wallTile)
                     continue;
                 }
 
                 if (i == (x+l) - 1 && j == y) {
-                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.topRight.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    // this.objects[i][j] = new Wall(i, j, new Tile(Wall.topRight.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    this.objects[i][j] = new Wall(i, j, this.wallTile)
                     continue;
                 }
 
                 if (i == x || i == (x+l) - 1) {
-                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.vertical.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    // this.objects[i][j] = new Wall(i, j, new Tile(Wall.vertical.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    this.objects[i][j] = new Wall(i, j, this.wallTile)
                     continue;
                 }
 
                 if (j == y || j == (y+h) - 1) {
-                    this.objects[i][j] = new Wall(i, j, new Tile(Wall.horizontal.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    // this.objects[i][j] = new Wall(i, j, new Tile(Wall.horizontal.ascii, CaveEnv.caveBrown, CaveEnv.roomBg));
+                    this.objects[i][j] = new Wall(i, j, this.wallTile)
                     continue;
                 }
 
 
                 if (random) {
                     let r = Math.floor(Math.random() * 2);
-                    if (r == 0) this.objects[i][j] = new Floor(i, j, new Tile('-', CaveEnv.caveBrown, CaveEnv.roomBg));
-                    else if (r == 1) this.objects[i][j] = new Wall(i, j, new Tile('#', CaveEnv.caveBrown, CaveEnv.roomBg));
+                    if (r == 0) this.objects[i][j] = new Floor(i, j, this.floorTile);//new Floor(i, j, new Tile('-', CaveEnv.caveBrown, CaveEnv.roomBg));
+                    else if (r == 1) this.objects[i][j] = new Wall(i, j, this.wallTile);//new Tile('#', CaveEnv.caveBrown, CaveEnv.roomBg));
                 }
                 else {
                     // Otherwise, place a Floor object tile
-                    this.objects[i][j] = new Floor(i, j, new Tile('-', CaveEnv.caveBrown, CaveEnv.roomBg));
+                    this.objects[i][j] = new Floor(i, j, this.floorTile);//new Tile('-', CaveEnv.caveBrown, CaveEnv.roomBg));
                 }
 
             }

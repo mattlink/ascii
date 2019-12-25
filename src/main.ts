@@ -17,10 +17,10 @@ let world = new World();
 const FOREST_HEIGHT = 82;
 const FOREST_WIDTH = 50;
 
-//let room = new Forest(FOREST_WIDTH / 2, FOREST_HEIGHT / 2, 'Forest');
-//room.init();
+let forest = new Forest(FOREST_WIDTH / 2, FOREST_HEIGHT / 2, 'Forest');
+forest.init();
 
-let cave = new Cave(FOREST_WIDTH, FOREST_HEIGHT, 'Cave');
+let cave = new Cave(FOREST_WIDTH / 2, FOREST_HEIGHT / 2, 'Cave');
 cave.init();
 cave.addActor(new Mob("Cave Mob 1", 10, 10, new Tile('O', 'white', 'purple')));
 cave.addActor(new Mob("Cave Mob 2", 10, 10, new Tile('A', 'white', 'red')));
@@ -32,35 +32,32 @@ cave.addActor(new Mob("Cave Mob 2", 10, 10, new Tile('A', 'white', 'red')));
 
 
 // Add our forest to the world
-//world.addRoom(room); 
+world.addRoom(forest); 
 world.addRoom(cave);
 // world.addRoom(cave2);
 
 
 // Add doors to rooms
-//let { x, y } = room.placeDoor(cave, DoorType.TrapDoor); // Place a TrapDoor from the forest to the cave
+let { x, y } = forest.placeDoor(cave, DoorType.TrapDoor); // Place a TrapDoor from the forest to the cave
 //console.log(x, y);
-//cave.placeDoor(room, DoorType.LadderDoor, x, y);
+cave.placeDoor(forest, DoorType.LadderDoor, x, y);
 
 
 
-// Add a player to the forest
+// Add our player to the active room
 let player = new Player(10, 10, new Tile('@', 'red', 'white'));
-// room.addActor(player);
-cave.addActor(player);
+world.getActiveRoom().addActor(player);
 
-// add some test mobs to the forest
-/*let mob1 = new Mob("Mob1 (F)", 20, 6, new Tile('F', 'blue', 'white'));
+// Add some test mobs to the forest
+let mob1 = new Mob("Mob1 (F)", 20, 6, new Tile('F', 'blue', 'white'));
 let mob2 = new Mob("Mob2 (O)", 6, 14, new Tile('O', 'blue', 'white'));
 let mob3 = new Mob("Mob3 (A)", 20, 20, new Tile('A', 'purple', 'white'));
 let mob4 = new Mob("Mob4 (P)", 6, 20, new Tile('P', 'yellow', 'white'));
 
-room.addActor(mob1);
-room.addActor(mob2);
-room.addActor(mob3);
-room.addActor(mob4);*/
-
-// room.addActor(player);
+forest.addActor(mob1);
+forest.addActor(mob2);
+forest.addActor(mob3);
+forest.addActor(mob4);
 
 
 let renderer = new Renderer();
@@ -113,7 +110,6 @@ IO.genericKeyBinding(function(key: string) {
 
 // let testWin = new Window(50, 800, 5, 5, winTiles);
 // renderer.addWindow(testWin);
-
 
 
 
