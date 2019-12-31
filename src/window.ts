@@ -3,8 +3,6 @@ import { Tile } from './tile';
 
 // Think of Windows as rendering contexts
 
-// NOTE: windows should not contain gameobject representations, only tile based representations
-
 // CONSIDERATION: do we want the windowing code to handle outlining the window itself?
 
 export class Window {
@@ -32,10 +30,6 @@ export class Window {
 
         this.initContext(tiles);
     }
-
-    // public getTile(x: number, y: number) {
-    //     return this.tiles[x][y];
-    // }
 
     public getContext() {
         return this.context;

@@ -149,26 +149,6 @@ export class Renderer {
         }
     }
 
-    // public renderLocalRoomContexts(objs: GameObject[], room: Room, context: HTMLElement){
-    //      // Update all locations around the game object to their initial world state
-    //     for (let n = 0; n < objs.length; n++){
-
-    //         // If the player is in debug render their movements and local contexts in yellow
-    //         if (objs[n] instanceof Actor && (<Actor>objs[n]).debug) {
-    //             this.updateTile(objs[n].x - 1, objs[n].y, new Tile(room.getObject(objs[n].x - 1, objs[n].y).getTile().ascii, room.getObject(objs[n].x - 1, objs[n].y).getTile().fg, 'yellow'), context);
-    //             this.updateTile(objs[n].x + 1, objs[n].y, new Tile(room.getObject(objs[n].x + 1, objs[n].y).getTile().ascii, room.getObject(objs[n].x + 1, objs[n].y).getTile().fg, 'yellow'), context);
-    //             this.updateTile(objs[n].x, objs[n].y - 1, new Tile(room.getObject(objs[n].x, objs[n].y - 1).getTile().ascii, room.getObject(objs[n].x, objs[n].y - 1).getTile().fg, 'yellow'), context);
-    //             this.updateTile(objs[n].x, objs[n].y + 1, new Tile(room.getObject(objs[n].x, objs[n].y + 1).getTile().ascii, room.getObject(objs[n].x, objs[n].y + 1).getTile().fg, 'yellow'), context);
-    //         }
-    //         else {
-    //             this.updateTile(objs[n].x - 1, objs[n].y, room.getObject(objs[n].x - 1, objs[n].y).getTile(), context);
-    //             this.updateTile(objs[n].x + 1, objs[n].y, room.getObject(objs[n].x + 1, objs[n].y).getTile(), context);
-    //             this.updateTile(objs[n].x, objs[n].y - 1, room.getObject(objs[n].x, objs[n].y - 1).getTile(), context);
-    //             this.updateTile(objs[n].x, objs[n].y + 1, room.getObject(objs[n].x, objs[n].y + 1).getTile(), context);
-    //         }
-    //     }
-    // }
-
     public renderObjectContext(obj: GameObject, room: Room, context: HTMLElement) {
         // If the player is in debug render their movements and local contexts in yellow
         if (obj instanceof Actor && (<Actor>obj).debug) {
