@@ -17,11 +17,11 @@ export class Forest extends Room {
     }
 
     init_() {
-        for (let i = 0; i < this.getHeight(); i++) {
+        for (let i = 0; i < this.getWidth(); i++) {
             this.objects[i] = [];
-            for (let j = 0; j < this.getWidth(); j++) {
+            for (let j = 0; j < this.getHeight(); j++) {
 
-                if (i == 0 && j == this.getWidth() - 1) { 
+                if (i == 0 && j == this.getHeight() - 1) { 
                     this.objects[i][j] = new Wall(i, j, Wall.botLeft);
                     continue; 
                 }
@@ -31,20 +31,20 @@ export class Forest extends Room {
                 }
                 
 
-                if (i == this.getHeight() - 1 && j == this.getWidth() - 1) { 
+                if (i == this.getWidth() - 1 && j == this.getHeight() - 1) { 
                     this.objects[i][j] = new Wall(i, j, Wall.botRight); 
                     continue; 
                 }
-                if (i == this.getHeight() - 1 && j == 0) { 
+                if (i == this.getWidth() - 1 && j == 0) { 
                     this.objects[i][j] = new Wall(i, j, Wall.topRight);
                     continue; 
                 }
-                if (i == 0 || i == this.getHeight() - 1) { 
+                if (i == 0 || i == this.getWidth() - 1) { 
                     this.objects[i][j] = new Wall(i, j, Wall.vertical); 
                     continue; 
                 }
 
-                if (j == 0 || j == this.getWidth() - 1) { 
+                if (j == 0 || j == this.getHeight() - 1) { 
                     this.objects[i][j] = new Wall(i, j, Wall.horizontal);
                     continue; 
                 }

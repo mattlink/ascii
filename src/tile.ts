@@ -18,7 +18,6 @@ export class Tile {
         if (fg != null && bg != null) {
             this.fg = fg;
             this.bg = bg;
-            // console.log(this);
             return;
         }
         

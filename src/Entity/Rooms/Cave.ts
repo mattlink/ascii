@@ -15,19 +15,23 @@ export class Cave extends Room {
         // Set up Cave-specific tile info
         this.wallTile = new Tile('#', this.caveBrown, this.defaultBgColor);
         this.floorTile = new Tile('-', this.caveBrown, this.defaultBgColor);
+
+        this.defaultFogBg = '#937d91'; // a dark, purple hazy 
+        // this.defaultFogFg = this.caveBrown;
+        this.defaultFogFg = 'black';
     }
 
     init() {
         // Initialize everything to empty GameObjects
-        for (let i = 0; i < this.getHeight(); i++) {
+        for (let i = 0; i < this.getWidth(); i++) {
             this.objects[i] = [];
-            for (let j = 0; j < this.getWidth(); j++) {
+            for (let j = 0; j < this.getHeight(); j++) {
                 this.objects[i][j] = new GameObject(i, j, new Tile(' ', 'black', 'black'));
             }
         }
 
         // Draw some walls to create the internal room structure
-        let baseArea = new Area(0, 0, this.getHeight(), this.getWidth());
+        let baseArea = new Area(0, 0, this.getWidth(), this.getHeight());
         let tree = new BSPTree<Area>(null, null, baseArea);
 
         let BSPiterations = 2;

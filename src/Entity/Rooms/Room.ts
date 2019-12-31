@@ -40,6 +40,9 @@ export abstract class Room {
     private trapDoorTile: Tile = new Tile('#', 'orange', 'black');
     private ladderDoorTile: Tile = new Tile('\\', 'orange', 'black');
 
+    public defaultFogBg = '#e9ecef'; // a sort of gray color
+    public defaultFogFg = 'black'; 
+
     public defaultBgColor = 'black';
     public defaultFgColor = 'white'; 
     public floorTile = new Tile('.', this.defaultFgColor, this.defaultBgColor);
@@ -61,8 +64,8 @@ export abstract class Room {
         switch (type) {
 
             case DoorType.TrapDoor: {
-                let y = Math.floor(Math.random() * this.getWidth());
-                let x = Math.floor(Math.random() * this.getHeight());
+                let x = Math.floor(Math.random() * this.getWidth());
+                let y = Math.floor(Math.random() * this.getHeight());
 
                 this.objects[x][y] = new Door(x, y, this.trapDoorTile, toRoom);
 
@@ -168,9 +171,9 @@ export abstract class Room {
 
     getTiles() {
         let tiles: Tile[][] = [];
-        for (let i = 0; i < this.height; i++) {
+        for (let i = 0; i < this.width; i++) {
             tiles[i] = [];
-            for (let j = 0; j < this.width; j++) {
+            for (let j = 0; j < this.height; j++) {
                 tiles[i][j] = this.getObject(i, j).getTile();
             }
         }

@@ -1,6 +1,5 @@
 import { Tile } from "../tile";
 
-
 export class GameObject {
     public x: number;
     public y: number;

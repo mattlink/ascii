@@ -1,6 +1,8 @@
 import { Renderer } from './renderer';
 import { Tile } from './tile';
 
+// Think of Windows as rendering contexts
+
 // NOTE: windows should not contain gameobject representations, only tile based representations
 
 // CONSIDERATION: do we want the windowing code to handle outlining the window itself?
@@ -31,19 +33,22 @@ export class Window {
         this.initContext(tiles);
     }
 
-    public getTile(x: number, y: number) {
-        return this.tiles[x][y];
-    }
+    // public getTile(x: number, y: number) {
+    //     return this.tiles[x][y];
+    // }
 
     public getContext() {
         return this.context;
     }
 
     private initContext(tiles: Tile[][]) {
+        console.log('localWidth:', this.localWidth, 'localHeight:', this.localHeight);
         // Loop over localWidth and localHeight to initialize the literal html elements that will be in this window
         this.context = document.createElement('div');
         this.context.style.height = Renderer.pxs(this.localHeight * Renderer.elementSize);
         this.context.style.width = Renderer.pxs(this.localWidth * Renderer.elementSize);
+
+        this.context.style.display = 'flex'; 
 
         if (this.startX == -1 && this.startY == -1) {
             this.context.style.margin = 'auto';
@@ -59,25 +64,25 @@ export class Window {
             this.context.style.borderWidth = Renderer.pxs(2);
         }
 
-        for (let i = 0; i < this.localHeight; i++) {
-            let rowDiv = document.createElement('div');
-            rowDiv.style.height = Renderer.pxs(Renderer.elementSize);
-            rowDiv.style.display = 'flex';
+        for (let i = 0; i < this.localWidth; i++) {
+
+            let colDiv = document.createElement('div');
+            colDiv.style.width = Renderer.pxs(Renderer.elementSize * this.localHeight);
         
-            for (let j = 0; j < this.localWidth; j++) {
+            for (let j = 0; j < this.localHeight; j++) {
                 var element = document.createElement('div');
                 element.style.height = Renderer.pxs(Renderer.elementSize);
                 element.style.width = Renderer.pxs(Renderer.elementSize);
                 element.style.textAlign = 'center';
                 element.style.userSelect = 'none';
 
-                element.innerHTML = tiles[j][i].ascii;
-                element.style.backgroundColor = tiles[j][i].bg;
-                element.style.color = tiles[j][i].fg;
+                element.innerHTML = tiles[i][j].ascii;
+                element.style.backgroundColor = tiles[i][j].bg;
+                element.style.color = tiles[i][j].fg;
 
-                rowDiv.appendChild(element);
+                colDiv.appendChild(element);
             }
-            this.context.appendChild(rowDiv);
+            this.context.appendChild(colDiv);
         }
     }
 

@@ -9,13 +9,14 @@ import { Mob } from './Entity/Actors/Mob';
 import { Cave } from './Entity/Rooms/Cave';
 import { Forest } from './Entity/Rooms/Forest';
 import { DoorType, Door } from './Entity/Door';
+import { Camera } from './camera';
 
 // TODO - load in a world config (parse a json file?) then pass it into the World constructor
 
 let world = new World();
 
-const FOREST_HEIGHT = 82;
-const FOREST_WIDTH = 50;
+const FOREST_HEIGHT = 60;
+const FOREST_WIDTH = 100;
 
 let forest = new Forest(FOREST_WIDTH / 2, FOREST_HEIGHT / 2, 'Forest');
 forest.init();
@@ -59,11 +60,17 @@ forest.addActor(mob2);
 forest.addActor(mob3);
 forest.addActor(mob4);
 
+let viewWidth = FOREST_WIDTH / 4;
+let viewHeight = FOREST_HEIGHT / 4;
+let camera = new Camera(world.getActiveRoom(), viewWidth, viewHeight, player.x, player.y);
 
 let renderer = new Renderer();
 
-let gameWindow = new Window(-1, -1, world.getActiveRoom().getHeight(), world.getActiveRoom().getWidth(), world.getActiveRoom().getTiles());
+let gameWindow = new Window(-1, -1, world.getActiveRoom().getWidth(), world.getActiveRoom().getHeight(), world.getActiveRoom().getTiles());
+// let gameWindow = new Window(-1, -1, viewWidth, viewHeight, camera.getTilesInView());
 renderer.addWindow(gameWindow);
+
+// renderer.renderRoom(world.getActiveRoom(), gameWindow.getContext());
 
 
 /** 
@@ -80,19 +87,33 @@ IO.genericKeyBinding(function(key: string) {
 
     // Check if we should be rendering a new room
     if (world.getActiveRoomChanged()) {
-        renderer.renderRoom(world.getActiveRoom(), gameWindow.getContext());
+        // renderer.renderRoom(world.getActiveRoom(), gameWindow.getContext());
+
+        camera.switchTargetRoom(world.getActiveRoom());
+        renderer.renderView(camera, gameWindow);
+        // renderer.renderViewOblong(camera, gameWindow);
     }
+
+    // Make sure the camera is centered on our player
+    camera.reCenter(player.x, player.y);
+    renderer.renderView(camera, gameWindow);
+    // renderer.renderViewOblong(camera, gameWindow);
+    // renderer.updateCameraView(camera, gameWindow); // Theoretically more efficient view update function
 
     // Grab all the actors in the active room
     let actors = world.getActiveRoom().getActors();
 
-    // Render everything /around/ each actor
-    renderer.renderLocalRoomContexts(actors, world.getActiveRoom(), gameWindow.getContext());
-
     // Render each actor
     actors.forEach(actor => {
-        renderer.updateGameObject(actor, gameWindow.getContext());
+        if(camera.actorInView(actor.x, actor.y)) {
+            // Render the actual actor
+            renderer.updateGameObject(actor, gameWindow.getContext());
+            // Render everything /around/ this actor
+            renderer.renderObjectContext(actor, world.getActiveRoom(), gameWindow.getContext());
+        }
+        // renderer.updateCameraView(camera, gameWindow.getContext());
     });
+
 
 });
 
