@@ -1,5 +1,7 @@
 .DS_Store
-tsconfig.json
 prepdeploy.sh
+build.sh
 built/
-todo.*
+dist/
+todo*.*
+node_modules

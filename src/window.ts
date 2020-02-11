@@ -19,9 +19,10 @@ export class Window {
 
     private context: HTMLElement;
 
-    constructor(startX: number, startY: number, localWidth: number, localHeight: number, tiles: Tile[][]) {
-        this.startX = startX;
-        this.startY = startY;
+    
+    constructor(startX?: number, startY?: number, localWidth?: number, localHeight?: number, tiles?: Tile[][]) {
+        this.startX = startX || -1;
+        this.startY = startY || -1;
 
         this.localWidth = localWidth;
         this.localHeight = localHeight;

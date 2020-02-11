@@ -1,0 +1,29 @@
+{
+  "name": "ascii",
+  "version": "0.1.0",
+  "description": "a web based ascii roguelike",
+  "main": "dist",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattlink/ascii.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mattlink/ascii/issues"
+  },
+  "homepage": "https://github.com/mattlink/ascii#readme",
+  "devDependencies": {
+    "browserify": "^16.5.0",
+    "typescript": "^3.7.5"
+  },
+  "bin": {
+    "ascii-scaffold": "./scripts/ascii-scaffold.js",
+    "ascii-build": "./scripts/ascii-build.js",
+    "ascii-build-shell": "./scripts/ascii-build-shell.sh"
+  }
+}
