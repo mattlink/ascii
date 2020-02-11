@@ -18,7 +18,6 @@ export class Forest extends Room {
 
     init_() {
         for (let i = 0; i < this.getWidth(); i++) {
-            this.objects[i] = [];
             for (let j = 0; j < this.getHeight(); j++) {
 
                 if (i == 0 && j == this.getHeight() - 1) { 

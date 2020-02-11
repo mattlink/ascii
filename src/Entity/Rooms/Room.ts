@@ -54,6 +54,14 @@ export abstract class Room {
         this.objects = [];
         this.actors = [];
         this.name = name;
+
+        // initialize all objects in room to empty game objects
+        for (let i = 0; i < this.getWidth(); i++) {
+            this.objects[i] = [];
+            for (let j = 0; j < this.getHeight(); j++) {
+                this.objects[i][j] = new GameObject(i, j, new Tile(' ', 'black', 'black'));
+            }
+        }
     }
 
     /* The init method is what defines how a type of room will get generated. */
