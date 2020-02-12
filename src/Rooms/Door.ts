@@ -1,7 +1,7 @@
-import { Room } from "./Rooms/Room";
-import { Player } from "./Actors/Player";
+import { Room } from "./Room";
+import { Player } from "../Actors/Player";
 import { Tile } from "../tile";
-import { GameObject } from "./GameObject";
+import { GameObject } from "../GameObject";
 
 export enum DoorType {
     NorthDoor,

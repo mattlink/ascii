@@ -1,13 +1,13 @@
 import { GameObject } from '../GameObject';
-import { Tile } from '../../tile';
+import { Tile } from '../tile';
 import { Actor } from '../Actors/Actor';
-import { World } from '../../world';
-import { Door, DoorType } from '../Door';
-import { Wall, Floor, Tree } from '../Environment';
-import { BSPTree } from '../../util';
+import { World } from '../world';
+import { Door, DoorType } from './Door';
+import { Wall, Floor, Tree } from './Environment';
+import { BSPTree } from '../util';
 
 // An instance of Area represents some area of a Room, usually walled off
-// Generally we apply our proc gen algorithms to Areas rather than direction to Rooms
+// Generally we apply our proc gen algorithms to Areas rather than ActionDirection to Rooms
 export class Area {
     public x: number;
     public y: number;

@@ -1,6 +1,6 @@
-import { Actor } from "../../Entity/Actors/Actor";
+import { Actor } from "../Actors/Actor";
 import { Action } from "./Action";
-import { World } from "../../world";
+import { World } from "../world";
 
 export class WaitAction extends Action {
     constructor(actor: Actor) {

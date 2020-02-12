@@ -1,7 +1,7 @@
 import { Action } from './Action';
-import { Actor } from '../../Entity/Actors/Actor';
-import { World } from '../../world';
-import { Door } from '../../Entity/Door';
+import { Actor } from '../Actors/Actor';
+import { World } from '../world';
+import { Door } from '../Rooms/Door';
 
 export class DoorAction extends Action {
     constructor(actor: Actor) {

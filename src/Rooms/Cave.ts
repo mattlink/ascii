@@ -1,9 +1,9 @@
-import { Wall, Floor, Tree } from '../Environment';
+import { Wall, Floor, Tree } from './Environment';
 import { Room, Area } from './Room';
-import { Door, DoorType } from '../Door';
-import { Tile } from '../../tile';
+import { Door, DoorType } from './Door';
+import { Tile } from '../tile';
 import { GameObject } from '../GameObject';
-import { BSPTree } from '../../util';
+import { BSPTree } from '../util';
 
 export class Cave extends Room {
 

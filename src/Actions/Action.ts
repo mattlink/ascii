@@ -1,7 +1,7 @@
-import { Actor } from "../../Entity/Actors/Actor";
-import { World } from "../../world";
+import { Actor } from "../Actors/Actor";
+import { World } from "../world";
 
-export enum Direction {
+export enum ActionDirection {
     Up,
     Down,
     Left,

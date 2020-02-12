@@ -1,6 +1,6 @@
-import { GameObject } from './GameObject';
+import { GameObject } from '../GameObject';
 import { Tile } from '../tile';
-import { Actor } from './Actors/Actor';
+import { Actor } from '../Actors/Actor';
 
 
 export class Tree extends GameObject {

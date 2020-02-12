@@ -1,9 +1,9 @@
-import { Tree, Wall, Floor } from '../Environment';
+import { Tree, Wall, Floor } from './Environment';
 import { Room, Area } from "./Room";
-import { Door, DoorType } from '../Door';
-import { Tile } from '../../tile';
+import { Door, DoorType } from './Door';
+import { Tile } from '../tile';
 import { GameObject } from '../GameObject';
-import { BSPTree } from '../../util';
+import { BSPTree } from '../util';
 
 export class Forest extends Room {
     constructor(width: number, height: number, name: string) {

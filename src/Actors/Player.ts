@@ -1,10 +1,10 @@
 import { Actor } from './Actor';
-import { Direction } from '../../Components/Actions/Action';
-import { WaitAction } from '../../Components/Actions/WaitAction';
-import { WalkAction } from '../../Components/Actions/WalkAction';
-import { DoorAction } from '../../Components/Actions/DoorAction';
-import { Tile } from '../../tile';
-import { World } from '../../world';
+import { ActionDirection } from '../Actions/Action';
+import { WaitAction } from '../Actions/WaitAction';
+import { WalkAction } from '../Actions/WalkAction';
+import { DoorAction } from '../Actions/DoorAction';
+import { Tile } from '../tile';
+import { World } from '../world';
 
 export class Player extends Actor {
 
@@ -15,16 +15,16 @@ export class Player extends Actor {
 
     receiveKeyInput(key: string) {
         if (key == 'w') {
-            this.nextAction = new WalkAction(Direction.Up, this);
+            this.nextAction = new WalkAction(ActionDirection.Up, this);
         }
         else if (key == 'a') {
-            this.nextAction = new WalkAction(Direction.Left, this);
+            this.nextAction = new WalkAction(ActionDirection.Left, this);
         }
         else if (key == 's') {
-            this.nextAction = new WalkAction(Direction.Down, this);
+            this.nextAction = new WalkAction(ActionDirection.Down, this);
         }
         else if (key == 'd') {
-            this.nextAction = new WalkAction(Direction.Right, this);
+            this.nextAction = new WalkAction(ActionDirection.Right, this);
         }
 
         else if (key == '>') {

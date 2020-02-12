@@ -1,8 +1,8 @@
-import { Actor } from "./Entity/Actors/Actor";
-import { Tile } from "./tile";
-import { GameObject } from "./Entity/GameObject";
+import { Actor } from "../Actors/Actor";
+import { Tile } from "../tile";
+import { GameObject } from "../GameObject";
 import { Window } from "./window";
-import { Room } from "./Entity/ROoms/room";
+import { Room } from "../Rooms/room";
 import { Camera } from "./camera";
 
 export class Renderer {

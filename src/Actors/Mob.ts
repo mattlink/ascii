@@ -1,10 +1,10 @@
 import { Actor } from './Actor';
-import { Direction } from '../../Components/Actions/Action';
-import { WalkAction } from '../../Components/Actions/WalkAction';
-import { WaitAction } from '../../Components/Actions/WaitAction';
-import { Tile } from '../../tile';
-import { Action } from '../../Components/Actions/Action';
-import { World } from '../../world';
+import { ActionDirection } from '../Actions/Action';
+import { WalkAction } from '../Actions/WalkAction';
+import { WaitAction } from '../Actions/WaitAction';
+import { Tile } from '../tile';
+import { Action } from '../Actions/Action';
+import { World } from '../world';
 
 export class Mob extends Actor {
 
@@ -21,10 +21,10 @@ export class Mob extends Actor {
 
         let actionList: Action[] = [
             new WaitAction(this),
-            new WalkAction(Direction.Up, this),
-            new WalkAction(Direction.Down, this),
-            new WalkAction(Direction.Left, this),
-            new WalkAction(Direction.Right, this)
+            new WalkAction(ActionDirection.Up, this),
+            new WalkAction(ActionDirection.Down, this),
+            new WalkAction(ActionDirection.Left, this),
+            new WalkAction(ActionDirection.Right, this)
         ];
 
         let r = Math.floor(Math.random() * (actionList.length));

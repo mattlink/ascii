@@ -1,5 +1,5 @@
 import { Renderer } from './renderer';
-import { Tile } from './tile';
+import { Tile } from '../tile';
 
 // Think of Windows as rendering contexts
 

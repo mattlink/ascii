@@ -1,7 +1,7 @@
 import { GameObject } from '../GameObject'; 
-import { Tile } from '../../tile';
-import { World } from '../../world';
-import { Action } from '../../Components/Actions/Action';
+import { Tile } from '../tile';
+import { World } from '../world';
+import { Action } from '../Actions/Action';
 
 // essentially, "Actors" are GameObjects that are allowed to takeTurns and have names.
 

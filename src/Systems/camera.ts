@@ -1,7 +1,7 @@
 import { Renderer } from './renderer';
 import { Window } from './window';
-import { Room } from './Entity/Rooms/Room';
-import { Tile } from './tile';
+import { Room } from '../Rooms/Room';
+import { Tile } from '../tile';
 
 export class Camera {
 

@@ -12,8 +12,8 @@ Notes about what this World class could or should be:
 */
 
 //import { ASCII } from './ascii';
-import { Room } from './Entity/Rooms/Room';
-import { Door } from './Entity/Door';
+import { Room } from './Rooms/Room';
+import { Door } from './Rooms/Door';
 
 // Currently, the World just maintains all the rooms and manages turns taken
 

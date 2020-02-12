@@ -1,34 +1,36 @@
-// Entity
-export { GameObject } from './Entity/GameObject';
-export { Door, DoorType } from './Entity/Door';
-export { Tree, Floor, Wall } from './Entity/Environment';
-
 // Actors
-export { Actor } from './Entity/Actors/Actor';
-export { Mob } from './Entity/Actors/Mob';
-export { Player } from './Entity/Actors/Player';
+export { Actor } from './Actors/Actor';
+export { Mob } from './Actors/Mob';
+export { Player } from './Actors/Player';
 
 // Actions
-export { Action, Direction } from './Components/Actions/Action';
-export { WaitAction } from './Components/Actions/WaitAction';
-export { ChopAction } from './Components/Actions/ChopAction';
-export { DoorAction } from './Components/Actions/DoorAction';
-export { WalkAction } from './Components/Actions/WalkAction';
+export { Action, ActionDirection } from './Actions/Action';
+export { WaitAction } from './Actions/WaitAction';
+export { ChopAction } from './Actions/ChopAction';
+export { DoorAction } from './Actions/DoorAction';
+export { WalkAction } from './Actions/WalkAction';
 
 
 // Rooms
-export { Room, Area } from './Entity/Rooms/Room';
-/*consider leaving out of module*/export { Cave } from './Entity/Rooms/Cave';
-/*consider leaving out of module*/export { Forest } from './Entity/Rooms/Forest';
+export { Room, Area } from './Rooms/Room';
+/*consider leaving out of module*/export { Cave } from './Rooms/Cave';
+/*consider leaving out of module*/export { Forest } from './Rooms/Forest';
+export { Door, DoorType } from './Rooms/Door';
+export { Tree, Floor, Wall } from './Rooms/Environment';
 
+// Systems
+export { Renderer } from './Systems/renderer';
+export { Window } from './Systems/window';
+export { IO } from './Systems/io';
+export { Camera } from './Systems/camera'; 
+
+// Misc Base Objects
 export { BSPTree } from './util';
-
-export { World } from './world';
-export { Renderer } from './renderer';
-export { Window } from './window';
 export { Tile } from './tile';
-export { IO } from './io';
-export { Camera } from './camera'; // not officially supporting the Camera
+export { GameObject } from './GameObject';
+export { World } from './world';
+
+
 
 
 export class Engine {

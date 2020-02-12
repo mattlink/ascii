@@ -1,15 +1,15 @@
 import { World } from './world';
-import { Window } from './window';
-import { Renderer } from './renderer';
+import { Window } from './Systems/window';
+import { Renderer } from './Systems/renderer';
 import { Tile } from './tile';
-import { IO } from './io';
+import { IO } from './Systems/io';
 
-import { Player } from './Entity/Actors/Player';
-import { Mob } from './Entity/Actors/Mob';
-import { Cave } from './Entity/Rooms/Cave';
-import { Forest } from './Entity/Rooms/Forest';
-import { DoorType, Door } from './Entity/Door';
-import { Camera } from './camera';
+import { Player } from './Actors/Player';
+import { Mob } from './Actors/Mob';
+import { Cave } from './Rooms/Cave';
+import { Forest } from './Rooms/Forest';
+import { DoorType, Door } from './Rooms/Door';
+import { Camera } from './Systems/camera';
 
 // TODO - load in a world config (parse a json file?) then pass it into the World constructor
 

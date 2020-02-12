@@ -1,14 +1,14 @@
 // An Action for chopping down a tree
-import { Action, Direction } from './Action';
-import { Actor } from '../../Entity/Actors/Actor';
-import { Tree } from '../../Entity/Environment';
-import { World } from '../../world';
+import { Action, ActionDirection } from './Action';
+import { Actor } from '../Actors/Actor';
+import { Tree } from '../Rooms/Environment';
+import { World } from '../world';
 
 export class ChopAction extends Action {
 
-    private dir: Direction;
+    private dir: ActionDirection;
 
-    constructor(dir: Direction, actor: Actor) {
+    constructor(dir: ActionDirection, actor: Actor) {
         super(actor);
         this.dir = dir;
     }
@@ -21,7 +21,7 @@ export class ChopAction extends Action {
             // Do they have an axe, or another item capable of doing this?
 
         switch(this.dir) {
-            case Direction.Up:
+            case ActionDirection.Up:
                 // If there is a tree above, chop it..
                 let object = room.getObject(this.actor.x, this.actor.y - 1);
                 if (!(object instanceof Tree)) {
@@ -32,15 +32,15 @@ export class ChopAction extends Action {
 
                 break;
 
-            case Direction.Down:
+            case ActionDirection.Down:
 
                 break;
 
-            case Direction.Left:
+            case ActionDirection.Left:
 
                 break;
 
-            case Direction.Right:
+            case ActionDirection.Right:
 
                 break;
 

@@ -1,13 +1,13 @@
-import { Action, Direction } from "./Action";
-import { Actor }  from "../../Entity/Actors/Actor";
-import { Floor } from "../../Entity/Environment";
-import { World } from "../../world";
+import { Action, ActionDirection } from "./Action";
+import { Actor }  from "../Actors/Actor";
+import { Floor } from "../Rooms/Environment";
+import { World } from "../world";
 
 export class WalkAction extends Action {
     
-    private dir: Direction;
+    private dir: ActionDirection;
 
-    constructor(dir: Direction, actor: Actor) {
+    constructor(dir: ActionDirection, actor: Actor) {
         super(actor);
         this.dir = dir;
     }
@@ -18,7 +18,7 @@ export class WalkAction extends Action {
 
         let fromObject = room.getObject(this.actor.x, this.actor.y);
 
-        if (this.dir == Direction.Up) {
+        if (this.dir == ActionDirection.Up) {
             let object = room.getObject(this.actor.x, this.actor.y - 1);
             // IF OBJECT IS A DOOR, PERFORM A DoorAction (or something similar) ON THIS ACTOR, and return.
             if (!object.collides) {
@@ -39,7 +39,7 @@ export class WalkAction extends Action {
                 }
             }
         }
-        else if (this.dir == Direction.Down) {
+        else if (this.dir == ActionDirection.Down) {
             let object = room.getObject(this.actor.x, this.actor.y + 1);
             if (!object.collides) {           
                 
@@ -58,7 +58,7 @@ export class WalkAction extends Action {
                 }
             }
         }
-        else if (this.dir == Direction.Left) {
+        else if (this.dir == ActionDirection.Left) {
             let object = room.getObject(this.actor.x - 1, this.actor.y);
             if (!object.collides) {
                 if (fromObject instanceof Floor) {
@@ -77,7 +77,7 @@ export class WalkAction extends Action {
                 }
             }
         }
-        else if (this.dir == Direction.Right) {
+        else if (this.dir == ActionDirection.Right) {
             
             let object = room.getObject(this.actor.x + 1, this.actor.y);
             if (!object.collides) {
