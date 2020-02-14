@@ -17,6 +17,9 @@
     "url": "https://github.com/mattlink/ascii/issues"
   },
   "homepage": "https://github.com/mattlink/ascii#readme",
+  "dependencies": {
+    "typescript": "^3.7.5"
+  },
   "devDependencies": {
     "browserify": "^16.5.0",
     "typescript": "^3.7.5"
