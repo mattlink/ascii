@@ -18,7 +18,8 @@ export class IO {
         'j', // wait
         '>', // use door
         'i', // change state to inventory
-        'Escape' // go to pause menu
+        'Escape', // go to pause menu
+        'P', // try to pick up item
     ];
 
     public static validControl(key: string): boolean {
