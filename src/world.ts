@@ -1,19 +1,5 @@
-/* This is sort of kind of a world "system" 
-
-Notes about what this World class could or should be:
-
-- keep things related to generating the initial world state (?)
-- leave propagation of the simulation to another system
-- in theory, if users are to specify custom "factors" into the way their world is generated, 
-    then those factors would be tweaked here... (maybe?)
-    - but, maybe this would be better left for a "Generator" class
-        - it could generate types of rooms/dungeons?
-
-*/
-
-//import { ASCII } from './ascii';
 import { Room } from './Rooms/Room';
-import { Door } from './Rooms/Door';
+import { Player } from './Actors/Player';
 
 // Currently, the World just maintains all the rooms and manages turns taken
 
@@ -22,6 +8,8 @@ export class World {
     private rooms: Room[] = [];
 
     private activeRoom: Room;
+
+    private player: Player;
 
     private activeRoomChanged: boolean = false;
 
@@ -41,6 +29,14 @@ export class World {
             return true;
         }
         else return false;
+    }
+
+    getPlayer() {
+        return this.player;
+    }
+
+    setPlayer(player: Player) {
+        this.player = player;
     }
 
 
@@ -71,4 +67,6 @@ export class World {
     getRooms() {
         return this.rooms;
     }
+
+    
 }

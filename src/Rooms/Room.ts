@@ -5,6 +5,7 @@ import { World } from '../world';
 import { Door, DoorType } from './Door';
 import { Wall, Floor, Tree } from './Environment';
 import { BSPTree } from '../util';
+import { Item } from '../Items/Item';
 
 // An instance of Area represents some area of a Room, usually walled off
 // Generally we apply our proc gen algorithms to Areas rather than ActionDirection to Rooms
@@ -136,31 +137,20 @@ export abstract class Room {
         }
     }
 
-
-
-    // placeDoor(toRoom: Room) {
-    //     console.log("call to placeDoor()");
-    //     // this.doors.push(door);
-    //     // get the walls and choose a random wall (or floor?) to place it
-    //     // choose a random location to place it
-    //     // let rx = Math.floor(Math.random() * this.getHeight());
-    //     // let ry = Math.floor(Math.random() * this.getWidth());
-
-    //     // this.objects[rx][ry] = new Door(rx, ry, new Tile('%', 'red', 'green'), toRoom);
-    //     // toRoom.objects[rx][ry] = new Door(rx, ry, new Tile('%', 'red', 'green'), this);
-        
-
-    // }
+    placeItem(item: Item) {
+        this.objects[item.x][item.y] = item;
+    }
 
     handleActorTurns(world: World) {
         this.actors.forEach(actor => {
             actor.takeTurn(world);
         });
     }
+
     addActor(actor: Actor) {
         this.actors.push(actor);
-        // this.objects[actor.x][actor.y] = actor;
     }
+
     getActors() {
         return this.actors;
     }
@@ -188,9 +178,89 @@ export abstract class Room {
         return tiles;
     }
 
+    
+
     /********
      *  Various algorithms and room generation helpers 
      */
+
+    correctSpawn(object: GameObject) {
+        
+        // Correct the spawn if necessary
+        if (this.getObject(object.x,object.y) instanceof Wall) {
+            // Find the nearest tiles that is not a wall
+            
+            
+            // let objects = world.getActiveRoom().getObject();
+            let d = 1;
+            let x = object.x;
+            let y = object.y;
+
+            let positionFound = false;
+
+            let blockedNorth = false;
+            let blockedEast = false;
+            let blockedSouth = false;
+            let blockedWest = false;
+
+            while (!(positionFound || (blockedNorth && blockedEast && blockedSouth && blockedWest))) {
+                
+                // Look up by d
+                if (y-d < 0) {
+                    blockedNorth = true;
+                    break;
+                }
+                if (!blockedNorth && this.getObject(x, y-d) instanceof Floor) {
+                    object.x = x;
+                    object.y = y-d;
+                    positionFound = true;
+                    console.log("Moved player to:", object.x, object.y);
+                    break;
+                }
+
+                // Look down by d
+                if (y+d > this.height - 1) {
+                    blockedSouth = true;
+                    break;
+                }
+                if (!blockedSouth && this.getObject(x, y+d) instanceof Floor) {
+                    object.x = x;
+                    object.y = y+d;
+                    positionFound = true;
+                    console.log("Moved player to:", object.x, object.y);
+                    break;
+                }
+
+                // Look right by d
+                if (x+d > this.width - 1) {
+                    blockedEast = true;
+                    break;
+                }
+                if (!blockedEast && this.getObject(x+d,y) instanceof Floor) {
+                    object.x = x+d;
+                    object.y = y;
+                    positionFound = true;
+                    console.log("Moved player to:", object.x, object.y);
+                    break;
+                }
+
+                // Look left by d
+                if (x-d < 0) {
+                    blockedWest = true;
+                    break;
+                }
+                if (!blockedWest && this.getObject(x-d, y) instanceof Floor) {
+                    object.x = x -d;
+                    object.y = y;
+                    positionFound = true;
+                    console.log("Moved player to:", object.x, object.y);
+                    break;
+                }
+
+                d++;
+            }
+        }
+    }
 
     generateCA(iterations: number, area: Area) {
         // Assume that we get an initially randomized area, instead of a totally plain one

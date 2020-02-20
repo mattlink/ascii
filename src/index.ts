@@ -10,6 +10,10 @@ export { ChopAction } from './Actions/ChopAction';
 export { DoorAction } from './Actions/DoorAction';
 export { WalkAction } from './Actions/WalkAction';
 
+// Items
+export { Item } from './Items/Item';
+export { ShovelItem } from './Items/ShovelItem';
+
 
 // Rooms
 export { Room, Area } from './Rooms/Room';
@@ -23,6 +27,8 @@ export { Renderer } from './Systems/renderer';
 export { Window } from './Systems/window';
 export { IO } from './Systems/io';
 export { Camera } from './Systems/camera'; 
+export { Menu, MenuTitle, MenuOption } from './Systems/Menu/Menu';
+export { MenuWindow } from './Systems/Menu/MenuWindow';
 
 // Misc Base Objects
 export { BSPTree } from './util';
@@ -31,22 +37,4 @@ export { GameObject } from './GameObject';
 export { World } from './world';
 
 
-
-
-export class Engine {
-
-
-    public run() {
-        console.log('ascii engine running!');
-    }
-}
-
-
-export abstract class Game {
-
-    abstract load(): void;
-    abstract update(): void;
-    abstract draw(): void;
-
-
-}
+export { Game } from './Game';

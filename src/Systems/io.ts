@@ -1,5 +1,26 @@
 export class IO {
     
+    public static validMenuControls: string[] = [
+        'ArrowUp',
+        'ArrowDown',
+        'ArrowLeft',
+        'ArrowRight',
+        'Enter',
+        'Escape',
+        'e', 
+        'E'
+    ];
+    public static validGameControls: string[] = [
+        'w',
+        'a',
+        's',
+        'd',
+        'j', // wait
+        '>', // use door
+        'i', // change state to inventory
+        'Escape' // go to pause menu
+    ];
+
     public static validControl(key: string): boolean {
         if (
             key == 'w' || 
@@ -44,18 +65,11 @@ export class IO {
     }
 
     public static genericKeyBinding(func: Function) {
-        document.addEventListener('keypress', function(event){
+        document.addEventListener('keydown', function(event){
             func(event.key);
         });
     }
 
-    // public static setKeyBinding(key: string, func: Function) {
-    //     document.addEventListener('keypress', function(event){
-    //         if (event.key == key){
-    //             func();
-    //         }
-    //     });
-    // }
 
     // USAGE: 
 

@@ -17,7 +17,7 @@ export class Window {
 
     private tiles: Tile[][];
 
-    private context: HTMLElement;
+    public context: HTMLElement;
 
     
     constructor(startX?: number, startY?: number, localWidth?: number, localHeight?: number, tiles?: Tile[][]) {
@@ -34,6 +34,20 @@ export class Window {
 
     public getContext() {
         return this.context;
+    }
+
+    addKeybinding(func: Function) {
+        this.context.addEventListener('keydown', function(event){
+            func(event.key);
+        });
+    }
+
+    show() {
+
+    }
+
+    hide() {
+        
     }
 
     private initContext(tiles: Tile[][]) {

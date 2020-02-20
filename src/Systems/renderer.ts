@@ -4,6 +4,9 @@ import { GameObject } from "../GameObject";
 import { Window } from "./window";
 import { Room } from "../Rooms/room";
 import { Camera } from "./camera";
+import { Menu } from "./Menu/Menu";
+import { MenuWindow } from "./Menu/MenuWindow";
+import { MenuTitle, MenuOption } from "./Menu/Menu";
 
 export class Renderer {
 
@@ -21,6 +24,33 @@ export class Renderer {
         (<HTMLElement>context.children[x].children[y]).innerHTML = tile.ascii;
         (<HTMLElement>context.children[x].children[y]).style.backgroundColor = tile.bg;
         (<HTMLElement>context.children[x].children[y]).style.color = tile.fg;
+    }
+
+    public renderMenu(menu: Menu, context: HTMLElement) {
+        for (let i = 0; i < menu.elements.length; i++) {
+            // MenuTitle
+            if (menu.elements[i] instanceof MenuTitle) {
+            // if((<HTMLElement>context.children[i]).id == 'menu-title') {
+                (<HTMLElement>context.children[i]).innerHTML = (<MenuTitle>menu.elements[i]).title;
+            }
+
+            // MenuOption
+            if(menu.elements[i] instanceof MenuOption) {
+            // if ((<HTMLElement>context.children[i]).id == 'menu-option') {
+                if (i == menu.selectedElement) {
+                    (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).name;
+                    (<HTMLElement>context.children[i]).style.backgroundColor = menu.defaultSelectedBg;
+                    (<HTMLElement>context.children[i]).style.color = menu.defaultSelectedFg;
+                    // (<HTMLElement>context.children[i+1]).style.border = 'dashed 1px black';
+                }
+                else {
+                    (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).name;
+                    (<HTMLElement>context.children[i]).style.backgroundColor = menu.defaultBg;
+                    (<HTMLElement>context.children[i]).style.color = menu.defaultFg;
+                    (<HTMLElement>context.children[i]).style.border = 'none';
+                }
+            }
+        }
     }
 
     public renderRoom(room: Room, context: HTMLElement) {
@@ -44,8 +74,7 @@ export class Renderer {
         // render everything to the "test overlay (white/room default bg color)"
         for (let i = 0; i < window.localWidth; i++) {
             for (let j = 0; j < window.localHeight; j++) {
-                // this.updateTile(i, j, new Tile('+', 'black', 'white'), context);
-                // this.updateTile(i, j, new Tile(''), context);
+                
                 // TEST: (just graying out what was there before)
                 // FOG OF WAR: (TODO: have specific room store information about their fog color)
                 this.updateTile(i, j, 
@@ -60,6 +89,11 @@ export class Renderer {
                 this.updateTile(i, j, room.getObject(i, j).getTile(), context);
             }
         }
+
+        // TODO: note how this method is inefficient. We are first rendering the entire window as fog,
+        // then going back over the parts that are in view to render whats actually there. 
+        // (painters algorithm, back to front, style)
+        // It would be much better to only update the parts of fog that need to be updated.
     }
 
     // public renderViewOblong(camera: Camera, window: Window) {
@@ -166,6 +200,11 @@ export class Renderer {
     }
 
     public addWindow(window: Window) {
+        let context = window.getContext();
+        this.bind(context);
+    }
+
+    public addMenuWindow(window: MenuWindow) {
         let context = window.getContext();
         this.bind(context);
     }

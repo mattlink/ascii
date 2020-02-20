@@ -1,8 +1,9 @@
 import { Actor } from './Actor';
-import { ActionDirection } from '../Actions/Action';
+import { ActionDirection, Action } from '../Actions/Action';
 import { WaitAction } from '../Actions/WaitAction';
 import { WalkAction } from '../Actions/WalkAction';
 import { DoorAction } from '../Actions/DoorAction';
+import { PickupItemAction } from '../Actions/PickupItemAction';
 import { Tile } from '../tile';
 import { World } from '../world';
 
@@ -25,6 +26,10 @@ export class Player extends Actor {
         }
         else if (key == 'd') {
             this.nextAction = new WalkAction(ActionDirection.Right, this);
+        }
+
+        else if (key == 'P') {
+            this.nextAction = new PickupItemAction(this);
         }
 
         else if (key == '>') {
