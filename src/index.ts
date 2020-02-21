@@ -12,7 +12,7 @@ export { WalkAction } from './Actions/WalkAction';
 
 // Items
 export { Item } from './Items/Item';
-export { ShovelItem } from './Items/ShovelItem';
+export { Shovel } from './Items/Shovel';
 
 
 // Rooms

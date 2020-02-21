@@ -49,7 +49,7 @@ class ShovelAction extends Action {
     }
 }
 
-export class ShovelItem extends Item {
+export class Shovel extends Item {
 
     constructor(x: number, y: number, tile: Tile) {
         super(x, y, tile);
