@@ -4,6 +4,8 @@ export class Tile {
     public fg: string = 'black';
     public bg: string = 'white';
 
+    public className = null;
+
     constructor()
     constructor(ascii: string)
     constructor(ascii: string, fg: string, bg: string)

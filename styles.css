@@ -1,0 +1,44 @@
+.tile-forest {
+    animation-name: tile-forest;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+@keyframes tile-forest {
+    from { color: forestgreen;}
+    from {background-color: lightseagreen;}
+
+    to { color: green; }
+    to { background-color: forestgreen; }
+}
+
+.tile-fire {
+    animation-name: tile-fire;
+    animation-duration: 1s;
+    animation-iteration-count:infinite;
+    animation-direction: alternate;
+}
+@keyframes tile-fire {
+    from { color: red; }
+    to { color: orange; }
+
+    /* from { background-color: white;}
+    to { background-color: white;} */
+}
+
+
+.tile {
+    animation-name: tile;
+    animation-duration: 2.5s;
+    animation-iteration-count:infinite;
+    animation-direction: alternate;
+}
+
+@keyframes tile {
+    from { color: blue; }
+    to { color: lightskyblue; }
+
+    from { background-color: lightskyblue;}
+    to { background-color: lightcyan;}
+}
+

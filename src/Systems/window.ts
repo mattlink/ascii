@@ -89,6 +89,10 @@ export class Window {
                 element.style.backgroundColor = tiles[i][j].bg;
                 element.style.color = tiles[i][j].fg;
 
+                // Add some animations
+                // element.style.animationName = 'tile';
+                element.className = tiles[i][j].className || 'tile';
+
                 colDiv.appendChild(element);
             }
             this.context.appendChild(colDiv);
