@@ -33,10 +33,6 @@ class ga extends Game {
             this.renderer.updateGameObject(actor, this.window.getContext());
             this.renderer.renderObjectContext(actor, this.world.getActiveRoom(), this.window.getContext());
         });
-
-        console.log(this.world.getActiveRoom().getItems());
-        let item = this.world.getActiveRoom().getItems()[0];
-        console.log(this.world.getActiveRoom().getObject(item.x, item.y));
     }
 
     update(key: string) {

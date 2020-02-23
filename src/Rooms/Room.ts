@@ -30,7 +30,6 @@ export class Room {
     private height: number;
 
     private actors: Actor[];
-    private items: Item[];
     public objects: GameObject[][];
 
     public northDoor: Door = null;
@@ -55,7 +54,6 @@ export class Room {
         this.height = height;
         this.objects = [];
         this.actors = [];
-        this.items = [];
         this.name = name;
 
         // initialize all objects in room to empty game objects
@@ -155,12 +153,6 @@ export class Room {
 
     placeItem(item: Item) {
         this.objects[item.x][item.y] = item;
-        console.log('placeItem:', this.objects[item.x][item.y]);
-        console.log('placeItem:', this.objects);
-        this.items.push(item);
-    }
-    getItems(){
-        return this.items;
     }
 
     handleActorTurns(world: World) {

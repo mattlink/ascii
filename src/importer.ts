@@ -63,10 +63,8 @@ export class Importer {
         }
 
         if (json.room.items) {
-            console.log("parsing items:", json.room.items);
             json.room.items.forEach(itemJson => {
                 let item = this.importItem(itemJson);
-                console.log("item parsing:", item);
                 room.placeItem(item);
             });
         }
@@ -94,7 +92,6 @@ export class Importer {
     public static importItem(json): Item {
         let item: Item;
         if (json.type == 'Shovel') {
-            console.log("attempting to parse Shovel", json);
             item = new Shovel(json.x, json.y, this.importTile(json.tile));
         }
         return item;
