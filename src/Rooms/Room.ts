@@ -30,6 +30,7 @@ export class Room {
     private height: number;
 
     private actors: Actor[];
+    private items: Item[];
     public objects: GameObject[][];
 
     public northDoor: Door = null;
@@ -54,6 +55,7 @@ export class Room {
         this.height = height;
         this.objects = [];
         this.actors = [];
+        this.items = [];
         this.name = name;
 
         // initialize all objects in room to empty game objects
@@ -64,13 +66,22 @@ export class Room {
             }
         }
     }
-    
+
     /* The init method is what defines how a type of room will get generated. */
-    init() {
-        // Let the default room init method apply CA to the entire area
-        let area = new Area(0, 0, this.width, this.height);
-        this.initArea(area, true);
-        this.generateCA(4, area);
+    init(BSPIterations?: number, CAIterations?: number) {
+
+        // Create area tree to represent internal room structure
+        let baseArea = new Area(0, 0, this.getWidth(), this.getHeight());
+        let tree = new BSPTree<Area>(null, null, baseArea);
+
+        if (BSPIterations > 0) {
+            this.generateSymmetricBSPTreeHorizontal(BSPIterations, tree);
+        }
+
+        // Initialilze every leaf of the BSP Tree
+        this.initAreas(tree, (CAIterations > 0));
+
+        this.applyCAtoBSPLeaves(tree, CAIterations);
     }
 
     // abstract placeDoor(toRoom: Room, type: DoorType, x?: number, y?: number): void;
@@ -144,6 +155,12 @@ export class Room {
 
     placeItem(item: Item) {
         this.objects[item.x][item.y] = item;
+        console.log('placeItem:', this.objects[item.x][item.y]);
+        console.log('placeItem:', this.objects);
+        this.items.push(item);
+    }
+    getItems(){
+        return this.items;
     }
 
     handleActorTurns(world: World) {

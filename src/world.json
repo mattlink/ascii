@@ -3,7 +3,11 @@
         "rooms": [
             {
                 "name": "Cave",
-                "width": 25,
+
+                "BSPIterations": 0,
+                "CAIterations": 5,
+
+                "width": 40,
                 "height": 25,
                 "floorTile": {
                     "ascii": ".",
@@ -18,7 +22,7 @@
         
                 "actors": [
                     { 
-                        "type": "mob",
+                        "type": "Mob",
                         "name": "My Mob",
                         "x": 12,
                         "y": 12,
@@ -29,7 +33,7 @@
                         }
                     },
                     { 
-                        "type": "mob",
+                        "type": "Mob",
                         "name": "My Mob2",
                         "x": 15,
                         "y": 15,
@@ -40,7 +44,7 @@
                         }
                     },
                     { 
-                        "type": "player",
+                        "type": "Player",
                         "x": 10,
                         "y": 10,
                         "tile": {
@@ -49,7 +53,20 @@
                             "bg": "white"
                         }
                     }
+                ],
+                "items": [
+                    {
+                        "type": "Shovel",
+                        "x": 5,
+                        "y": 5,
+                        "tile": {
+                            "ascii": "^",
+                            "fg": "white",
+                            "bg": "green"
+                        }
+                    }
                 ]
+
             }
         ]
     }
