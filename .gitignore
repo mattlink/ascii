@@ -3,5 +3,6 @@ prepdeploy.sh
 build.sh
 built/
 dist/
+bundle.js
 todo*.*
 node_modules
