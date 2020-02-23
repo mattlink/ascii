@@ -23,7 +23,7 @@ export class Area {
     }
 }
 
-export abstract class Room { 
+export class Room { 
     public name: string;
     
     private width: number;
@@ -64,9 +64,14 @@ export abstract class Room {
             }
         }
     }
-
+    
     /* The init method is what defines how a type of room will get generated. */
-    abstract init(): void;
+    init() {
+        // Let the default room init method apply CA to the entire area
+        let area = new Area(0, 0, this.width, this.height);
+        this.initArea(area, true);
+        this.generateCA(4, area);
+    }
 
     // abstract placeDoor(toRoom: Room, type: DoorType, x?: number, y?: number): void;
     placeDoor(toRoom: Room, type: DoorType, x1?: number, y1?: number) {

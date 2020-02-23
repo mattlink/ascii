@@ -1,0 +1,56 @@
+{
+    "world": {
+        "rooms": [
+            {
+                "name": "Cave",
+                "width": 25,
+                "height": 25,
+                "floorTile": {
+                    "ascii": ".",
+                    "fg": "brown",
+                    "bg": "black"
+                },
+                "wallTile": {
+                    "ascii": "C",
+                    "fg": "red",
+                    "bg": "black"
+                },
+        
+                "actors": [
+                    { 
+                        "type": "mob",
+                        "name": "My Mob",
+                        "x": 12,
+                        "y": 12,
+                        "tile": {
+                            "ascii": "I",
+                            "fg": "brown",
+                            "bg": "yellow"
+                        }
+                    },
+                    { 
+                        "type": "mob",
+                        "name": "My Mob2",
+                        "x": 15,
+                        "y": 15,
+                        "tile": {
+                            "ascii": "O",
+                            "fg": "white",
+                            "bg": "purple"
+                        }
+                    },
+                    { 
+                        "type": "player",
+                        "x": 10,
+                        "y": 10,
+                        "tile": {
+                            "ascii": "@",
+                            "fg": "red",
+                            "bg": "white"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

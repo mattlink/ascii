@@ -9,7 +9,7 @@ export class World {
 
     private activeRoom: Room;
 
-    private player: Player;
+    private player: Player = null;
 
     private activeRoomChanged: boolean = false;
 
