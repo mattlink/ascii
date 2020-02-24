@@ -1,6 +1,6 @@
 import { Renderer } from '../renderer';
 import { Window } from '../window';
-import { Menu, MenuTitle, MenuOption } from './Menu';
+import { Menu, MenuTitle, MenuOption, MenuTable } from './Menu';
 
 // Think of Windows as rendering contexts
 
@@ -16,31 +16,31 @@ export class MenuWindow {
 
     public bordered: boolean = false;
 
-
     private context: HTMLElement;
 
-    private rowCount: number;
     private menu: Menu;
 
     
-    constructor(menu: Menu, rowCount: number, startX: number, startY: number, localWidth: number, localHeight: number) {
+    constructor(menu: Menu, startX: number, startY: number, localWidth: number, localHeight: number) {
         this.startX = startX || -1;
         this.startY = startY || -1;
 
         this.localWidth = localWidth;
         this.localHeight = localHeight;
 
-        this.rowCount = rowCount;
-
-        // if (startOptions) this.initContextStartMenu(startOptions);
-        // else this.initContext();
         this.menu = menu;
         this.initMenuContext(this.menu);
-        console.log('menu context init-ed', this.context.children);
     }
 
     public getContext() {
         return this.context;
+    }
+    show() {
+        this.context.style.display = 'block';
+    }
+
+    hide() {
+        this.context.style.display = 'none';
     }
 
     private initMenuContext(menu: Menu) {
@@ -100,6 +100,36 @@ export class MenuWindow {
                 }
 
                 child.id = 'menu-option';
+            }
+
+            if (elem instanceof MenuTable) {
+                child = document.createElement('table');
+                child.style.margin = 'auto';
+                child.style.border = '1px solid black';
+                child.style.height = null;
+
+                let invLimit = 15;
+                let row = document.createElement('tr');
+                row.style.height = Renderer.pxs(Renderer.elementSize);
+                row.style.width = Renderer.pxs(invLimit * Renderer.elementSize);
+                
+                for (let i = 0; i < invLimit; i++) {
+                    let col = document.createElement('td');
+                    // col.style.border = '1px solid black';
+
+                    let innerDiv = document.createElement('div');
+                    innerDiv.style.height = Renderer.pxs(Renderer.elementSize);
+                    innerDiv.style.width = Renderer.pxs(Renderer.elementSize);
+                    innerDiv.style.textAlign = 'center';
+                    innerDiv.innerHTML = '';
+
+                    col.appendChild(innerDiv);
+                    row.appendChild(col);
+                }
+
+                child.appendChild(row);
+
+                child.id = 'menu-table';
             }
 
             console.log('trying to append child');

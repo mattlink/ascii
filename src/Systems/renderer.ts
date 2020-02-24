@@ -6,7 +6,7 @@ import { Room } from "../Rooms/room";
 import { Camera } from "./camera";
 import { Menu } from "./Menu/Menu";
 import { MenuWindow } from "./Menu/MenuWindow";
-import { MenuTitle, MenuOption } from "./Menu/Menu";
+import { MenuTitle, MenuOption, MenuTable } from "./Menu/Menu";
 
 export class Renderer {
 
@@ -30,13 +30,11 @@ export class Renderer {
         for (let i = 0; i < menu.elements.length; i++) {
             // MenuTitle
             if (menu.elements[i] instanceof MenuTitle) {
-            // if((<HTMLElement>context.children[i]).id == 'menu-title') {
                 (<HTMLElement>context.children[i]).innerHTML = (<MenuTitle>menu.elements[i]).title;
             }
 
             // MenuOption
             if(menu.elements[i] instanceof MenuOption) {
-            // if ((<HTMLElement>context.children[i]).id == 'menu-option') {
                 if (i == menu.selectedElement) {
                     (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).name;
                     (<HTMLElement>context.children[i]).style.backgroundColor = menu.defaultSelectedBg;
@@ -48,6 +46,16 @@ export class Renderer {
                     (<HTMLElement>context.children[i]).style.backgroundColor = menu.defaultBg;
                     (<HTMLElement>context.children[i]).style.color = menu.defaultFg;
                     (<HTMLElement>context.children[i]).style.border = 'none';
+                }
+            }
+
+            // MenuTable
+            if (menu.elements[i] instanceof MenuTable) {
+                for (let j = 0; j < (<MenuTable>menu.elements[i]).elements.length; j++) {
+                    // context.children[i] -> MenuTable, .children[0] -> tr, .children[j] -> td, .children[0] -> inner Div
+                    (<HTMLElement>context.children[i].children[0].children[j].children[0]).innerHTML = (<MenuTable>menu.elements[i]).elements[j].tile.ascii;
+                    (<HTMLElement>context.children[i].children[0].children[j].children[0]).style.color = (<MenuTable>menu.elements[i]).elements[j].tile.fg;
+                    (<HTMLElement>context.children[i].children[0].children[j].children[0]).style.backgroundColor = (<MenuTable>menu.elements[i]).elements[j].tile.bg;
                 }
             }
         }

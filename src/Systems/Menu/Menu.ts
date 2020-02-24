@@ -27,6 +27,13 @@ export class MenuOption extends MenuElement {
     }
 }
 
+export class MenuTable extends MenuElement {
+    elements: any[];
+    constructor() {
+        super();
+    }
+}
+
 export class Menu {
     private width;
     private height;

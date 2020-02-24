@@ -43,11 +43,11 @@ export class Window {
     }
 
     show() {
-
+        this.context.style.display = 'flex';
     }
 
     hide() {
-        
+        this.context.style.display = 'none';
     }
 
     private initContext(tiles: Tile[][]) {

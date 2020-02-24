@@ -5,18 +5,18 @@
                 "name": "Cave",
 
                 "BSPIterations": 0,
-                "CAIterations": 5,
+                "CAIterations": 10,
 
-                "width": 40,
+                "width": 60,
                 "height": 25,
                 "floorTile": {
                     "ascii": ".",
-                    "fg": "brown",
+                    "fg": "white",
                     "bg": "black"
                 },
                 "wallTile": {
-                    "ascii": "C",
-                    "fg": "red",
+                    "ascii": "#",
+                    "fg": "green",
                     "bg": "black"
                 },
         

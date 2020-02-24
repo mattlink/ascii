@@ -13,11 +13,14 @@ export abstract class Actor extends GameObject {
 
     public equipt: Item;
 
+    public inventory: Item[];
+
     public debug: boolean = false;
 
     constructor(name: string, x: number, y: number, tile: Tile){
         super(x, y, tile);
         this.name = name;
+        this.inventory = [];
     }
 
     abstract takeTurn(world: World): void;
