@@ -13,7 +13,7 @@ export abstract class Actor extends GameObject {
 
     public equipt: Item;
 
-    public inventory: Item[];
+    public inventory: GameObject[];
 
     public debug: boolean = false;
 

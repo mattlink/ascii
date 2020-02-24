@@ -37,15 +37,16 @@ class ShovelAction extends Action {
             toPosY = this.actor.y;
         }
 
-        // TODO: this is where you add something to inventory
-        // Change this to "DirtWall" or "DiggableWall"... do we want to be able to dig out any walls?
         if (room.objects[toPosX][toPosY] instanceof Wall) {
-            // this.actor.inventory.add(room.objects[toPosX][toPosY]); 
+            // Add the wall to the actors inventory
+            this.actor.inventory.push(room.objects[toPosX][toPosY]);
+
+            // Put a floor tile where the Wall that we just dug was
             room.objects[toPosX][toPosY] = new Floor(toPosX, toPosY, room.floorTile);
             return true;
         }
+
         return false;
-        
     }
 }
 
