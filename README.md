@@ -2,4 +2,6 @@
 A framework for web based ascii roguelikes
 
 ## Screenshots
-![Screenshots](./screenshots/1.png)
+![screenshot1](./screenshots/1.png)
+![screenshot1](./screenshots/2.png)
+
