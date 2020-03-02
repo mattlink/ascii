@@ -7,19 +7,30 @@ export class IO {
         'ArrowRight',
         'Enter',
         'Escape',
-        'e', 
-        'E'
+        // 'e', 
+        // 'E'
     ];
     public static validGameControls: string[] = [
-        'w',
-        'a',
-        's',
-        'd',
+        
+        //directional controls:
+
+        'w', // up
+        'a', // left
+        's', // down
+        'd', // right
+
+        'q', // diagonal up-left
+        'e', // diagonal up-right
+        'z', // diagonal down-left
+        'x', // diagonal down-right
+
+        ',', // pick up item
+        'P',
+
         'j', // wait
         '>', // use door
         'i', // change state to inventory
-        'Escape', // go to pause menu
-        'P', // try to pick up item
+        // 'Escape', // go to pause menu
     ];
 
     public static validControl(key: string): boolean {

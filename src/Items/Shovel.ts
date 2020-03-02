@@ -17,25 +17,10 @@ class ShovelAction extends Action {
     perform(world: World) {
         let room = world.getActiveRoom();
         
-        let toPosX = null;
-        let toPosY = null;
-        if (this.dir == ActionDirection.Up) {
-            toPosX = this.actor.x;
-            toPosY = this.actor.y - 1;
-        }
-        if (this.dir == ActionDirection.Down) {
-            toPosX = this.actor.x;
-            toPosY = this.actor.y + 1;
-        }
-        
-        if (this.dir == ActionDirection.Left) {
-            toPosX = this.actor.x - 1;
-            toPosY = this.actor.y;
-        }
-        if (this.dir == ActionDirection.Right) {
-            toPosX = this.actor.x + 1;
-            toPosY = this.actor.y;
-        }
+        let toCoords = Action.DirectionToCoords(this.actor.x, this.actor.y, this.dir);
+
+        let toPosX = toCoords[0];
+        let toPosY = toCoords[1];
 
         if (room.objects[toPosX][toPosY] instanceof Wall) {
             // Add the wall to the actors inventory
@@ -54,6 +39,7 @@ export class Shovel extends Item {
 
     constructor(x: number, y: number, tile: Tile) {
         super(x, y, tile);
+        this.name = "shovel";
     }
 
     use(actor: Actor, dir: ActionDirection, world: World) {

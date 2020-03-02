@@ -21,9 +21,28 @@ export class MenuTitle extends MenuElement {
 
 export class MenuOption extends MenuElement {
     name: string;
-    constructor(name: string) { 
+    letter: string; // the letter used to select this option
+    subOptions: MenuOption[] = [];
+    constructor(name: string, letter: string) { 
         super(1);
         this.name = name;
+        this.letter = letter;
+    }
+}
+
+export class MenuInfo extends MenuElement {
+    label: string = '';
+    content: string = '';
+    constructor(content: string, label?: string) {
+        super(1);
+        this.content = content;
+        this.label = label || '';
+    }
+    getContent() {
+        if (this.label != '') {
+            return this.label + ': ' + this.content;
+        }
+        return this.content;
     }
 }
 
@@ -38,14 +57,14 @@ export class Menu {
     private width;
     private height;
 
-    public defaultFg = 'black';
-    public defaultBg = 'white';
+    public defaultFg = 'white';
+    public defaultBg = 'black';
 
     public defaultSelectedFg = 'black';
     public defaultSelectedBg = 'lightGrey';
 
     public elements: MenuElement[] = [];
-    public selectedElement: number = 0;
+    public selectedElement: number = -1;
 
     constructor(width: number, height: number) {
         this.width = width;

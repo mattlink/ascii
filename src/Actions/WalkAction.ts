@@ -29,6 +29,11 @@ export class WalkAction extends Action {
         if (this.dir == ActionDirection.Left) toObject = room.getObject(this.actor.x - 1, this.actor.y);
         if (this.dir == ActionDirection.Right) toObject = room.getObject(this.actor.x + 1, this.actor.y);
 
+        if (this.dir == ActionDirection.UpLeft) toObject = room.getObject(this.actor.x - 1, this.actor. y - 1);
+        if (this.dir == ActionDirection.UpRight) toObject = room.getObject(this.actor.x + 1, this.actor. y - 1);
+        if (this.dir == ActionDirection.DownLeft) toObject = room.getObject(this.actor.x - 1, this.actor. y + 1);
+        if (this.dir == ActionDirection.DownRight) toObject = room.getObject(this.actor.x + 1, this.actor. y + 1);
+
 
         if (!toObject.collides) {
             if (fromObject instanceof Floor) {
@@ -40,6 +45,25 @@ export class WalkAction extends Action {
             if (this.dir == ActionDirection.Down) this.actor.y = this.actor.y + 1;
             if (this.dir == ActionDirection.Left) this.actor.x = this.actor.x - 1;
             if (this.dir == ActionDirection.Right) this.actor.x = this.actor.x + 1;
+            
+            // diagonals:
+            if (this.dir == ActionDirection.UpLeft) {
+                this.actor.x -= 1
+                this.actor.y -= 1
+            }
+            if (this.dir == ActionDirection.UpRight) { 
+                this.actor.x += 1;
+                this.actor.y -= 1; 
+            }
+
+            if (this.dir == ActionDirection.DownLeft){
+                this.actor.x -= 1;
+                this.actor.y +=1;
+            }
+            if (this.dir == ActionDirection.DownRight) {
+                this.actor.x += 1;
+                this.actor.y += 1;
+            }
 
             if (toObject instanceof Floor) {
                 (<Floor>room.objects[this.actor.x][this.actor.y]).setOccupation(this.actor);

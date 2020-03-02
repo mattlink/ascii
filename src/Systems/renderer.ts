@@ -3,10 +3,12 @@ import { Tile } from "../tile";
 import { GameObject } from "../GameObject";
 import { Window } from "./window";
 import { Room } from "../Rooms/room";
+import { Floor } from "../Rooms/Environment";
 import { Camera } from "./camera";
-import { Menu } from "./Menu/Menu";
+import { Menu, MenuInfo } from "./Menu/Menu";
 import { MenuWindow } from "./Menu/MenuWindow";
 import { MenuTitle, MenuOption, MenuTable } from "./Menu/Menu";
+import { Player } from "../Actors/Player";
 
 export class Renderer {
 
@@ -14,9 +16,17 @@ export class Renderer {
 
     constructor() {}
 
-    public updateGameObject(obj: GameObject, context: HTMLElement) {
+    public renderGameObject(obj: GameObject, context: HTMLElement) {
+        let tile = obj.getTile();
+
+        // If a floor tile has something on it, we want to render the thing that is on it.
+        if (obj instanceof Floor && (<Floor>obj).getObjects().length > 0) {
+            tile = (<Floor>obj).getObjects()[0].getTile();
+            console.log('updateing tile to have item ');
+        }
+
         // Render the game object in its position
-        this.updateTile(obj.x, obj.y, obj.getTile(), context);
+        this.updateTile(obj.x, obj.y, tile, context);
     }
 
     // "Re-render a specific tile"
@@ -27,22 +37,46 @@ export class Renderer {
     }
 
     public renderMenu(menu: Menu, context: HTMLElement) {
+
+        // For menus, we basically re-initialize the context each time we want to render (we don't do this for rendering game tiles because its more computationally more expensive)
+        while(context.firstChild) {
+            context.removeChild(context.lastChild);
+        }
+
         for (let i = 0; i < menu.elements.length; i++) {
             // MenuTitle
             if (menu.elements[i] instanceof MenuTitle) {
+                let child = MenuWindow.createMenuTitle(<MenuTitle>menu.elements[i]);
+                context.appendChild(child);
                 (<HTMLElement>context.children[i]).innerHTML = (<MenuTitle>menu.elements[i]).title;
+                (<HTMLElement>context.children[i]).style.color = menu.defaultFg;
+            }
+
+            if (menu.elements[i] instanceof MenuInfo) {
+                let child = MenuWindow.createMenuInfo(<MenuInfo>menu.elements[i]);
+                context.appendChild(child);
+
+                (<HTMLElement>context.children[i]).innerHTML = (<MenuInfo>menu.elements[i]).getContent();
+                (<HTMLElement>context.children[i]).style.backgroundColor = menu.defaultBg;
+                (<HTMLElement>context.children[i]).style.color = menu.defaultFg;
+                (<HTMLElement>context.children[i]).style.border = 'none';
             }
 
             // MenuOption
             if(menu.elements[i] instanceof MenuOption) {
+                let child = MenuWindow.createMenuOption(<MenuOption>menu.elements[i]);
+                context.appendChild(child);
+
                 if (i == menu.selectedElement) {
-                    (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).name;
+                    (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).letter + '  -  ' + (<MenuOption>menu.elements[i]).name;
+                    // (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).name;
                     (<HTMLElement>context.children[i]).style.backgroundColor = menu.defaultSelectedBg;
                     (<HTMLElement>context.children[i]).style.color = menu.defaultSelectedFg;
                     // (<HTMLElement>context.children[i+1]).style.border = 'dashed 1px black';
                 }
                 else {
-                    (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).name;
+                    (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).letter + '  -  ' + (<MenuOption>menu.elements[i]).name;
+                    // (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).name;
                     (<HTMLElement>context.children[i]).style.backgroundColor = menu.defaultBg;
                     (<HTMLElement>context.children[i]).style.color = menu.defaultFg;
                     (<HTMLElement>context.children[i]).style.border = 'none';
@@ -52,10 +86,15 @@ export class Renderer {
             // MenuTable
             if (menu.elements[i] instanceof MenuTable) {
                 for (let j = 0; j < (<MenuTable>menu.elements[i]).elements.length; j++) {
-                    // context.children[i] -> MenuTable, .children[0] -> tr, .children[j] -> td, .children[0] -> inner Div
-                    (<HTMLElement>context.children[i].children[0].children[j].children[0]).innerHTML = (<MenuTable>menu.elements[i]).elements[j].tile.ascii;
-                    (<HTMLElement>context.children[i].children[0].children[j].children[0]).style.color = (<MenuTable>menu.elements[i]).elements[j].tile.fg;
-                    (<HTMLElement>context.children[i].children[0].children[j].children[0]).style.backgroundColor = (<MenuTable>menu.elements[i]).elements[j].tile.bg;
+                    // // context.children[i] -> MenuTable, .children[0] -> tr, .children[j] -> td, .children[0] -> inner Div
+                    // (<HTMLElement>context.children[i].children[0].children[j].children[0]).innerHTML = (<MenuTable>menu.elements[i]).elements[j].tile.ascii;
+                    // (<HTMLElement>context.children[i].children[0].children[j].children[0]).style.color = (<MenuTable>menu.elements[i]).elements[j].tile.fg;
+                    // (<HTMLElement>context.children[i].children[0].children[j].children[0]).style.backgroundColor = (<MenuTable>menu.elements[i]).elements[j].tile.bg;
+
+                    // context.children[i] -> MenuTable, .children[j] -> tr, .children[0] -> inner Div
+                    (<HTMLElement>context.children[i].children[j].children[0]).innerHTML = (<MenuTable>menu.elements[i]).elements[j].tile.ascii;
+                    (<HTMLElement>context.children[i].children[j].children[0]).style.color = (<MenuTable>menu.elements[i]).elements[j].tile.fg;
+                    (<HTMLElement>context.children[i].children[j].children[0]).style.backgroundColor = (<MenuTable>menu.elements[i]).elements[j].tile.bg;
                 }
             }
         }
@@ -64,54 +103,67 @@ export class Renderer {
     public renderRoom(room: Room, context: HTMLElement) {
         for (let i = 0; i < room.getWidth(); i++) {
             for (let j = 0; j < room.getHeight(); j++) {
+                this.renderGameObject(room.getObject(i, j), context);
+            }
+        }
+    }
+
+    public renderArea(x: number, y: number, width: number, height: number, room: Room, context: HTMLElement) {
+        for (let i = x; i < x + width; i++) {
+            for (let j = y; j < y + height; j++) {
                 this.updateTile(i, j, room.getObject(i, j).getTile(), context);
             }
         }
+    }
+
+    public renderView(player: Player, room: Room, context: HTMLElement) {
+        let vd = player.visionDistance;
+        while(vd > 0) {
+
+            // draw adjacent vision
+            if (vd != player.visionDistance) {
+                // up-right
+                this.updateTile(player.x + 1, player.y - vd, room.getObject(player.x + 1, player.y - vd).getTile(), context);
+
+                // up-left
+                this.updateTile(player.x - 1, player.y - vd, room.getObject(player.x - 1, player.y - vd).getTile(), context);
+
+                // down-right
+                this.updateTile(player.x , player.y - vd, room.getObject(player.x , player.y - vd).getTile(), context);
+            }
+
+            // up
+            this.updateTile(player.x, player.y - vd, room.getObject(player.x, player.y - vd).getTile(), context);
+
+            // right
+            this.updateTile(player.x + vd, player.y, room.getObject(player.x + vd, player.y).getTile(), context);
+
+            // down
+            this.updateTile(player.x, player.y + vd, room.getObject(player.x, player.y + vd).getTile(), context);
+
+            // left
+            this.updateTile(player.x - vd, player.y, room.getObject(player.x - vd, player.y).getTile(), context);
+
+            vd--;
+        }
+
     }
 
     // More expenseive than simply updating the view of the camera
-    public renderView(camera: Camera, window: Window) {
+    // public renderView(camera: Camera, window: Window) {
 
-        let context = window.getContext();
-
-        let room = camera.getRoom(); // the room that the camera is looking at
-
-        let viewStartX = camera.getStartX();
-        let viewStartY = camera.getStartY();
-
-        // render everything to the "test overlay (white/room default bg color)"
-        for (let i = 0; i < window.localWidth; i++) {
-            for (let j = 0; j < window.localHeight; j++) {
-                
-                // TEST: (just graying out what was there before)
-                // FOG OF WAR: (TODO: have specific room store information about their fog color)
-                this.updateTile(i, j, 
-                    new Tile(room.getObject(i, j).getTile().ascii, room.defaultFogFg, room.defaultFogBg), 
-                    context);
-            }
-        }
-
-        // render everything in view of our camera
-        for (let i = Math.max(viewStartX, 0); i < Math.min(viewStartX + camera.viewWidth, window.localWidth); i++) {
-            for (let j = Math.max(viewStartY, 0); j < Math.min(viewStartY + camera.viewHeight, window.localHeight); j++) {
-                this.updateTile(i, j, room.getObject(i, j).getTile(), context);
-            }
-        }
-
-        // TODO: note how this method is inefficient. We are first rendering the entire window as fog,
-        // then going back over the parts that are in view to render whats actually there. 
-        // (painters algorithm, back to front, style)
-        // It would be much better to only update the parts of fog that need to be updated.
-    }
-
-    // public renderViewOblong(camera: Camera, window: Window) {
     //     let context = window.getContext();
 
-    //     let room = camera.getRoom();
+    //     let room = camera.getRoom(); // the room that the camera is looking at
 
-    //     // render everything to the fog color
+    //     let viewStartX = camera.getStartX();
+    //     let viewStartY = camera.getStartY();
+
+    //     // render everything to the "test overlay (white/room default bg color)"
     //     for (let i = 0; i < window.localWidth; i++) {
     //         for (let j = 0; j < window.localHeight; j++) {
+                
+    //             // TEST: (just graying out what was there before)
     //             // FOG OF WAR: (TODO: have specific room store information about their fog color)
     //             this.updateTile(i, j, 
     //                 new Tile(room.getObject(i, j).getTile().ascii, room.defaultFogFg, room.defaultFogBg), 
@@ -119,44 +171,17 @@ export class Renderer {
     //         }
     //     }
 
-    //     // render everything in view, in an oblong shape
-
-    //     let viewStartX = camera.getStartX();
-    //     let viewStartY = camera.getStartY();
-
-    //     let cx = camera.cx;//viewStartX + (camera.viewWidth / 2);
-    //     let cy = camera.cy;//viewStartY + (camera.viewHeight / 2);
-
-    //     for (let j = Math.max(viewStartY, 0); j < Math.min(viewStartY + camera.viewHeight, window.localHeight); j++) {
-    //         console.log(cx, j);
-    //         this.updateTile(cx, j, room.getObject(cx, j).getTile(), context);
-
-
-    //         if (j == cy || j == cy - 1 || j == cy + 1) {
-    //             for (let i = Math.max(viewStartX, 0); i < Math.min(viewStartX + camera.viewWidth, window.localWidth); i++) {
-    //                 this.updateTile(i, j, room.getObject(i, j).getTile(), context);
-
-    //             }
-    //         }
-
-    //         if ((j <= cy - 2 || j >= cy + 2)){// && (j < cy - 3 || j > cy + 3)) {
-    //             for (let i = Math.max(viewStartX + 1, 1); i < Math.min(viewStartX + camera.viewWidth - 1, window.localWidth); i++) {
-    //                 this.updateTile(i, j, room.getObject(i, j).getTile(), context);
-    //             }
-    //         }
-
-    //         if ((j <= cy - 3 || j >= cy + 3)){// && (j < cy - 4 || j > cy + 4)) {
-    //             for (let i = Math.max(viewStartX + 2, 2); i < Math.min(viewStartX + camera.viewWidth - 2, window.localWidth); i++) {
-    //                 this.updateTile(i, j, room.getObject(i, j).getTile(), context);
-    //             }
-    //         }
-
-    //         if ((j <= cy - 4 || j >= cy + 4)){//&& (j < cy - 4 || j > cy + 4)) {
-    //             for (let i = Math.max(viewStartX + 3, 3); i < Math.min(viewStartX + camera.viewWidth - 3, window.localWidth); i++) {
-    //                 this.updateTile(i, j, room.getObject(i, j).getTile(), context);
-    //             }
+    //     // render everything in view of our camera
+    //     for (let i = Math.max(viewStartX, 0); i < Math.min(viewStartX + camera.viewWidth, window.localWidth); i++) {
+    //         for (let j = Math.max(viewStartY, 0); j < Math.min(viewStartY + camera.viewHeight, window.localHeight); j++) {
+    //             this.updateTile(i, j, room.getObject(i, j).getTile(), context);
     //         }
     //     }
+
+    //     // TODO: note how this method is inefficient. We are first rendering the entire window as fog,
+    //     // then going back over the parts that are in view to render whats actually there. 
+    //     // (painters algorithm, back to front, style)
+    //     // It would be much better to only update the parts of fog that need to be updated.
     // }
 
     public updateCameraView (camera: Camera, window: Window) {
@@ -198,12 +223,22 @@ export class Renderer {
             this.updateTile(obj.x + 1, obj.y, new Tile(room.getObject(obj.x + 1, obj.y).getTile().ascii, room.getObject(obj.x + 1, obj.y).getTile().fg, 'yellow'), context);
             this.updateTile(obj.x, obj.y - 1, new Tile(room.getObject(obj.x, obj.y - 1).getTile().ascii, room.getObject(obj.x, obj.y - 1).getTile().fg, 'yellow'), context);
             this.updateTile(obj.x, obj.y + 1, new Tile(room.getObject(obj.x, obj.y + 1).getTile().ascii, room.getObject(obj.x, obj.y + 1).getTile().fg, 'yellow'), context);
+
+            this.updateTile(obj.x - 1, obj.y - 1, new Tile(room.getObject(obj.x - 1, obj.y - 1).getTile().ascii, room.getObject(obj.x - 1, obj.y - 1).getTile().fg, 'yellow'), context);
+            this.updateTile(obj.x + 1, obj.y - 1, new Tile(room.getObject(obj.x + 1, obj.y - 1).getTile().ascii, room.getObject(obj.x + 1, obj.y - 1).getTile().fg, 'yellow'), context);
+            this.updateTile(obj.x - 1, obj.y + 1, new Tile(room.getObject(obj.x - 1, obj.y + 1).getTile().ascii, room.getObject(obj.x - 1, obj.y + 1).getTile().fg, 'yellow'), context);
+            this.updateTile(obj.x + 1, obj.y + 1, new Tile(room.getObject(obj.x - 1, obj.y + 1).getTile().ascii, room.getObject(obj.x - 1, obj.y + 1).getTile().fg, 'yellow'), context);
         }
         else {
-            this.updateTile(obj.x - 1, obj.y, room.getObject(obj.x - 1, obj.y).getTile(), context);
-            this.updateTile(obj.x + 1, obj.y, room.getObject(obj.x + 1, obj.y).getTile(), context);
-            this.updateTile(obj.x, obj.y - 1, room.getObject(obj.x, obj.y - 1).getTile(), context);
-            this.updateTile(obj.x, obj.y + 1, room.getObject(obj.x, obj.y + 1).getTile(), context);
+            this.renderGameObject(room.getObject(obj.x - 1, obj.y), context);
+            this.renderGameObject(room.getObject(obj.x + 1, obj.y), context);
+            this.renderGameObject(room.getObject(obj.x, obj.y - 1), context);
+            this.renderGameObject(room.getObject(obj.x, obj.y + 1), context);
+
+            this.renderGameObject(room.getObject(obj.x - 1, obj.y - 1), context);
+            this.renderGameObject(room.getObject(obj.x + 1, obj.y - 1), context);
+            this.renderGameObject(room.getObject(obj.x - 1, obj.y + 1), context);
+            this.renderGameObject(room.getObject(obj.x + 1, obj.y + 1), context);
         }
     }
 

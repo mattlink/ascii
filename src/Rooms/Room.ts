@@ -29,7 +29,7 @@ export class Room {
     private width: number;
     private height: number;
 
-    private actors: Actor[];
+    public actors: Actor[];
     public objects: GameObject[][];
 
     public northDoor: Door = null;
@@ -152,7 +152,9 @@ export class Room {
     }
 
     placeItem(item: Item) {
-        this.objects[item.x][item.y] = item;
+        this.objects[item.x][item.y] = new Floor(item.x, item.y, this.floorTile); // reset this tile to a floor so that we can actually put an item on it
+        (<Floor>this.objects[item.x][item.y]).addObject(item);
+        console.log('item placed: ', (<Floor>this.objects[item.x][item.y]));
     }
 
     handleActorTurns(world: World) {

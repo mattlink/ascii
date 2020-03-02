@@ -85,9 +85,9 @@ export class Window {
                 element.style.textAlign = 'center';
                 element.style.userSelect = 'none';
 
-                element.innerHTML = tiles[i][j].ascii;
-                element.style.backgroundColor = tiles[i][j].bg;
-                element.style.color = tiles[i][j].fg;
+                // element.innerHTML = tiles[i][j].ascii;
+                // element.style.backgroundColor = tiles[i][j].bg;
+                // element.style.color = tiles[i][j].fg;
 
                 colDiv.appendChild(element);
             }

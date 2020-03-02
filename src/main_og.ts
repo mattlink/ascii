@@ -90,13 +90,13 @@ IO.genericKeyBinding(function(key: string) {
         // renderer.renderRoom(world.getActiveRoom(), gameWindow.getContext());
 
         camera.switchTargetRoom(world.getActiveRoom());
-        renderer.renderView(camera, gameWindow);
+        // renderer.renderView(camera, gameWindow);
         // renderer.renderViewOblong(camera, gameWindow);
     }
 
     // Make sure the camera is centered on our player
     camera.reCenter(player.x, player.y);
-    renderer.renderView(camera, gameWindow);
+    // renderer.renderView(camera, gameWindow);
     // renderer.renderViewOblong(camera, gameWindow);
     // renderer.updateCameraView(camera, gameWindow); // Theoretically more efficient view update function
 
@@ -107,7 +107,7 @@ IO.genericKeyBinding(function(key: string) {
     actors.forEach(actor => {
         if(camera.actorInView(actor.x, actor.y)) {
             // Render the actual actor
-            renderer.updateGameObject(actor, gameWindow.getContext());
+            renderer.renderGameObject(actor, gameWindow.getContext());
             // Render everything /around/ this actor
             renderer.renderObjectContext(actor, world.getActiveRoom(), gameWindow.getContext());
         }
