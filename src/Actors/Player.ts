@@ -8,13 +8,18 @@ import { Tile } from '../tile';
 import { World } from '../world';
 
 export class Player extends Actor {
+    
+    visionDistance: number;
 
     constructor(x0: number, y0: number, tile: Tile) {
         super("Player", x0, y0, tile);
         this.nextAction = new WaitAction(this);
+        this.visionDistance = 2;
     }
 
     receiveKeyInput(key: string) {
+        
+        // directional movement
         if (key == 'w') {
             this.nextAction = new WalkAction(ActionDirection.Up, this);
         }
@@ -28,7 +33,21 @@ export class Player extends Actor {
             this.nextAction = new WalkAction(ActionDirection.Right, this);
         }
 
-        else if (key == 'P') {
+        // diagonal movement:
+        else if (key == 'q') {
+            this.nextAction = new WalkAction(ActionDirection.UpLeft, this);
+        }
+        else if (key == 'e') {
+            this.nextAction = new WalkAction(ActionDirection.UpRight, this);
+        }
+        else if (key == 'z') {
+            this.nextAction = new WalkAction(ActionDirection.DownLeft, this);
+        }
+        else if (key == 'x') {
+            this.nextAction = new WalkAction(ActionDirection.DownRight, this);
+        }
+
+        else if (key == ',' || key == 'P') {
             this.nextAction = new PickupItemAction(this);
         }
 
@@ -36,12 +55,19 @@ export class Player extends Actor {
             this.nextAction = new DoorAction(this);
         }
 
-        else  {
+        else if (key == 'j')  {
             this.nextAction = new WaitAction(this);
         }
     }
 
     takeTurn(world: World) {
         this.nextAction.perform(world);        
+    }
+
+    death(world: World) {
+        
+        // TODO: somehow trigger the end of the game
+
+        return [];
     }
 }

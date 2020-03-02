@@ -1,12 +1,14 @@
 import { GameObject } from '../GameObject';
 import { Tile } from '../tile';
 import { Actor } from '../Actors/Actor';
+import { Item } from '../Items/Item';
 
 
 export class Tree extends GameObject {
     constructor(x: number, y: number, tile: Tile) {
         super(x, y, tile);
         this.collides = true;
+        this.name = "Tree";
     }
 
     public static trees = [
@@ -16,10 +18,20 @@ export class Tree extends GameObject {
 
 export class Floor extends GameObject {
     private occupiedBy: Actor = null;
+    private objects: GameObject[] = []; // contains any GameObjects (Items) that are on this floor tile
 
     constructor(x: number, y:number, tile: Tile) {
         super(x, y, tile);
         this.collides = false;
+        this.name = "Floor";
+    }
+
+    getObjects() {
+        return this.objects;
+    }
+
+    addObject(item: GameObject) {
+        this.objects.push(item);
     }
 
     setOccupation(actor: Actor) {
@@ -30,6 +42,10 @@ export class Floor extends GameObject {
     removeOccupation() {
         this.occupiedBy = null;
         this.collides = false;
+    }
+
+    getOccupation() {
+        return this.occupiedBy;
     }
 
     public static forestTiles = [
@@ -45,6 +61,7 @@ export class Wall extends GameObject {
     constructor(x: number, y: number, tile: Tile) {
         super(x, y, tile);
         this.collides = true;
+        this.name = "Wall";
     }
 
     /* BIG TODO:

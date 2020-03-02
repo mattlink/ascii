@@ -7,6 +7,7 @@ import { Mob } from "./Actors/Mob";
 import { World } from "./world";
 import { Item } from "./Items/Item";
 import { Shovel } from "./Items/Shovel";
+import { Sword } from "./Items/Sword";
 
 export class Importer {
     public static importWorld(json): World {
@@ -93,6 +94,9 @@ export class Importer {
         let item: Item;
         if (json.type == 'Shovel') {
             item = new Shovel(json.x, json.y, this.importTile(json.tile));
+        }
+        if (json.type == 'Sword') {
+            item = new Sword(json.x, json.y, this.importTile(json.tile));
         }
         return item;
     }

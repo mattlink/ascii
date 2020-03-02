@@ -13,14 +13,42 @@ export class World {
 
     private activeRoomChanged: boolean = false;
 
+    private turnsPassed: number = 0;
+
+    private messageHistory: string[] = [];
+    private messages: string[] = [];
+
     // Perhaps provide a random seed to the world for seeding room (dungeon) generation, and random events
     constructor() {}
 
     takeTurn() {
-        this.rooms.forEach(room => {
-            // check if this room is active
-            room.handleActorTurns(this);
-        });
+        this.messages = [];
+
+        // this.rooms.forEach(room => {
+        //     room.handleActorTurns(this);
+        // });
+
+        // instead of having every room in existence take a turn, only have the active room take a turn:
+        this.activeRoom.handleActorTurns(this);
+
+        this.turnsPassed++;
+
+        if (this.messages.length > 0) {
+            this.messages.forEach(message => {
+                this.messageHistory.push(message);
+            });
+        }
+    }
+
+    appendMessage(message: string) {
+        this.messages.push(message);
+    }
+    getCurrentMessages() {
+        return this.messages;
+    }
+
+    getTurnsPassed() {
+        return this.turnsPassed;
     }
 
     getActiveRoomChanged() {

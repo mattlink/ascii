@@ -6,6 +6,15 @@ import { Item } from '../Items/Item';
 
 // essentially, "Actors" are GameObjects that are allowed to takeTurns and have names.
 
+export class Corpse extends GameObject {
+
+    constructor(actor: Actor) {
+        super(actor.x, actor.y, new Tile('%', actor.getTile().fg, actor.getTile().bg));
+        this.name = actor.name + ' corpse';
+    }
+
+}
+
 export abstract class Actor extends GameObject {
 
     public nextAction: Action;
@@ -24,4 +33,6 @@ export abstract class Actor extends GameObject {
     }
 
     abstract takeTurn(world: World): void;
+
+    abstract death(world: World): GameObject[];
 }

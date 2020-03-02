@@ -1,6 +1,9 @@
 import { Tile } from "./tile";
 
 export class GameObject {
+
+    public name: string = "Default GameObject Name";
+
     public x: number;
     public y: number;
     private tile: Tile;

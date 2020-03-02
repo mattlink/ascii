@@ -4,45 +4,25 @@
             {
                 "name": "Cave",
 
-                "BSPIterations": 0,
-                "CAIterations": 10,
+                "BSPIterations": 2,
+                "CAIterations": 12,
 
-                "width": 60,
-                "height": 25,
+                "width": 50,
+                "height": 30,
+
                 "floorTile": {
                     "ascii": ".",
-                    "fg": "white",
+
+                    "fg": "gray",
                     "bg": "black"
                 },
                 "wallTile": {
-                    "ascii": "#",
-                    "fg": "green",
+                    "ascii": "C",
+                    "fg": "red",
                     "bg": "black"
                 },
         
                 "actors": [
-                    { 
-                        "type": "Mob",
-                        "name": "My Mob",
-                        "x": 12,
-                        "y": 12,
-                        "tile": {
-                            "ascii": "I",
-                            "fg": "brown",
-                            "bg": "yellow"
-                        }
-                    },
-                    { 
-                        "type": "Mob",
-                        "name": "My Mob2",
-                        "x": 15,
-                        "y": 15,
-                        "tile": {
-                            "ascii": "O",
-                            "fg": "white",
-                            "bg": "purple"
-                        }
-                    },
                     { 
                         "type": "Player",
                         "x": 10,
@@ -52,15 +32,39 @@
                             "fg": "red",
                             "bg": "white"
                         }
+
+                    },
+                    { 
+                        "type": "Mob",
+                        "name": "goat",
+                        "x": 12,
+                        "y": 12,
+                        "tile": {
+                            "ascii": "g",
+                            "fg": "white",
+                            "bg": "black"
+                        }
+                    },
+                    {
+                        "type": "Mob",
+                        "name": "yeti",
+                        "x": 10,
+                        "y": 8,
+                        "tile": {
+                            "ascii": "Y",
+                            "fg": "white",
+                            "bg": "black"
+                        }
                     }
                 ],
                 "items": [
                     {
-                        "type": "Shovel",
+                        "type": "Sword",
+                        "name": "sword",
                         "x": 5,
                         "y": 5,
                         "tile": {
-                            "ascii": "^",
+                            "ascii": "i",
                             "fg": "white",
                             "bg": "green"
                         }
