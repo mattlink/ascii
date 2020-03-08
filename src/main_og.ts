@@ -10,6 +10,7 @@ import { Cave } from './Rooms/Cave';
 import { Forest } from './Rooms/Forest';
 import { DoorType, Door } from './Rooms/Door';
 import { Camera } from './Systems/camera';
+import { Menu } from './Systems/Menu/Menu';
 
 // TODO - load in a world config (parse a json file?) then pass it into the World constructor
 
@@ -66,9 +67,9 @@ let camera = new Camera(world.getActiveRoom(), viewWidth, viewHeight, player.x, 
 
 let renderer = new Renderer();
 
-let gameWindow = new Window(-1, -1, world.getActiveRoom().getWidth(), world.getActiveRoom().getHeight(), world.getActiveRoom().getTiles());
+let gameWindow = new Window(-1, -1, world.getActiveRoom().getWidth(), world.getActiveRoom().getHeight());
 // let gameWindow = new Window(-1, -1, viewWidth, viewHeight, camera.getTilesInView());
-renderer.addWindow(gameWindow);
+renderer.addWindow('game', Menu.width, Menu.height);
 
 // renderer.renderRoom(world.getActiveRoom(), gameWindow.getContext());
 
@@ -79,7 +80,7 @@ renderer.addWindow(gameWindow);
                                              */
 IO.genericKeyBinding(function(key: string) {
     
-    if (!IO.validControl(key)) return;
+    if (!(IO.validGameControls.indexOf(key) > -1)) return;
 
     player.receiveKeyInput(key);
 

@@ -8,8 +8,46 @@ import { World } from "./world";
 import { Item } from "./Items/Item";
 import { Shovel } from "./Items/Shovel";
 import { Sword } from "./Items/Sword";
+import { Menu, MenuOption, MenuTitle } from "./Systems/Menu/Menu";
 
 export class Importer {
+
+    /** Menu Importing (menus,json) */
+    public static importMenus(json): Record<string, Menu> {
+        if (!json.menus) {
+            console.error('IMPORTER: Error importing menus. Please make sure menus.json has a \"menus\" field.');
+        }
+
+        Menu.width = json.width;
+        Menu.height = json.height;
+        Menu.defaultFg = json.defaultFg;
+        Menu.defaultBg = json.defaultBg;
+        Menu.defaultSelectedFg = json.defaultSelectedFg;
+        Menu.defaultSelectedBg = json.defaultSelectedBg;
+
+        let menus: Record<string, Menu> = {};
+
+        json.menus.forEach(m => {
+            let menu = new Menu();
+            menu.name = m.name;
+
+            menu.addElement(new MenuTitle(m.title));
+
+            m.options.forEach(o => {
+                let option = new MenuOption(o.name, o.letter);
+                if (o.toMenu != null) option.toMenu = o.toMenu;
+                if (o.toState != null) option.toState = o.toState;
+                menu.addElement(option);
+            });
+
+            menus[m.name] = menu;
+        });
+
+        return menus;
+
+    }
+
+    /** World Importing (world.json) */
     public static importWorld(json): World {
         if (!json.world) {
             console.error("IMPORTER (World): No `world` provided. Please alter the config file.");

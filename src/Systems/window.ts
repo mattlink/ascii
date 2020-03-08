@@ -1,9 +1,8 @@
 import { Renderer } from './renderer';
 import { Tile } from '../tile';
+import { MenuInfo, MenuOption, MenuTitle } from './Menu/Menu';
 
 // Think of Windows as rendering contexts
-
-// CONSIDERATION: do we want the windowing code to handle outlining the window itself?
 
 export class Window {
     
@@ -15,49 +14,42 @@ export class Window {
 
     public bordered: boolean = false;
 
-    private tiles: Tile[][];
+    public isTiled: boolean = false;
 
     public context: HTMLElement;
 
     
-    constructor(startX?: number, startY?: number, localWidth?: number, localHeight?: number, tiles?: Tile[][]) {
+    constructor(startX?: number, startY?: number, localWidth?: number, localHeight?: number, isTiled?: boolean) {
         this.startX = startX || -1;
         this.startY = startY || -1;
 
         this.localWidth = localWidth;
         this.localHeight = localHeight;
 
-        this.tiles = tiles;
-
-        this.initContext(tiles);
+        this.isTiled = isTiled || false;
     }
 
     public getContext() {
         return this.context;
     }
 
-    addKeybinding(func: Function) {
-        this.context.addEventListener('keydown', function(event){
-            func(event.key);
-        });
-    }
-
     show() {
-        this.context.style.display = 'flex';
+        if (this.isTiled) this.context.style.display = 'flex';
+        else this.context.style.display = 'block';
     }
 
     hide() {
         this.context.style.display = 'none';
     }
 
-    private initContext(tiles: Tile[][]) {
-        console.log('localWidth:', this.localWidth, 'localHeight:', this.localHeight);
+    public initContext() {
         // Loop over localWidth and localHeight to initialize the literal html elements that will be in this window
         this.context = document.createElement('div');
         this.context.style.height = Renderer.pxs(this.localHeight * Renderer.elementSize);
         this.context.style.width = Renderer.pxs(this.localWidth * Renderer.elementSize);
 
-        this.context.style.display = 'flex'; 
+        if (this.isTiled) this.context.style.display = 'flex'; 
+        else this.context.style.display = 'block';
 
         if (this.startX == -1 && this.startY == -1) {
             this.context.style.margin = 'auto';
@@ -72,6 +64,9 @@ export class Window {
             this.context.style.border = 'solid';
             this.context.style.borderWidth = Renderer.pxs(2);
         }
+
+        // Only continue for a tile based window
+        if (!this.isTiled) return;
 
         for (let i = 0; i < this.localWidth; i++) {
 
@@ -93,6 +88,62 @@ export class Window {
             }
             this.context.appendChild(colDiv);
         }
+    }
+
+    // public initContext() {
+    //     this.context = document.createElement('div');
+    //     this.context.style.display = 'block';
+    //     this.context.style.height = Renderer.pxs(this.localHeight * Renderer.elementSize);
+    //     this.context.style.width = Renderer.pxs(this.localWidth * Renderer.elementSize);
+
+    //     if (this.startX == -1 && this.startY == -1) {
+    //         this.context.style.margin = 'auto';
+    //         // this.context.style.marginTop = Renderer.pxs(5);
+    //     }else {
+    //         this.context.style.position = 'absolute';
+    //         this.context.style.left = Renderer.pxs(this.startX);
+    //         this.context.style.top = Renderer.pxs(this.startY);
+    //     }
+
+    //     if (this.bordered) {
+    //         this.context.style.border = 'solid';
+    //         this.context.style.borderWidth = Renderer.pxs(2);
+    //     }
+    // }
+
+    public static createMenuTitle(menuTitle: MenuTitle) {
+        let child = document.createElement('div');
+        child.style.height = Renderer.pxs(menuTitle.rowSize * Renderer.elementSize);
+        child.style.lineHeight = Renderer.pxs(menuTitle.rowSize * Renderer.elementSize);
+        child.style.fontSize = '30px';
+        child.style.fontStyle = 'italic';
+        child.style.textAlign = 'center';
+        return child;
+    }
+
+    public static createMenuOption(menuOption: MenuOption) {
+        let child = document.createElement('div');
+        child.style.height = Renderer.pxs(menuOption.rowSize * Renderer.elementSize);
+        child.style.lineHeight = Renderer.pxs(menuOption.rowSize * Renderer.elementSize);
+        child.style.margin = 'auto';
+        child.style.fontSize = '18px';
+        child.style.textAlign = 'left';
+        child.style.width = '300px';
+        child.style.height = null;
+        child.style.lineHeight = null;
+        return child;
+    }
+
+    public static createMenuInfo(menuInfo: MenuInfo) {
+        let child = document.createElement('div');
+        // child.style.height = Renderer.pxs(menuInfo.rowSize * Renderer.elementSize);
+        // child.style.lineHeight = Renderer.pxs(menuInfo.rowSize * Renderer.elementSize);
+        child.style.margin = 'auto';
+        child.style.fontSize = '20px';
+        child.style.textAlign = 'left';
+        child.style.height = null;
+        child.style.lineHeight = null;
+        return child;
     }
 
 }

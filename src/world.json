@@ -12,13 +12,12 @@
 
                 "floorTile": {
                     "ascii": ".",
-
                     "fg": "gray",
                     "bg": "black"
                 },
                 "wallTile": {
-                    "ascii": "C",
-                    "fg": "red",
+                    "ascii": "Y",
+                    "fg": "green",
                     "bg": "black"
                 },
         
@@ -47,12 +46,12 @@
                     },
                     {
                         "type": "Mob",
-                        "name": "yeti",
+                        "name": "goblin",
                         "x": 10,
                         "y": 8,
                         "tile": {
-                            "ascii": "Y",
-                            "fg": "white",
+                            "ascii": "O",
+                            "fg": "orange",
                             "bg": "black"
                         }
                     }
@@ -65,6 +64,17 @@
                         "y": 5,
                         "tile": {
                             "ascii": "i",
+                            "fg": "orange",
+                            "bg": "white"
+                        }
+                    },
+                    {
+                        "type": "Shovel",
+                        "name": "shovel",
+                        "x": 7,
+                        "y": 5,
+                        "tile": {
+                            "ascii": "^",
                             "fg": "white",
                             "bg": "green"
                         }

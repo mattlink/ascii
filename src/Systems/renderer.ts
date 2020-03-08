@@ -6,13 +6,14 @@ import { Room } from "../Rooms/room";
 import { Floor } from "../Rooms/Environment";
 import { Camera } from "./camera";
 import { Menu, MenuInfo } from "./Menu/Menu";
-import { MenuWindow } from "./Menu/MenuWindow";
 import { MenuTitle, MenuOption, MenuTable } from "./Menu/Menu";
 import { Player } from "../Actors/Player";
 
 export class Renderer {
 
     public static elementSize: number = 15;
+
+    public windows: Record<string, Window> = {};
 
     constructor() {}
 
@@ -22,7 +23,6 @@ export class Renderer {
         // If a floor tile has something on it, we want to render the thing that is on it.
         if (obj instanceof Floor && (<Floor>obj).getObjects().length > 0) {
             tile = (<Floor>obj).getObjects()[0].getTile();
-            console.log('updateing tile to have item ');
         }
 
         // Render the game object in its position
@@ -46,39 +46,39 @@ export class Renderer {
         for (let i = 0; i < menu.elements.length; i++) {
             // MenuTitle
             if (menu.elements[i] instanceof MenuTitle) {
-                let child = MenuWindow.createMenuTitle(<MenuTitle>menu.elements[i]);
+                let child = Window.createMenuTitle(<MenuTitle>menu.elements[i]);
                 context.appendChild(child);
                 (<HTMLElement>context.children[i]).innerHTML = (<MenuTitle>menu.elements[i]).title;
-                (<HTMLElement>context.children[i]).style.color = menu.defaultFg;
+                (<HTMLElement>context.children[i]).style.color = Menu.defaultFg;
             }
 
             if (menu.elements[i] instanceof MenuInfo) {
-                let child = MenuWindow.createMenuInfo(<MenuInfo>menu.elements[i]);
+                let child = Window.createMenuInfo(<MenuInfo>menu.elements[i]);
                 context.appendChild(child);
 
                 (<HTMLElement>context.children[i]).innerHTML = (<MenuInfo>menu.elements[i]).getContent();
-                (<HTMLElement>context.children[i]).style.backgroundColor = menu.defaultBg;
-                (<HTMLElement>context.children[i]).style.color = menu.defaultFg;
+                (<HTMLElement>context.children[i]).style.backgroundColor = Menu.defaultBg;
+                (<HTMLElement>context.children[i]).style.color = Menu.defaultFg;
                 (<HTMLElement>context.children[i]).style.border = 'none';
             }
 
             // MenuOption
             if(menu.elements[i] instanceof MenuOption) {
-                let child = MenuWindow.createMenuOption(<MenuOption>menu.elements[i]);
+                let child = Window.createMenuOption(<MenuOption>menu.elements[i]);
                 context.appendChild(child);
 
                 if (i == menu.selectedElement) {
                     (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).letter + '  -  ' + (<MenuOption>menu.elements[i]).name;
                     // (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).name;
-                    (<HTMLElement>context.children[i]).style.backgroundColor = menu.defaultSelectedBg;
-                    (<HTMLElement>context.children[i]).style.color = menu.defaultSelectedFg;
+                    (<HTMLElement>context.children[i]).style.backgroundColor = Menu.defaultSelectedBg;
+                    (<HTMLElement>context.children[i]).style.color = Menu.defaultSelectedFg;
                     // (<HTMLElement>context.children[i+1]).style.border = 'dashed 1px black';
                 }
                 else {
                     (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).letter + '  -  ' + (<MenuOption>menu.elements[i]).name;
                     // (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).name;
-                    (<HTMLElement>context.children[i]).style.backgroundColor = menu.defaultBg;
-                    (<HTMLElement>context.children[i]).style.color = menu.defaultFg;
+                    (<HTMLElement>context.children[i]).style.backgroundColor = Menu.defaultBg;
+                    (<HTMLElement>context.children[i]).style.color = Menu.defaultFg;
                     (<HTMLElement>context.children[i]).style.border = 'none';
                 }
             }
@@ -242,14 +242,24 @@ export class Renderer {
         }
     }
 
-    public addWindow(window: Window) {
-        let context = window.getContext();
-        this.bind(context);
+
+    public showWindows(names: string[]) {
+        this.hideAllWindows();
+        names.forEach(name => {
+            this.windows[name].show();
+        });
     }
 
-    public addMenuWindow(window: MenuWindow) {
-        let context = window.getContext();
-        this.bind(context);
+    public hideAllWindows() {
+        for (let key in this.windows) {
+            this.windows[key].hide();
+        }
+    }
+
+    public addWindow(name: string, width: number, height: number, isTiled?: boolean) {
+        this.windows[name] = new Window(-1, -1, width, height, isTiled);
+        this.windows[name].initContext();
+        this.bind(this.windows[name].getContext());
     }
 
     private bind(windowContext: HTMLElement) {

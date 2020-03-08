@@ -28,7 +28,7 @@ export { Window } from './Systems/window';
 export { IO } from './Systems/io';
 export { Camera } from './Systems/camera'; 
 export { Menu, MenuTitle, MenuOption } from './Systems/Menu/Menu';
-export { MenuWindow } from './Systems/Menu/MenuWindow';
+// export { MenuWindow } from './Systems/Menu/MenuWindow';
 
 // Misc Base Objects
 export { BSPTree } from './util';

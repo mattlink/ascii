@@ -4,13 +4,9 @@ import { GameObject } from '../../GameObject';
 export class InventoryMenu extends Menu {
 
     title: MenuTitle;
-    // options: MenuOption[] = [];
-    options: Record<string, MenuOption> = {};// - new Record<string, MenuOption>();
-    
-    // availableLetters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
     constructor(width: number, height: number, titleName: string) {
-        super(width, height);
+        super();
         this.title = new MenuTitle(titleName);
     }
 
@@ -31,13 +27,4 @@ export class InventoryMenu extends Menu {
         });
 
     }
-
-    // addInventoryItem(item: GameObject) {
-    //     let letter = this.availableLetters.shift();
-    //     let option = new MenuOption(obj.name, letter.toString());
-    // }
-
-    // removeInventoryItem(letter: string) {
-    //     // look up this.options[letter]
-    // }
 }

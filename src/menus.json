@@ -1,0 +1,57 @@
+{
+    "width": 50,
+    "height": 30,
+
+    "defaultFg": "white",
+    "defaultBg": "black",
+
+    "defaultSelectedFg": "black",
+    "defaultSelectedBg": "lightgrey",
+
+
+    "menus": [
+        {
+            "name": "start",
+            "title": "Start",
+            "options": [
+                {
+                    "letter": "q",
+                    "name": "Quick Start",
+                    "toState": "Play"
+                },
+                {
+                    "letter": "c",
+                    "name": "Create Game",
+                    "toMenu": "create_game"
+                },
+                {
+                    "letter": "a",
+                    "name": "About Game",
+                    "toMenu": "about_game"
+                }   
+            ]
+        },
+        {
+            "name": "create_game",
+            "title": "Create Game",
+            "options": [
+                {
+                    "letter": "s",
+                    "name": "Enter Seed",
+                    "onSelect": "seed_entry"
+                }
+            ]
+        },
+        {
+            "name": "about_game",
+            "title": "About Game",
+            "options": []
+        }
+    ],
+    "menuActions": [
+        {
+            "name": "seed_entry",
+            "type": "text_input"
+        }
+    ]   
+}

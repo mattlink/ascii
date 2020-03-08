@@ -1,4 +1,5 @@
 import { Tile } from "../../tile";
+import { Game } from "../../Game";
 
 
 export abstract class MenuElement { 
@@ -22,7 +23,11 @@ export class MenuTitle extends MenuElement {
 export class MenuOption extends MenuElement {
     name: string;
     letter: string; // the letter used to select this option
-    subOptions: MenuOption[] = [];
+    // subOptions: MenuOption[] = [];
+
+    toMenu: string = null; // name of menu which selecting this option takes you to
+    toState: string = null;
+
     constructor(name: string, letter: string) { 
         super(1);
         this.name = name;
@@ -34,7 +39,7 @@ export class MenuInfo extends MenuElement {
     label: string = '';
     content: string = '';
     constructor(content: string, label?: string) {
-        super(1);
+        super(2);
         this.content = content;
         this.label = label || '';
     }
@@ -54,32 +59,31 @@ export class MenuTable extends MenuElement {
 }
 
 export class Menu {
-    private width;
-    private height;
 
-    public defaultFg = 'white';
-    public defaultBg = 'black';
+    public static width;
+    public static height;
 
-    public defaultSelectedFg = 'black';
-    public defaultSelectedBg = 'lightGrey';
+    public static defaultFg = 'white';
+    public static defaultBg = 'black';
 
+    public static defaultSelectedFg = 'black';
+    public static defaultSelectedBg = 'lightGrey';
+
+    public name: string;
+
+    public options: Record<string, MenuOption> = {};
     public elements: MenuElement[] = [];
     public selectedElement: number = -1;
 
-    constructor(width: number, height: number) {
-        this.width = width;
-        this.height = height;
+    constructor(elems?: MenuElement[]) {
+        if (!elems) return;
+        elems.forEach(elem => {
+            this.addElement(elem);
+        });
     }
 
     addElement(element: MenuElement) {
+        if (element instanceof MenuOption) this.options[element.letter] = element;
         this.elements.push(element);
-    }
-
-    getWidth() {
-        return this.width; 
-    }
-
-    getHeight() {
-        return this.height;
     }
 }
