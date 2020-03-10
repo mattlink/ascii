@@ -37,7 +37,12 @@ export class Importer {
                 let option = new MenuOption(o.name, o.letter);
                 if (o.toMenu != null) option.toMenu = o.toMenu;
                 if (o.toState != null) option.toState = o.toState;
-                menu.addElement(option);
+
+                if (o.hidden) {
+                    menu.options[o.letter] = option;
+                } else {
+                    menu.addElement(option);
+                }
             });
 
             menus[m.name] = menu;

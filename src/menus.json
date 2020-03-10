@@ -39,13 +39,26 @@
                     "letter": "s",
                     "name": "Enter Seed",
                     "onSelect": "seed_entry"
+                },
+                {
+                    "letter": "Escape",
+                    "name": "",
+                    "toMenu": "start",
+                    "hidden": "true"
                 }
             ]
         },
         {
             "name": "about_game",
             "title": "About Game",
-            "options": []
+            "options": [
+                {
+                    "letter": "Escape",
+                    "name": "",
+                    "toMenu": "start",
+                    "hidden": "true"
+                }
+            ]
         }
     ],
     "menuActions": [

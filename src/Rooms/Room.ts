@@ -145,7 +145,7 @@ export class Room {
             }
 
             default: {
-                console.log("DoorType:", type, " not supported by ", this.name);
+                console.log("DoorType:", type, " not supported by room:", this.name);
                 break;
             }
         }
@@ -164,6 +164,8 @@ export class Room {
 
     addActor(actor: Actor) {
         this.actors.push(actor);
+        this.objects[actor.x][actor.y] = new Floor(actor.x, actor.y, this.floorTile);
+        (<Floor>this.objects[actor.x][actor.y]).setOccupation(actor);
     }
 
     getActors() {

@@ -61,10 +61,10 @@ class game extends Game {
         this.renderer.addWindow('create_game', Menu.width, Menu.height);
         this.renderer.addWindow('about_game', Menu.width, Menu.height);
         
-        this.renderer.addWindow('messagebox', Menu.width, 2);
+        this.renderer.addWindow('messagebox', Menu.width, 1);
         this.renderer.addWindow('game', Menu.width, Menu.height, true);
         this.renderer.addWindow('inventory', Menu.width, Menu.height);
-        this.renderer.addWindow('status_info', Menu.width, 3);
+        this.renderer.addWindow('status_info', Menu.width);
 
         this.renderer.hideAllWindows();
         this.renderer.windows['start'].show();
@@ -166,6 +166,7 @@ class game extends Game {
             }
 
             if (key == 'Escape') {
+                this.renderer.renderGameObject(this.world.getActiveRoom().objects[this.lookCursor.x][this.lookCursor.y], this.renderer.windows['game'].getContext());
                 this.state = GameState.Play;
             }
 
@@ -174,6 +175,11 @@ class game extends Game {
             if (obj instanceof Floor && (<Floor>obj).getOccupation() != null) {
                 name = (<Floor>obj).getOccupation().name;
             }
+
+            if (obj instanceof Floor && (<Floor>obj).getObjects().length > 0) {
+                name = (<Floor>obj).getObjects()[0].name;
+            }
+
             (<MenuInfo>this.menus['messagebox'].elements[0]).content = name;
 
         }
@@ -197,9 +203,7 @@ class game extends Game {
                 this.state = GameState.Look;
                 this.lookCursor.x = this.world.getPlayer().x;
                 this.lookCursor.y = this.world.getPlayer().y;
-
-                // this.renderer.renderLookCursor(this.lookCursor, this.renderer.windows['game'].getContext());
-
+                return;
             }
 
             this.world.getPlayer().receiveKeyInput(key);

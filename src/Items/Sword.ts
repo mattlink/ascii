@@ -43,13 +43,9 @@ class SwordAction extends Action {
                 world.appendMessage("You kill the " + target.name + ".");
 
                 (<Floor>obj).removeOccupation();
-                console.log("room actors pre: ", room.actors);
-                console.log("activeRoom actors pre: ", world.getActiveRoom().actors);
                 room.actors = room.actors.filter(a => {
                     return a != target;
                 });
-                console.log("room actors post: ", room.actors);
-                console.log("activeRoom actors post: ", world.getActiveRoom().actors);
             } 
             
             return true;

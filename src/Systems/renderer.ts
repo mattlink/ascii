@@ -256,7 +256,7 @@ export class Renderer {
         }
     }
 
-    public addWindow(name: string, width: number, height: number, isTiled?: boolean) {
+    public addWindow(name: string, width: number, height?: number, isTiled?: boolean) {
         this.windows[name] = new Window(-1, -1, width, height, isTiled);
         this.windows[name].initContext();
         this.bind(this.windows[name].getContext());
