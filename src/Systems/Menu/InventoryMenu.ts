@@ -5,26 +5,20 @@ export class InventoryMenu extends Menu {
 
     title: MenuTitle;
 
-    constructor(width: number, height: number, titleName: string) {
+    constructor(titleName: string) {
         super();
         this.title = new MenuTitle(titleName);
     }
 
-    establishInventory(inventory: GameObject[]) {
+    establishInventory(inventory: Record<string, GameObject>) {
         this.elements = []; // reset the menu representation
 
         this.elements.push(this.title); // add the title back into the menu
 
-        let availableLetters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-
-        inventory.forEach(obj => {
-            let letter = availableLetters.shift();
-           
-            let option = new MenuOption(obj.name, letter.toString());
-
-            this.options[letter] = option;
+        for (let key in inventory) {
+            let option = new MenuOption(inventory[key].name, key);
+            this.options[key] = option;
             this.elements.push(option);
-        });
-
+        }
     }
 }

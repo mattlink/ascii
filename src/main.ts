@@ -1,11 +1,10 @@
 import { Importer } from "./importer";
 import { Game } from "./Game";
 import { World } from "./world";
-import { Window } from './Systems/window';
 import { Renderer } from "./Systems/renderer";
 import { Player } from "./Actors/Player";
 import { IO } from "./Systems/io";
-import { Menu, MenuTitle, MenuOption, MenuInfo } from './Systems/Menu/Menu';
+import { Menu, MenuOption, MenuInfo } from './Systems/Menu/Menu';
 import { InventoryMenu } from './Systems/Menu/InventoryMenu';
 import { GameObject } from './GameObject';
 import { Tile } from './tile';
@@ -13,6 +12,8 @@ import { Tile } from './tile';
 import * as worldConfig from "./world.json";
 import * as menusConfig from "./menus.json";
 import { Floor } from "./Rooms/Environment";
+import { Item } from "./Items/Item";
+import { EquipAction } from "./Actions/EquipAction";
 
 enum GameState {
     Play,
@@ -30,6 +31,8 @@ class game extends Game {
 
     state: GameState;
     lookCursor: GameObject;
+
+    intermediateKey = null;
 
     load() {
 
@@ -57,7 +60,7 @@ class game extends Game {
         this.menus['messagebox'].addElement(new MenuInfo('You feel tired.', ''));
 
         // Create the inventory menu
-        this.menus['inventory'] = new InventoryMenu(this.world.getActiveRoom().getWidth(), this.world.getActiveRoom().getHeight(), 'Inventory');
+        this.menus['inventory'] = new InventoryMenu('Inventory');
         this.menus['inventory'].options['Escape'] = new MenuOption("Exit", "Escape");
         this.menus['inventory'].options['Escape'].toState = 'Play';
 
@@ -99,7 +102,7 @@ class game extends Game {
     update(key: string) {
 
         if (this.state == GameState.Menu) {
-            if (!(IO.validMenuControls.indexOf(key) > -1)) return;
+            if (!(IO.validMenuControls.indexOf(key) > -1) && this.intermediateKey == null) return;
 
             /*if (key == 'ArrowUp') {
                 this.menus[this.activeMenu].selectedElement -= 1;
@@ -120,6 +123,19 @@ class game extends Game {
 
                 return;
             }*/
+
+            // We're trying to equipt an item
+            if (this.intermediateKey == 'E') {
+                this.attemptEquip(key);
+                
+                this.intermediateKey = null;
+
+                this.renderer.showWindows(['game', 'messagebox', 'status_info']);
+                this.state = GameState.Play;
+                this.activeMenu = null;
+
+                return;
+            }
 
             let i = Object.keys(this.menus[this.activeMenu].options).indexOf(key);
             if (i > -1) {
@@ -191,7 +207,31 @@ class game extends Game {
 
         if (this.state == GameState.Play) {
 
-            if (!(IO.validGameControls.indexOf(key) > -1)) return;
+            if (!(IO.validGameControls.indexOf(key) > -1) && this.intermediateKey == null) return;
+
+            /* Equipt Item */
+            if (key == 'E') {
+                this.world.clearMessage();
+                this.world.appendMessage("Which item would you like to equip? (choose letter) or [space] to view inventory.");
+                this.intermediateKey = 'E';
+                return;
+            }
+
+            if (this.intermediateKey == 'E') {
+
+                // Open up inventory 
+                if (key == ' ') {
+                    this.renderer.showWindows(['inventory']);
+                    this.activeMenu = 'inventory';
+                    this.state = GameState.Menu;
+                    return;
+                }
+
+                this.attemptEquip(key);
+                
+                this.intermediateKey = null;
+                return;
+            }
 
              // switch state to "viewing inventory"
             if (key == 'i') {
@@ -291,6 +331,17 @@ class game extends Game {
 
         }
         
+    }
+
+    private attemptEquip(key: string) {
+        this.world.clearMessage();
+        let inventoryKeys = Object.keys(this.world.getPlayer().inventory);
+        if (!(inventoryKeys.indexOf(key) > -1)) {
+            this.world.appendMessage("Invalid item.");
+        } else {
+            let equipAction = new EquipAction(this.world.getPlayer(), this.world.getPlayer().inventory[key]);
+            equipAction.perform(this.world);
+        }
     }
 }
 

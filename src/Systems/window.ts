@@ -89,27 +89,7 @@ export class Window {
         }
     }
 
-    // public initContext() {
-    //     this.context = document.createElement('div');
-    //     this.context.style.display = 'block';
-    //     this.context.style.height = Renderer.pxs(this.localHeight * Renderer.elementSize);
-    //     this.context.style.width = Renderer.pxs(this.localWidth * Renderer.elementSize);
-
-    //     if (this.startX == -1 && this.startY == -1) {
-    //         this.context.style.margin = 'auto';
-    //         // this.context.style.marginTop = Renderer.pxs(5);
-    //     }else {
-    //         this.context.style.position = 'absolute';
-    //         this.context.style.left = Renderer.pxs(this.startX);
-    //         this.context.style.top = Renderer.pxs(this.startY);
-    //     }
-
-    //     if (this.bordered) {
-    //         this.context.style.border = 'solid';
-    //         this.context.style.borderWidth = Renderer.pxs(2);
-    //     }
-    // }
-
+    /** 
     public static createGameTiles(localWidth: number, localHeight: number) {
         let containingDiv = document.createElement('div');
         containingDiv.style.display = 'flex';
@@ -136,7 +116,7 @@ export class Window {
         }
 
         return containingDiv;
-    }
+    } */
 
     public static createMenuTitle(menuTitle: MenuTitle) {
         let child = document.createElement('div');

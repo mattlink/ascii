@@ -25,12 +25,10 @@ export class IO {
 
     public static validGameControls: string[] = [
         
-        //directional controls:
-
-        'w', // up
-        'a', // left
-        's', // down
-        'd', // right
+        'w', // move up
+        'a', // move left
+        's', // move down
+        'd', // move right
 
         'q', // diagonal up-left
         'e', // diagonal up-right
@@ -39,6 +37,8 @@ export class IO {
 
         ',', // pick up item
         'P',
+
+        'E', // Equipt item
 
         'L', // Look mode
 

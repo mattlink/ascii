@@ -40,6 +40,10 @@ export class World {
         }
     }
 
+    clearMessage() {
+        this.messages = [];
+    }
+
     appendMessage(message: string) {
         this.messages.push(message);
     }

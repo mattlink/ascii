@@ -24,7 +24,7 @@ class ShovelAction extends Action {
 
         if (room.objects[toPosX][toPosY] instanceof Wall) {
             // Add the wall to the actors inventory
-            this.actor.inventory.push(room.objects[toPosX][toPosY]);
+            this.actor.addInventoryItem(room.objects[toPosX][toPosY]);
 
             // Put a floor tile where the Wall that we just dug was
             room.objects[toPosX][toPosY] = new Floor(toPosX, toPosY, room.floorTile);

@@ -22,17 +22,26 @@ export abstract class Actor extends GameObject {
 
     public equipt: Item;
 
-    public inventory: GameObject[];
+    public inventory: Record<string, GameObject>;
+    private inventoryKeys = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
     public debug: boolean = false;
 
     constructor(name: string, x: number, y: number, tile: Tile){
         super(x, y, tile);
         this.name = name;
-        this.inventory = [];
+        this.inventory = {};
     }
 
     abstract takeTurn(world: World): void;
 
     abstract death(world: World): GameObject[];
+
+    addInventoryItem(obj: GameObject) {
+        let key = this.inventoryKeys.shift();
+        this.inventory[key] = obj;
+    }
+
+
+
 }
