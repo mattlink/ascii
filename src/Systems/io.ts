@@ -45,7 +45,8 @@ export class IO {
         'j', // wait
         '>', // use door
         'i', // change state to inventory
-        // 'Escape', // go to pause menu
+        'Escape', // go to pause menu
+        '?', // go to help menu
     ];
 
     public static genericKeyBinding(func: Function) {

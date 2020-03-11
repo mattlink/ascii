@@ -21,11 +21,8 @@ enum GameState {
 }
 class game extends Game {
 
-    // menuWindows: Record<string, MenuWindow> = {};
     menus: Record<string, Menu> = {};
     activeMenu: string = null;
-
-    // menusNew: Record<string, Menu> = {};
 
     renderer: Renderer;
 
@@ -35,6 +32,9 @@ class game extends Game {
     lookCursor: GameObject;
 
     load() {
+
+        // TODO: Check for an existing save in localStorage
+
         this.state = GameState.Menu;
         this.world = Importer.importWorld(worldConfig);
         this.menus = Importer.importMenus(menusConfig);
@@ -43,31 +43,37 @@ class game extends Game {
 
         this.lookCursor = new GameObject(0, 0, new Tile('X', 'white','black'));
 
-        // create a message box
+        this.renderer = new Renderer();
+
+        // add windows for all the menus we imported
+        for (let key in this.menus) {
+            this.renderer.addWindow(key, Menu.width, Menu.height);
+        }
+
+        /* Set Up Game-time Menus & Windows */
+
+        // Create the message box
         this.menus['messagebox'] = new Menu();
         this.menus['messagebox'].addElement(new MenuInfo('You feel tired.', ''));
 
-        // Create an inventory menu
+        // Create the inventory menu
         this.menus['inventory'] = new InventoryMenu(this.world.getActiveRoom().getWidth(), this.world.getActiveRoom().getHeight(), 'Inventory');
         this.menus['inventory'].options['Escape'] = new MenuOption("Exit", "Escape");
         this.menus['inventory'].options['Escape'].toState = 'Play';
 
         this.menus['status_info'] = new Menu();
         this.menus['status_info'].addElement(new MenuInfo('Turns: 0'));
-
-        this.renderer = new Renderer();
-
-        this.renderer.addWindow('start', Menu.width, Menu.height);
-        this.renderer.addWindow('create_game', Menu.width, Menu.height);
-        this.renderer.addWindow('about_game', Menu.width, Menu.height);
         
         this.renderer.addWindow('messagebox', Menu.width, 1);
         this.renderer.addWindow('game', Menu.width, Menu.height, true);
         this.renderer.addWindow('inventory', Menu.width, Menu.height);
         this.renderer.addWindow('status_info', Menu.width);
 
+
         this.renderer.hideAllWindows();
         this.renderer.windows['start'].show();
+
+        // initially render everything for the first time
 
         this.renderer.renderRoom(this.world.getActiveRoom(), this.renderer.windows['game'].getContext());
 
@@ -94,8 +100,6 @@ class game extends Game {
 
         if (this.state == GameState.Menu) {
             if (!(IO.validMenuControls.indexOf(key) > -1)) return;
-
-            // TODO: Check for an existing save in localStorage
 
             /*if (key == 'ArrowUp') {
                 this.menus[this.activeMenu].selectedElement -= 1;
@@ -133,7 +137,7 @@ class game extends Game {
                     if (toState == 'Play') {
                         this.state = GameState.Play;
                         
-                        this.activeMenu = null;
+                        this.activeMenu = 'game';
                         this.renderer.showWindows(['game', 'status_info', 'messagebox']);
                         return;
                     }
@@ -168,6 +172,7 @@ class game extends Game {
             if (key == 'Escape') {
                 this.renderer.renderGameObject(this.world.getActiveRoom().objects[this.lookCursor.x][this.lookCursor.y], this.renderer.windows['game'].getContext());
                 this.state = GameState.Play;
+                return;
             }
 
             let obj = this.world.getActiveRoom().objects[this.lookCursor.x][this.lookCursor.y];
@@ -201,8 +206,23 @@ class game extends Game {
             if (key == 'L') {
 
                 this.state = GameState.Look;
+                this.activeMenu = null;
                 this.lookCursor.x = this.world.getPlayer().x;
                 this.lookCursor.y = this.world.getPlayer().y;
+                return;
+            }
+
+            if (key == 'Escape') {
+                this.renderer.showWindows(['pause']);
+                this.activeMenu = 'pause';
+                this.state = GameState.Menu;
+                return;
+            }
+
+            if (key == '?') {
+                this.renderer.showWindows(['help']);
+                this.activeMenu = 'help',
+                this.state = GameState.Menu;
                 return;
             }
 
@@ -220,16 +240,17 @@ class game extends Game {
 
         if (this.state == GameState.Look) {
 
-                
-                this.renderer.renderObjectContext(this.lookCursor, this.world.getActiveRoom(), this.renderer.windows['game'].getContext());
+            // Render the actual look cursor
+            this.renderer.renderObjectContext(this.lookCursor, this.world.getActiveRoom(), this.renderer.windows['game'].getContext());
 
-                this.world.getActiveRoom().getActors().forEach(actor => {
-                    this.renderer.renderGameObject(actor, this.renderer.windows['game'].getContext());    
-                });
+            // Render every actor in the room
+            this.world.getActiveRoom().getActors().forEach(actor => {
+                this.renderer.renderGameObject(actor, this.renderer.windows['game'].getContext());    
+            });
 
-                this.renderer.renderGameObject(this.lookCursor, this.renderer.windows['game'].getContext());
+            this.renderer.renderGameObject(this.lookCursor, this.renderer.windows['game'].getContext());
 
-                this.renderer.renderMenu(this.menus['messagebox'], this.renderer.windows['messagebox'].getContext());
+            this.renderer.renderMenu(this.menus['messagebox'], this.renderer.windows['messagebox'].getContext());
 
         }
 

@@ -11,6 +11,52 @@
 
     "menus": [
         {
+            "name": "pause",
+            "title": "Game Paused",
+            "options": [
+                {
+                    "letter": "Escape",
+                    "name": "",
+                    "hidden": true,
+                    "toState": "Play"
+                }
+            ]
+        },
+        {
+            "name": "help",
+            "title": "Controls/General Help",
+            "options": [
+                {
+                    "letter": "Escape",
+                    "name": "",
+                    "hidden": true,
+                    "toState": "Play"
+                }
+            ],
+            "infos": [
+                {
+                    "label": "Movement",
+                    "content": "wasd"
+                },
+                {
+                    "label": "Diagonal Movement",
+                    "content": "qezx"
+                },
+                {
+                    "label": "Pick Up Item",
+                    "content": ","
+                },
+                {
+                    "label": "Look",
+                    "content": "L"
+                },
+                {
+                    "label": "Move Look Cursor",
+                    "content": "arrow up, down, left, right"
+                }
+            ]
+        },
+        {
             "name": "start",
             "title": "Start",
             "options": [
@@ -28,7 +74,7 @@
                     "letter": "a",
                     "name": "About Game",
                     "toMenu": "about_game"
-                }   
+                }
             ]
         },
         {
@@ -44,7 +90,7 @@
                     "letter": "Escape",
                     "name": "",
                     "toMenu": "start",
-                    "hidden": "true"
+                    "hidden": true
                 }
             ]
         },
@@ -56,7 +102,7 @@
                     "letter": "Escape",
                     "name": "",
                     "toMenu": "start",
-                    "hidden": "true"
+                    "hidden": true
                 }
             ]
         }

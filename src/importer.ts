@@ -8,11 +8,11 @@ import { World } from "./world";
 import { Item } from "./Items/Item";
 import { Shovel } from "./Items/Shovel";
 import { Sword } from "./Items/Sword";
-import { Menu, MenuOption, MenuTitle } from "./Systems/Menu/Menu";
+import { Menu, MenuOption, MenuTitle, MenuInfo } from "./Systems/Menu/Menu";
 
 export class Importer {
 
-    /** Menu Importing (menus,json) */
+    /** Menu Importing (menus.json) */
     public static importMenus(json): Record<string, Menu> {
         if (!json.menus) {
             console.error('IMPORTER: Error importing menus. Please make sure menus.json has a \"menus\" field.');
@@ -44,6 +44,16 @@ export class Importer {
                     menu.addElement(option);
                 }
             });
+
+            if (m.infos) {
+                m.infos.forEach(i => {
+                    let info = new MenuInfo(i.content);
+                    if (i.label) {
+                        info.label = i.label;
+                    }
+                    menu.addElement(info);
+                });
+            }
 
             menus[m.name] = menu;
         });

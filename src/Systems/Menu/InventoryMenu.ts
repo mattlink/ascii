@@ -21,7 +21,7 @@ export class InventoryMenu extends Menu {
             let letter = availableLetters.shift();
            
             let option = new MenuOption(obj.name, letter.toString());
-            // this.options.push(option);
+
             this.options[letter] = option;
             this.elements.push(option);
         });

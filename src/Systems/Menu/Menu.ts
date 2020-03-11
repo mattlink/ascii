@@ -6,7 +6,7 @@ export abstract class MenuElement {
 
     rowSize: number;
     
-    constructor(rowSize?: number) {;
+    constructor(rowSize?: number) {
         this.rowSize = rowSize || 1;
     }
 

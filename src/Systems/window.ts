@@ -1,5 +1,4 @@
 import { Renderer } from './renderer';
-import { Tile } from '../tile';
 import { MenuInfo, MenuOption, MenuTitle } from './Menu/Menu';
 
 // Think of Windows as rendering contexts
@@ -110,6 +109,34 @@ export class Window {
     //         this.context.style.borderWidth = Renderer.pxs(2);
     //     }
     // }
+
+    public static createGameTiles(localWidth: number, localHeight: number) {
+        let containingDiv = document.createElement('div');
+        containingDiv.style.display = 'flex';
+
+        for (let i = 0; i < localWidth; i++) {
+
+            let colDiv = document.createElement('div');
+            colDiv.style.width = Renderer.pxs(Renderer.elementSize * localHeight);
+        
+            for (let j = 0; j < localHeight; j++) {
+                var element = document.createElement('div');
+                element.style.height = Renderer.pxs(Renderer.elementSize);
+                element.style.width = Renderer.pxs(Renderer.elementSize);
+                element.style.textAlign = 'center';
+                element.style.userSelect = 'none';
+
+                // element.innerHTML = tiles[i][j].ascii;
+                // element.style.backgroundColor = tiles[i][j].bg;
+                // element.style.color = tiles[i][j].fg;
+
+                colDiv.appendChild(element);
+            }
+            containingDiv.appendChild(colDiv);
+        }
+
+        return containingDiv;
+    }
 
     public static createMenuTitle(menuTitle: MenuTitle) {
         let child = document.createElement('div');
