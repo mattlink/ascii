@@ -2,7 +2,7 @@ import { Actor } from "../Actors/Actor";
 import { Tile } from "../tile";
 import { GameObject } from "../GameObject";
 import { Window } from "./window";
-import { Room } from "../Rooms/room";
+import { Room } from "../Rooms/Room";
 import { Floor } from "../Rooms/Environment";
 import { Camera } from "./camera";
 import { Menu, MenuInfo } from "./Menu/Menu";
