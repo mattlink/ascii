@@ -29,7 +29,7 @@
                         "tile": {
                             "ascii": "@",
                             "fg": "red",
-                            "bg": "white"
+                            "bg": "black"
                         }
 
                     },

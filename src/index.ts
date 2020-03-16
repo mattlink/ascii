@@ -30,6 +30,8 @@ export { Camera } from './Systems/camera';
 export { Menu, MenuTitle, MenuOption } from './Systems/Menu/Menu';
 // export { MenuWindow } from './Systems/Menu/MenuWindow';
 
+export { Importer } from './importer';
+
 // Misc Base Objects
 export { BSPTree } from './util';
 export { Tile } from './tile';
