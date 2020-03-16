@@ -28,8 +28,7 @@
   "bin": {
     "ascii-scaffold": "cp node_modules/ascii/src/scaffold/index.html ./index.html",
     "ascii-build": "tsc main.ts --outDir build; browserify build/main.js > build/bundle.js",
-    "ascii-build-shell": "./scripts/ascii-build-shell.sh",
-    "ascii-scaffold-shell": "./scripts/ascii-scaffold.sh",
-    "ascii-test": "echo bartle"
+    "ascii-build-shell": "./scripts/ascii-build.sh",
+    "ascii-scaffold-shell": "./scripts/ascii-scaffold.sh"
   }
 }
