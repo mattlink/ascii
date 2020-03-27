@@ -4,267 +4,169 @@ import { World } from "./world";
 import { Renderer } from "./Systems/renderer";
 import { Player } from "./Actors/Player";
 import { IO } from "./Systems/io";
-import { Menu, MenuOption, MenuInfo } from './Systems/Menu/Menu';
-import { InventoryMenu } from './Systems/Menu/InventoryMenu';
 import { GameObject } from './GameObject';
 import { Tile } from './tile';
 
-import * as worldConfig from "./world.json";
-import * as menusConfig from "./menus.json";
-import { Floor } from "./Rooms/Environment";
-import { Item } from "./Items/Item";
-import { EquipAction } from "./Actions/EquipAction";
+import { Room } from "./Rooms/Room";
 
 enum GameState {
     Play,
-    Look,
     Menu
 }
+
+enum CursorState {
+    Panning,
+    NotPanning
+}
+
 class game extends Game {
 
-    menus: Record<string, Menu> = {};
-    activeMenu: string = null;
+    // menus: Record<string, Menu> = {};
 
     renderer: Renderer;
 
     world: World;
 
     state: GameState;
-    lookCursor: GameObject;
 
-    intermediateKey = null;
+    cursor: GameObject = new GameObject(0, 0, new Tile('X', 'black', 'yellow'));
+    cursorState: CursorState = CursorState.NotPanning;
 
     load() {
 
         // TODO: Check for an existing save in localStorage
 
         this.state = GameState.Menu;
-        this.world = Importer.importWorld(worldConfig);
-        this.menus = Importer.importMenus(menusConfig);
+        // this.world = Importer.importWorld(worldConfig);
+        this.world = new World();
+        let room = new Room(100, 100, "Forest");
+        // room.wallTile = new Tile('P', 'red', 'green');
+        // room.init(2, 2);
+        room.init(0, 3);
 
-        this.activeMenu = 'start';
+        console.log(room);
 
-        this.lookCursor = new GameObject(0, 0, new Tile('X', 'white','black'));
+        this.world.addRoom(room);
+        let cursor = new Player(0, 0, new Tile('X', 'black', 'yellow'));
+        room.addActor(cursor);
+
 
         this.renderer = new Renderer();
 
-        // add windows for all the menus we imported
-        for (let key in this.menus) {
-            this.renderer.addWindow(key, Menu.width, Menu.height);
-        }
+        /* Set Up  Windows */
+        let windowWidth = 30;
+        let windowHeight = 25;
 
-        /* Set Up Game-time Menus & Windows */
+        // center the view
+        let viewStartX = Math.floor(this.world.getActiveRoom().getWidth() / 2) - Math.floor(windowWidth / 2);
+        let viewStartY  = Math.floor(this.world.getActiveRoom().getHeight() / 2) - Math.floor(windowHeight / 2);
 
-        // Create the message box
-        this.menus['messagebox'] = new Menu();
-        this.menus['messagebox'].addElement(new MenuInfo('You feel tired.', ''));
+        let panThreshold = 5; // 5 tiles from edge until start panning camera
 
-        // Create the inventory menu
-        this.menus['inventory'] = new InventoryMenu('Inventory');
-        this.menus['inventory'].options['Escape'] = new MenuOption("Exit", "Escape");
-        this.menus['inventory'].options['Escape'].toState = 'Play';
+        // start view in top left corner:
+        // viewStartX = 0;
+        // viewStartY = 0;
 
-        this.menus['status_info'] = new Menu();
-        this.menus['status_info'].addElement(new MenuInfo('Turns: 0'));
+        console.log(viewStartX, viewStartY);
         
-        this.renderer.addWindow('messagebox', Menu.width, 1);
-        this.renderer.addWindow('game', Menu.width, Menu.height, true);
-        this.renderer.addWindow('inventory', Menu.width, Menu.height);
-        this.renderer.addWindow('status_info', Menu.width);
+        this.renderer.addWindow('game', windowWidth, windowHeight, this.world.getActiveRoom().getTiles());
+        this.renderer.renderRoomInView(
+            this.world.getActiveRoom(), 
+            viewStartX,
+            viewStartY,
+            'game');
 
-
-        this.renderer.hideAllWindows();
-        this.renderer.windows['start'].show();
-
-        // initially render everything for the first time
-
-        this.renderer.renderRoom(this.world.getActiveRoom(), this.renderer.windows['game'].getContext());
-
-        this.renderer.renderMenu(this.menus['start'], this.renderer.windows['start'].getContext());
         
-
-        this.world.getActiveRoom().getActors().forEach(actor => {
-            if (actor instanceof Player && this.world.getPlayer() == null) 
-            {
-                this.world.setPlayer(actor);
-                (<InventoryMenu>this.menus['inventory']).establishInventory(this.world.getPlayer().inventory);
-
-                // this.renderer.renderArea(this.world.getPlayer().x - 6,  this.world.getPlayer().y - 6, 12, 12, this.world.getActiveRoom(), this.window.getContext());
-
-                this.renderer.renderGameObject(actor, this.renderer.windows['game'].getContext());
-                this.renderer.renderObjectContext(actor, this.world.getActiveRoom(), this.renderer.windows['game'].getContext());
-                return;
-            }
+        let gameContext = this.renderer.windows['game'].getContext();
+        gameContext.addEventListener('panview', function(e) {
+            
         });
+        
+        
+        let tiles = this.world.getActiveRoom().getTiles();
+        let cols = Array.prototype.slice.call(this.renderer.windows['game'].getContext().children);
+        for (let i = 0; i < cols.length; i++) {
+            let colrows = Array.prototype.slice.call(cols[i].children);
+            for (let j = 0; j < colrows.length; j++) {
+                IO.defineMouseOver(colrows[j], function(e, game) {
 
+                    if (game.cursorState == CursorState.Panning) {
+                        // Pan Left
+                        if (i <= panThreshold) {
+                            viewStartX -= 1;
+                        }
+                        // Pan Right
+                        if (i >= windowWidth - panThreshold) {
+                            viewStartX += 1;
+                        }
+                        // Pan Up 
+                        if (j <= panThreshold) {
+                            viewStartY -= 1;
+                        }
+                        // Pan Down
+                        if (j >= windowHeight - panThreshold) {
+                            viewStartY += 1;
+                        }
+
+                        game.renderer.renderRoomInView(game.world.getActiveRoom(), viewStartX, viewStartY, 'game');
+
+                        if (i > panThreshold && i < windowWidth - panThreshold && j > panThreshold && j < windowHeight - panThreshold) {
+                            game.cursorState = CursorState.NotPanning;
+                            return;
+                        }
+
+                        (<HTMLElement>e.target).dispatchEvent(new Event(''))
+                    }
+
+                    if (game.cursorState == CursorState.NotPanning) {
+                        if (i <= panThreshold) {
+                            game.cursorState = CursorState.Panning;
+                        }
+                        // Pan Right
+                        if (i >= windowWidth - panThreshold) {
+                            game.cursorState = CursorState.Panning;
+                        }
+                        // Pan Up 
+                        if (j <= panThreshold) {
+                            game.cursorState = CursorState.Panning;
+                        }
+                        // Pan Down
+                        if (j >= windowHeight - panThreshold) {
+                            game.cursorState = CursorState.Panning;
+                        }
+                    }
+
+
+                    // colrows[j].innerHTML = 'X';
+                    // colrows[j].style.color = 'black';
+                    // colrows[j].style.backgroundColor = 'yellow';
+                    game.cursor.x = i;
+                    game.cursor.y = j;
+
+                    // game.renderer.renderRoomInView(game.world.getActiveRoom(), viewStartX, viewStartY, 'game');
+                    game.renderer.renderGameObject(game.cursor, game.renderer.windows['game'].getContext());
+
+                }, this);
+                IO.defineMouseOut(colrows[j], function(e, t) {
+
+                    colrows[j].innerHTML = (<Tile>t[i + viewStartX][j + viewStartY]).ascii;
+                    colrows[j].style.color = (<Tile>t[i + viewStartX][j + viewStartY]).fg;
+                    colrows[j].style.backgroundColor = (<Tile>t[i + viewStartX][j + viewStartY]).bg;
+
+                }, tiles);
+            }
+        }
     }
 
     update(key: string) {
 
         if (this.state == GameState.Menu) {
-            if (!(IO.validMenuControls.indexOf(key) > -1) && this.intermediateKey == null) return;
-
-            /*if (key == 'ArrowUp') {
-                this.menus[this.activeMenu].selectedElement -= 1;
-
-                if (this.menus[this.activeMenu].selectedElement < 1) {
-                    this.menus[this.activeMenu].selectedElement = this.menus[this.activeMenu].elements.length - 1;
-                }
-
-                return;
-            }
-
-            if (key == 'ArrowDown') {
-                this.menus[this.activeMenu].selectedElement += 1;
-
-                if (this.menus[this.activeMenu].selectedElement > this.menus[this.activeMenu].elements.length - 1) {
-                    this.menus[this.activeMenu].selectedElement = 1;
-                }
-
-                return;
-            }*/
-
-            // We're trying to equipt an item
-            if (this.intermediateKey == 'E') {
-                this.attemptEquip(key);
-                
-                this.intermediateKey = null;
-
-                this.renderer.showWindows(['game', 'messagebox', 'status_info']);
-                this.state = GameState.Play;
-                this.activeMenu = null;
-
-                return;
-            }
-
-            let i = Object.keys(this.menus[this.activeMenu].options).indexOf(key);
-            if (i > -1) {
-
-                // toMenu
-                if (this.menus[this.activeMenu].options[key].toMenu != null) {
-                    this.activeMenu = this.menus[this.activeMenu].options[key].toMenu;
-                    this.renderer.showWindows([this.activeMenu]);
-                    return;
-                }
-
-                // toState
-                let toState = this.menus[this.activeMenu].options[key].toState;
-                if (toState != null) {
-                    if (toState == 'Play') {
-                        this.state = GameState.Play;
-                        
-                        this.activeMenu = 'game';
-                        this.renderer.showWindows(['game', 'status_info', 'messagebox']);
-                        return;
-                    }
-                }
-            }
-
-        }
-
-        if (this.state == GameState.Look) {
-            if (!(IO.validLookControls.indexOf(key) > -1)) return;
-
-            if (key == 'ArrowUp') {
-                if (this.lookCursor.y - 1 < 0) return;
-                this.lookCursor.y -= 1;
-            }
-
-            if (key == 'ArrowDown') {
-                if (this.lookCursor.y + 1 > this.world.getActiveRoom().getHeight() - 1) return;
-                this.lookCursor.y += 1;
-            }
-
-            if (key == 'ArrowRight') {
-                if (this.lookCursor.x + 1 > this.world.getActiveRoom().getWidth() - 1) return;
-                this.lookCursor.x += 1;
-            }
-
-            if (key == 'ArrowLeft') {
-                if (this.lookCursor.x - 1 < 0) return;
-                this.lookCursor.x -= 1;
-            }
-
-            if (key == 'Escape') {
-                this.renderer.renderGameObject(this.world.getActiveRoom().objects[this.lookCursor.x][this.lookCursor.y], this.renderer.windows['game'].getContext());
-                this.state = GameState.Play;
-                return;
-            }
-
-            let obj = this.world.getActiveRoom().objects[this.lookCursor.x][this.lookCursor.y];
-            let name = obj.name;
-            if (obj instanceof Floor && (<Floor>obj).getOccupation() != null) {
-                name = (<Floor>obj).getOccupation().name;
-            }
-
-            if (obj instanceof Floor && (<Floor>obj).getObjects().length > 0) {
-                name = (<Floor>obj).getObjects()[0].name;
-            }
-
-            (<MenuInfo>this.menus['messagebox'].elements[0]).content = name;
-
+            if (!(IO.validMenuControls.indexOf(key) > -1)) return;
         }
 
         if (this.state == GameState.Play) {
 
-            if (!(IO.validGameControls.indexOf(key) > -1) && this.intermediateKey == null) return;
-
-            /* Equipt Item */
-            if (key == 'E') {
-                this.world.clearMessage();
-                this.world.appendMessage("Which item would you like to equip? (choose letter) or [space] to view inventory.");
-                this.intermediateKey = 'E';
-                return;
-            }
-
-            if (this.intermediateKey == 'E') {
-
-                // Open up inventory 
-                if (key == ' ') {
-                    this.renderer.showWindows(['inventory']);
-                    this.activeMenu = 'inventory';
-                    this.state = GameState.Menu;
-                    return;
-                }
-
-                this.attemptEquip(key);
-                
-                this.intermediateKey = null;
-                return;
-            }
-
-             // switch state to "viewing inventory"
-            if (key == 'i') {
-
-                this.renderer.showWindows(['inventory']);
-
-                this.activeMenu = 'inventory';
-                this.state = GameState.Menu;
-                return;
-            }
-
-            if (key == 'L') {
-
-                this.state = GameState.Look;
-                this.activeMenu = null;
-                this.lookCursor.x = this.world.getPlayer().x;
-                this.lookCursor.y = this.world.getPlayer().y;
-                return;
-            }
-
-            if (key == 'Escape') {
-                this.renderer.showWindows(['pause']);
-                this.activeMenu = 'pause';
-                this.state = GameState.Menu;
-                return;
-            }
-
-            if (key == '?') {
-                this.renderer.showWindows(['help']);
-                this.activeMenu = 'help',
-                this.state = GameState.Menu;
-                return;
-            }
+            if (!(IO.validGameControls.indexOf(key) > -1)) return;
 
             this.world.getPlayer().receiveKeyInput(key);
             this.world.takeTurn();
@@ -274,33 +176,14 @@ class game extends Game {
     draw() {
 
         if (this.state == GameState.Menu) {
-            if (this.activeMenu == 'inventory') (<InventoryMenu>this.menus['inventory']).establishInventory(this.world.getPlayer().inventory);
-            this.renderer.renderMenu(this.menus[this.activeMenu], this.renderer.windows[this.activeMenu].getContext());
+            // if (this.activeMenu == 'inventory') (<InventoryMenu>this.menus['inventory']).establishInventory(this.world.getPlayer().inventory);
+            // this.renderer.renderMenu(this.menus[this.activeMenu], this.renderer.windows[this.activeMenu].getContext());
         }
 
-        if (this.state == GameState.Look) {
-
-            // Render the actual look cursor
-            this.renderer.renderObjectContext(this.lookCursor, this.world.getActiveRoom(), this.renderer.windows['game'].getContext());
-
-            // Render every actor in the room
-            this.world.getActiveRoom().getActors().forEach(actor => {
-                this.renderer.renderGameObject(actor, this.renderer.windows['game'].getContext());    
-            });
-
-            this.renderer.renderGameObject(this.lookCursor, this.renderer.windows['game'].getContext());
-
-            this.renderer.renderMenu(this.menus['messagebox'], this.renderer.windows['messagebox'].getContext());
-
-        }
 
 
         if (this.state == GameState.Play) {
-            // this.renderer.renderRoom(this.world.getActiveRoom(), this.window.getContext());
-            // this.renderer.renderView(this.world.getPlayer(), this.world.getActiveRoom(), this.window.getContext());
 
-            (<MenuInfo>this.menus['messagebox'].elements[0]).content = this.world.getCurrentMessages().join(" ");            
-            this.renderer.renderMenu(this.menus['messagebox'], this.renderer.windows['messagebox'].getContext());
 
             // Draw everything /around/ each actor
             this.world.getActiveRoom().getActors().forEach(actor => {
@@ -311,43 +194,15 @@ class game extends Game {
             this.world.getActiveRoom().getActors().forEach(actor => {
                 this.renderer.renderGameObject(actor, this.renderer.windows['game'].getContext());
             });
-            
-
-            let vd = this.world.getPlayer().visionDistance;
-            for (let i = 0; i < 4; i++) {
-                // i == 0 --> up
-
-                // i == 1 --> right
-
-                // i == 2 --> down
-
-                // i == 3 --> left
-
-            }
-
-            // display status info
-            (<MenuInfo>this.menus['status_info'].elements[0]).content = 'Turns: ' + this.world.getTurnsPassed();
-            this.renderer.renderMenu(this.menus['status_info'], this.renderer.windows['status_info'].getContext());
-
+        
         }
         
-    }
-
-    private attemptEquip(key: string) {
-        this.world.clearMessage();
-        let inventoryKeys = Object.keys(this.world.getPlayer().inventory);
-        if (!(inventoryKeys.indexOf(key) > -1)) {
-            this.world.appendMessage("Invalid item.");
-        } else {
-            let equipAction = new EquipAction(this.world.getPlayer(), this.world.getPlayer().inventory[key]);
-            equipAction.perform(this.world);
-        }
     }
 }
 
 let g = new game();
 g.load();
-IO.genericKeyBinding(function(key: string) {
-    g.update(key);
-    g.draw();
-})
+// IO.genericKeyBinding(function(key: string) {
+//     g.update(key);
+//     g.draw();
+// })

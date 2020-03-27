@@ -1,5 +1,7 @@
 import { Renderer } from './renderer';
 import { MenuInfo, MenuOption, MenuTitle } from './Menu/Menu';
+import { IO } from './io';
+import { Tile } from '../tile';
 
 // Think of Windows as rendering contexts
 
@@ -13,19 +15,19 @@ export class Window {
 
     public bordered: boolean = false;
 
-    public isTiled: boolean = false;
+    public tiles: Tile[][];
 
     public context: HTMLElement;
 
     
-    constructor(startX?: number, startY?: number, localWidth?: number, localHeight?: number, isTiled?: boolean) {
+    constructor(startX?: number, startY?: number, localWidth?: number, localHeight?: number, tiles?: Tile[][]) {
         this.startX = startX || -1;
         this.startY = startY || -1;
 
         this.localWidth = localWidth;
         this.localHeight = localHeight;
 
-        this.isTiled = isTiled || false;
+        this.tiles = tiles || null;
     }
 
     public getContext() {
@@ -33,7 +35,7 @@ export class Window {
     }
 
     show() {
-        if (this.isTiled) this.context.style.display = 'flex';
+        if (this.tiles) this.context.style.display = 'flex';
         else this.context.style.display = 'block';
     }
 
@@ -47,7 +49,7 @@ export class Window {
         this.context.style.height = Renderer.pxs(this.localHeight * Renderer.elementSize);
         this.context.style.width = Renderer.pxs(this.localWidth * Renderer.elementSize);
 
-        if (this.isTiled) this.context.style.display = 'flex'; 
+        if (this.tiles) this.context.style.display = 'flex'; 
         else this.context.style.display = 'block';
 
         if (this.startX == -1 && this.startY == -1) {
@@ -65,7 +67,7 @@ export class Window {
         }
 
         // Only continue for a tile based window
-        if (!this.isTiled) return;
+        if (!this.tiles) return;
 
         for (let i = 0; i < this.localWidth; i++) {
 
@@ -82,6 +84,44 @@ export class Window {
                 // element.innerHTML = tiles[i][j].ascii;
                 // element.style.backgroundColor = tiles[i][j].bg;
                 // element.style.color = tiles[i][j].fg;
+
+                // IO.defineMouseOver(element, function(e, c, t) {
+                    
+                //     let parent = (<HTMLElement>e.target).parentNode;
+                //     console.log('parent', parent);
+                //     // console.log('index:', c.children.indexOf(parent));
+                //     let nodes = Array.prototype.slice.call(c.children);
+                //     let x_index = nodes.indexOf(parent);
+                //     let y_index = Array.prototype.slice.call(nodes[x_index].children).indexOf(<HTMLElement>e.target);
+                //     console.log('x-index:', x_index);
+                //     console.log('y-index:', y_index);
+
+                //     (<HTMLElement>c.children[x_index].children[y_index]).innerHTML = 'X';
+                //     (<HTMLElement>c.children[x_index].children[y_index]).style.color = 'black';
+                //     (<HTMLElement>c.children[x_index].children[y_index]).style.backgroundColor = 'yellow';
+
+                // }, this.context, this.tiles);
+
+                // IO.defineMouseOut(element, function(e, c, t) {
+                    
+
+                //     let parent = (<HTMLElement>e.target).parentNode;
+                //     console.log('parent', parent);
+                //     // console.log('index:', c.children.indexOf(parent));
+                //     let nodes = Array.prototype.slice.call(c.children);
+                //     let x_index = nodes.indexOf(parent);
+                //     let y_index = Array.prototype.slice.call(nodes[x_index].children).indexOf(<HTMLElement>e.target);
+                //     console.log('x-index:', x_index);
+                //     console.log('y-index:', y_index);
+
+                //     (<HTMLElement>c.children[x_index].children[y_index]).innerHTML = (<Tile>t[x_index][y_index]).ascii;
+                //     (<HTMLElement>c.children[x_index].children[y_index]).style.color = (<Tile>t[x_index][y_index]).fg;
+                //     (<HTMLElement>c.children[x_index].children[y_index]).style.backgroundColor = (<Tile>t[x_index][y_index]).bg;
+
+                //     let target = e.target;
+                //     target.innerHTML = (<Tile>t[x_index][y_index]).ascii
+
+                // }, this.context, this.tiles);
 
                 colDiv.appendChild(element);
             }

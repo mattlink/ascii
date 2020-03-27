@@ -1,0 +1,41 @@
+{
+    "world": {
+        "rooms": [
+            {
+                "name": "Main",
+
+                "BSPIterations": 0,
+                "CAIterations": 12,
+
+                "width": 100,
+                "height": 100,
+
+                "floorTile": {
+                    "ascii": ".",
+                    "fg": "brown",
+                    "bg": "white"
+                },
+                "wallTile": {
+                    "ascii": "Y",
+                    "fg": "green",
+                    "bg": "white"
+                },
+        
+                "actors": [
+                    { 
+                        "type": "Player",
+                        "x": 10,
+                        "y": 10,
+                        "tile": {
+                            "ascii": "X",
+                            "fg": "red",
+                            "bg": "black"
+                        }
+
+                    }
+                ]
+
+            }
+        ]
+    }
+}

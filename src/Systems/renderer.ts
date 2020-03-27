@@ -8,6 +8,7 @@ import { Camera } from "./camera";
 import { Menu, MenuInfo } from "./Menu/Menu";
 import { MenuTitle, MenuOption, MenuTable } from "./Menu/Menu";
 import { Player } from "../Actors/Player";
+import { IO } from "./io";
 
 export class Renderer {
 
@@ -100,6 +101,7 @@ export class Renderer {
         }
     }
 
+
     public renderRoom(room: Room, context: HTMLElement) {
         for (let i = 0; i < room.getWidth(); i++) {
             for (let j = 0; j < room.getHeight(); j++) {
@@ -116,7 +118,16 @@ export class Renderer {
         }
     }
 
-    public renderView(player: Player, room: Room, context: HTMLElement) {
+    public renderRoomInView(room: Room, viewStartX: number, viewStartY: number, windowName: string) {
+        let window = this.windows[windowName];
+        for (let i = 0; i < window.localWidth; i++) {
+            for (let j = 0; j < window.localHeight; j++) {
+                this.updateTile(i, j, room.getObject(i + viewStartX, j + viewStartY).getTile(), window.getContext());
+            }
+        }
+    }
+
+    public renderPlayerView(player: Player, room: Room, context: HTMLElement) {
         let vd = player.visionDistance;
         while(vd > 0) {
 
@@ -256,8 +267,8 @@ export class Renderer {
         }
     }
 
-    public addWindow(name: string, width: number, height?: number, isTiled?: boolean) {
-        this.windows[name] = new Window(-1, -1, width, height, isTiled);
+    public addWindow(name: string, width: number, height?: number, tiles?: Tile[][]) {
+        this.windows[name] = new Window(-1, -1, width, height, tiles);
         this.windows[name].initContext();
         this.bind(this.windows[name].getContext());
     }

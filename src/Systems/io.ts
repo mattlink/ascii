@@ -1,3 +1,7 @@
+import { Tile } from "../tile";
+import { Game } from "../Game";
+import { Renderer } from "./renderer";
+
 export class IO {
     
     public static validMenuControls: string[] = [
@@ -53,5 +57,17 @@ export class IO {
         document.addEventListener('keydown', function(event){
             func(event.key);
         });
+    }
+
+    public static defineMouseOver(onElem: HTMLElement, func: Function, game: Game) {
+        onElem.onmouseover = function(e) {
+            func(e, game);
+        }
+    }
+
+    public static defineMouseOut(onElem: HTMLElement, func: Function, tiles: Tile[][]) {
+        onElem.onmouseout = function(e) {
+            func(e, tiles);
+        }
     }
 }

@@ -68,6 +68,9 @@ export class Room {
     /* The init method is what defines how a type of room will get generated. */
     init(BSPIterations?: number, CAIterations?: number) {
 
+        BSPIterations = BSPIterations || 0;
+        CAIterations = CAIterations || 0;
+
         // Create area tree to represent internal room structure
         let baseArea = new Area(0, 0, this.getWidth(), this.getHeight());
         let tree = new BSPTree<Area>(null, null, baseArea);
@@ -79,7 +82,7 @@ export class Room {
         // Initialilze every leaf of the BSP Tree
         this.initAreas(tree, (CAIterations > 0));
 
-        this.applyCAtoBSPLeaves(tree, CAIterations);
+        if (CAIterations > 0) this.applyCAtoBSPLeaves(tree, CAIterations);
     }
 
     // abstract placeDoor(toRoom: Room, type: DoorType, x?: number, y?: number): void;
@@ -460,6 +463,8 @@ export class Room {
 
     // Draws an area with wall around it, TODO: more sophisticated area drawing (subarea drawing, etc)
     initArea(area: Area, random?: boolean) {
+
+        console.log("calling initArea");
 
         let x = area.x;
         let y = area.y;
