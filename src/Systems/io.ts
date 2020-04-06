@@ -1,3 +1,4 @@
+import { KeyQueue } from '../util';
 export class IO {
     
     public static validMenuControls: string[] = [
@@ -52,6 +53,12 @@ export class IO {
     public static genericKeyBinding(func: Function) {
         document.addEventListener('keydown', function(event){
             func(event.key);
+        });
+    }
+
+    public static InitKeyQueue(keyQueue: KeyQueue) {
+        document.addEventListener('keydown', function(e){
+            keyQueue.enqueue(e.key);
         });
     }
 }

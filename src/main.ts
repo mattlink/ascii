@@ -12,7 +12,6 @@ import { Tile } from './tile';
 import * as worldConfig from "./world.json";
 import * as menusConfig from "./menus.json";
 import { Floor } from "./Rooms/Environment";
-import { Item } from "./Items/Item";
 import { EquipAction } from "./Actions/EquipAction";
 
 enum GameState {
@@ -31,8 +30,6 @@ class game extends Game {
 
     state: GameState;
     lookCursor: GameObject;
-
-    intermediateKey = null;
 
     load() {
 
@@ -99,10 +96,14 @@ class game extends Game {
 
     }
 
-    update(key: string) {
+    update(dt: number) {
+
+        let key = this.keyQueue.dequeue();
+        if (key == undefined) return;
 
         if (this.state == GameState.Menu) {
-            if (!(IO.validMenuControls.indexOf(key) > -1) && this.intermediateKey == null) return;
+
+            if (!(IO.validMenuControls.indexOf(key) > -1) && !(this.keyQueue.isHolding())) return;
 
             /*if (key == 'ArrowUp') {
                 this.menus[this.activeMenu].selectedElement -= 1;
@@ -125,10 +126,11 @@ class game extends Game {
             }*/
 
             // We're trying to equipt an item
-            if (this.intermediateKey == 'E') {
+            if (this.keyQueue.isHoldingKey('E')) {
+
                 this.attemptEquip(key);
-                
-                this.intermediateKey = null;
+            
+                this.keyQueue.releaseHold();
 
                 this.renderer.showWindows(['game', 'messagebox', 'status_info']);
                 this.state = GameState.Play;
@@ -207,17 +209,17 @@ class game extends Game {
 
         if (this.state == GameState.Play) {
 
-            if (!(IO.validGameControls.indexOf(key) > -1) && this.intermediateKey == null) return;
+            if (!(IO.validGameControls.indexOf(key) > -1) && !(this.keyQueue.isHolding())) return;
 
             /* Equipt Item */
             if (key == 'E') {
                 this.world.clearMessage();
                 this.world.appendMessage("Which item would you like to equip? (choose letter) or [space] to view inventory.");
-                this.intermediateKey = 'E';
+                this.keyQueue.hold('E');
                 return;
             }
 
-            if (this.intermediateKey == 'E') {
+            if (this.keyQueue.isHoldingKey('E') ) {
 
                 // Open up inventory 
                 if (key == ' ') {
@@ -227,10 +229,12 @@ class game extends Game {
                     return;
                 }
 
-                this.attemptEquip(key);
+                if (!(key == undefined)) {
+                    this.attemptEquip(key);
                 
-                this.intermediateKey = null;
-                return;
+                    this.keyQueue.releaseHold();
+                    return;
+                }
             }
 
              // switch state to "viewing inventory"
@@ -346,8 +350,4 @@ class game extends Game {
 }
 
 let g = new game();
-g.load();
-IO.genericKeyBinding(function(key: string) {
-    g.update(key);
-    g.draw();
-})
+g.run();

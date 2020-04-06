@@ -4,7 +4,7 @@
             {
                 "name": "Cave",
 
-                "BSPIterations": 2,
+                "BSPIterations": 0,
                 "CAIterations": 12,
 
                 "width": 50,
