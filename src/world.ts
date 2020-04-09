@@ -1,17 +1,16 @@
 import { Room } from './Rooms/Room';
+import { Level } from './Level';
 import { Player } from './Actors/Player';
 
 // Currently, the World just maintains all the rooms and manages turns taken
 
 export class World {
     
-    private rooms: Room[] = [];
+    private levels: Level[] = [];
 
-    private activeRoom: Room;
+    private activeLevel: Level;
 
     private player: Player = null;
-
-    private activeRoomChanged: boolean = false;
 
     private turnsPassed: number = 0;
 
@@ -24,12 +23,8 @@ export class World {
     takeTurn() {
         this.messages = [];
 
-        // this.rooms.forEach(room => {
-        //     room.handleActorTurns(this);
-        // });
-
         // instead of having every room in existence take a turn, only have the active room take a turn:
-        this.activeRoom.handleActorTurns(this);
+        this.activeLevel.takeTurn(this);
 
         this.turnsPassed++;
 
@@ -38,6 +33,19 @@ export class World {
                 this.messageHistory.push(message);
             });
         }
+    }
+
+    addLevel(level: Level) {
+        if (this.activeLevel == null) this.activeLevel = level;
+        this.levels.push(level);
+    }
+    
+    getActiveLevel(): Level {
+        return this.activeLevel;
+    }
+
+    getActiveRoom(): Room {
+        return this.activeLevel.getActiveRoom();
     }
 
     clearMessage() {
@@ -54,51 +62,12 @@ export class World {
     getTurnsPassed() {
         return this.turnsPassed;
     }
-
-    getActiveRoomChanged() {
-        if (this.activeRoomChanged) {
-            this.activeRoomChanged = false;
-            return true;
-        }
-        else return false;
-    }
-
+    
     getPlayer() {
         return this.player;
     }
 
     setPlayer(player: Player) {
         this.player = player;
-    }
-
-
-    getActiveRoom() {
-        return this.activeRoom;
-    }
-
-    setActiveRoom(room: Room) {
-        this.activeRoom = null;
-        this.activeRoom = room;
-        this.activeRoomChanged = true;
-    }
-
-    addRoom(room: Room) {
-        if (this.rooms.length == 0) this.activeRoom = room;
-        else {
-            // Place a door from the activeRoom to the new room
-            // this.activeRoom.placeDoor(room);
-            // room.placeDoor(this.activeRoom);
-
-            // // Place a door leading back from the new to the room that is currently active
-            // room.placeDoor(new Door(this.activeRoom));
-        }
-
-        this.rooms.push(room);   
-    }
-
-    getRooms() {
-        return this.rooms;
-    }
-
-    
+    }    
 }

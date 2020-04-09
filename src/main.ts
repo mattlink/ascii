@@ -63,6 +63,7 @@ class game extends Game {
 
         this.menus['status_info'] = new Menu();
         this.menus['status_info'].addElement(new MenuInfo('Turns: 0'));
+        this.menus['status_info'].addElement(new MenuInfo('Room: ' + this.world.getActiveRoom().name));
         
         this.renderer.addWindow('messagebox', Menu.width, 1);
         this.renderer.addWindow('game', Menu.width, Menu.height, true);
@@ -306,8 +307,14 @@ class game extends Game {
             (<MenuInfo>this.menus['messagebox'].elements[0]).content = this.world.getCurrentMessages().join(" ");            
             this.renderer.renderMenu(this.menus['messagebox'], this.renderer.windows['messagebox'].getContext());
 
+            if (this.world.getActiveLevel().getActiveRoomChanged()) {
+                this.renderer.renderRoom(this.world.getActiveRoom(), this.renderer.windows['game'].getContext());
+            }
+
             // Draw everything /around/ each actor
+            // console.log("DRAWING (everything around) ACTORS IN " + this.world.getActiveRoom().name);
             this.world.getActiveRoom().getActors().forEach(actor => {
+                // console.log("Drawing actor: ", actor.name, "(", actor.x, ", ", actor.y,")");
                 this.renderer.renderObjectContext(actor, this.world.getActiveRoom(), this.renderer.windows['game'].getContext());
             });
 
@@ -331,6 +338,7 @@ class game extends Game {
 
             // display status info
             (<MenuInfo>this.menus['status_info'].elements[0]).content = 'Turns: ' + this.world.getTurnsPassed();
+            (<MenuInfo>this.menus['status_info'].elements[1]).content = 'Room: ' + this.world.getActiveRoom().name;
             this.renderer.renderMenu(this.menus['status_info'], this.renderer.windows['status_info'].getContext());
 
         }

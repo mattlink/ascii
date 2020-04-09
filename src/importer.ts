@@ -9,6 +9,7 @@ import { Item } from "./Items/Item";
 import { Shovel } from "./Items/Shovel";
 import { Sword } from "./Items/Sword";
 import { Menu, MenuOption, MenuTitle, MenuInfo } from "./Systems/Menu/Menu";
+import { Level } from "./Level";
 
 export class Importer {
 
@@ -70,15 +71,45 @@ export class Importer {
         
         let world = new World();
 
-        if (json.world.rooms) {
+        if (json.world.levels) {
+            json.world.levels.forEach(levelJson => {
+
+                if (!levelJson.defaultRoom) {
+                    console.error("IMPORTER (Level): Please provide a defaultRoom to use for this level. Edit the config file.");
+                }
+                let defRoom = this.importRoom({"room": levelJson.defaultRoom});
+                let level = new Level(levelJson.name, levelJson.depth, defRoom);
+
+                // if (levelJson.rooms) {
+                //     levelJson.rooms.forEach(roomJson => {
+                //         let room = this.importRoom({"room": roomJson});
+                //         level.addAvailableRoom(room);
+                //     });
+                // }
+                
+                level.init();
+                world.addLevel(level);
+            })
+        }
+
+        /*if (json.world.rooms) {
             json.world.rooms.forEach(roomJson => {
                 let room = this.importRoom({ "room": roomJson });
                 world.addRoom(room);
             });
-        }
+        }*/
 
         return world;
     }
+
+    // public static importLevel(json): Level {
+    //     if (!json.level) {
+    //         console.error("IMPORTER (Level): No `level` provided. Please alter the config file.");
+    //         return;
+    //     }
+
+    //     return level;
+    // }
 
     public static importRoom(json): Room {
 
@@ -98,7 +129,7 @@ export class Importer {
         }
 
         // initialize the room before loading in actors, and items
-        room.init((json.room.BSPIterations || 0), (json.room.CAIterations || 0)); 
+        // room.init((json.room.BSPIterations || 0), (json.room.CAIterations || 0)); 
         
         if (json.room.actors) {
             json.room.actors.forEach(actor => {

@@ -1,7 +1,10 @@
 import { Action, ActionDirection } from "./Action";
 import { Actor }  from "../Actors/Actor";
 import { Floor, Wall } from "../Rooms/Environment";
+import { Door, DoorType } from "../Rooms/Door";
+
 import { World } from "../world";
+import { DoorAction } from "./DoorAction";
 
 export class WalkAction extends Action {
     
@@ -38,6 +41,16 @@ export class WalkAction extends Action {
         if (!toObject.collides) {
             if (fromObject instanceof Floor) {
                 (<Floor>room.objects[this.actor.x][this.actor.y]).removeOccupation();
+            }
+
+            // Check if the actor just walked through a door:
+            if (toObject instanceof Door) {
+                this.actor.x = toObject.x;
+                this.actor.y = toObject.y;
+
+                let newAction = new DoorAction(this.actor);
+                newAction.perform(world);
+                return;
             }
 
             // actually move in desired direction

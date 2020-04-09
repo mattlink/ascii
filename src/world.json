@@ -1,86 +1,35 @@
 {
     "world": {
-        "rooms": [
-            {
-                "name": "Cave",
 
-                "BSPIterations": 0,
-                "CAIterations": 12,
+        "levels":[
+            { 
+                "name": "Level0",
+                "depth": 0,
+                "width": 3,
+                "height": 3,
 
-                "width": 50,
-                "height": 30,
-
-                "floorTile": {
-                    "ascii": ".",
-                    "fg": "gray",
-                    "bg": "black"
-                },
-                "wallTile": {
-                    "ascii": "Y",
-                    "fg": "green",
-                    "bg": "black"
-                },
-        
-                "actors": [
-                    { 
-                        "type": "Player",
-                        "x": 10,
-                        "y": 10,
-                        "tile": {
-                            "ascii": "@",
-                            "fg": "red",
-                            "bg": "black"
-                        }
-
-                    },
-                    { 
-                        "type": "Mob",
-                        "name": "goat",
-                        "x": 12,
-                        "y": 12,
-                        "tile": {
-                            "ascii": "g",
-                            "fg": "white",
-                            "bg": "black"
-                        }
-                    },
+                "defaultRoom":
                     {
-                        "type": "Mob",
-                        "name": "goblin",
-                        "x": 10,
-                        "y": 8,
-                        "tile": {
-                            "ascii": "O",
-                            "fg": "orange",
+                        "name": "Cave",
+
+                        "BSPIterations": 0,
+                        "CAIterations": 12,
+
+                        "width": 50,
+                        "height": 30,
+
+                        "floorTile": {
+                            "ascii": ".",
+                            "fg": "gray",
+                            "bg": "black"
+                        },
+                        "wallTile": {
+                            "ascii": "Y",
+                            "fg": "green",
                             "bg": "black"
                         }
                     }
-                ],
-                "items": [
-                    {
-                        "type": "Sword",
-                        "name": "sword",
-                        "x": 5,
-                        "y": 5,
-                        "tile": {
-                            "ascii": "i",
-                            "fg": "orange",
-                            "bg": "white"
-                        }
-                    },
-                    {
-                        "type": "Shovel",
-                        "name": "shovel",
-                        "x": 7,
-                        "y": 5,
-                        "tile": {
-                            "ascii": "^",
-                            "fg": "white",
-                            "bg": "green"
-                        }
-                    }
-                ]
-
+                
             }
         ]
     }

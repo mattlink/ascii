@@ -1,4 +1,5 @@
 import { Actor } from "../Actors/Actor";
+import { Player } from "../Actors/Player";
 import { Action } from "./Action";
 import { World } from "../world";
 import { Floor } from "../Rooms/Environment";
@@ -18,7 +19,7 @@ export class PickupItemAction extends Action {
             let item = <Item>(<Floor>onObject).getObjects().shift();
 
             this.actor.addInventoryItem(item);
-            world.appendMessage("You pick up the " + item.name + ".");
+            if (this.actor instanceof Player) world.appendMessage("You pick up the " + item.name + ".");
 
             // If the actor had nothing else in their inventory, equip this item
             if (Object.keys(this.actor.inventory).length == 1) {

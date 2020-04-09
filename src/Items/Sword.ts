@@ -2,9 +2,9 @@ import { Action, ActionDirection } from "../Actions/Action";
 import { Actor } from "../Actors/Actor";
 import { World } from "../world";
 import { Wall, Floor } from "../Rooms/Environment";
-import { GameObject } from "../GameObject";
 import { Item } from "./Item";
 import { Tile } from "../tile";
+import { Player } from "../Actors/Player";
 
 class SwordAction extends Action {
     private dir: ActionDirection;
@@ -32,7 +32,7 @@ class SwordAction extends Action {
             let hits = true; // for now, always hit
             if (hits) {
                 
-                world.appendMessage("You hit the " + target.name + ".");
+                if (this.actor instanceof Player) world.appendMessage("You hit the " + target.name + ".");
 
                 // TODO: target.health -= sword.damage + actor.damageMultiplier ...
                 
@@ -40,7 +40,8 @@ class SwordAction extends Action {
                 target.death(world).forEach(obj => {
                     (<Floor>room.objects[toPosX][toPosY]).addObject(obj);
                 });
-                world.appendMessage("You kill the " + target.name + ".");
+
+                if (this.actor instanceof Player) world.appendMessage("You kill the " + target.name + ".");
 
                 (<Floor>obj).removeOccupation();
                 room.actors = room.actors.filter(a => {

@@ -1,3 +1,4 @@
+import { Player } from "../Actors/Player";
 import { Actor } from "../Actors/Actor";
 import { GameObject } from "../GameObject";
 import { World } from "../world";
@@ -15,12 +16,12 @@ export class EquipAction extends Action {
 
     perform(world: World) {
         if (!(this.item instanceof Item)) {
-            world.appendMessage("You fail to equip the " + this.item.name + ".");
+            if (this.actor instanceof Player) world.appendMessage("You fail to equip the " + this.item.name + ".");
             return;
         }
 
         this.actor.equipt = <Item>this.item;
-        world.appendMessage("You equip the " + this.item.name + ".");
+        if (this.actor instanceof Player) world.appendMessage("You equip the " + this.item.name + ".");
         return;
     }
 

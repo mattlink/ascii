@@ -66,7 +66,7 @@ export class Room {
     }
 
     /* The init method is what defines how a type of room will get generated. */
-    init(BSPIterations?: number, CAIterations?: number) {
+    init(BSPIterations?: number, CAIterations?: number, prevRoom?: Room, doorDirToPrevRoom?: DoorType) {
 
         // Create area tree to represent internal room structure
         let baseArea = new Area(0, 0, this.getWidth(), this.getHeight());
@@ -80,10 +80,46 @@ export class Room {
         this.initAreas(tree, (CAIterations > 0));
 
         this.applyCAtoBSPLeaves(tree, CAIterations);
+
+        if (prevRoom == undefined || doorDirToPrevRoom == undefined) return;
+        this.placeDoor(prevRoom, doorDirToPrevRoom);
     }
 
-    // abstract placeDoor(toRoom: Room, type: DoorType, x?: number, y?: number): void;
-    placeDoor(toRoom: Room, type: DoorType, x1?: number, y1?: number) {
+    placeDoor(toRoom: Room, dir: DoorType, x?: number, y?: number) {
+
+        if (dir == DoorType.NorthDoor) {
+            let doorx = x || Math.floor(Math.random() * this.getWidth());
+            let doory = this.getHeight() - 1;
+            this.objects[doorx][doory] = new Door(DoorType.NorthDoor, doorx, doory, this.wallDoorTile, toRoom);
+            return this.objects[doorx][doory];
+        }
+        if (dir == DoorType.SouthDoor) {
+            let doorx = x || Math.floor(Math.random() * this.getWidth());
+            let doory = 0;
+            this.objects[doorx][doory] = new Door(DoorType.SouthDoor, doorx, doory, this.wallDoorTile, toRoom);
+            return this.objects[doorx][doory];
+        }
+        if (dir == DoorType.WestDoor) {
+            let doorx = 0;
+            let doory = y || Math.floor(Math.random() * this.getHeight());
+            this.objects[doorx][doory] = new Door(DoorType.WestDoor, doorx, doory, this.wallDoorTile, toRoom);
+            return this.objects[doorx][doory];
+
+        }
+        if (dir == DoorType.EastDoor) {
+            let doorx = this.getWidth() - 1;
+            let doory = y || Math.floor(Math.random() * this.getHeight());
+            this.objects[doorx][doory] = new Door(DoorType.EastDoor, doorx, doory, this.wallDoorTile, toRoom);
+            return this.objects[doorx][doory];
+        }
+
+        return null;
+    }
+
+    //
+    // LEAVING COMMENT TO PRESERVE HOW TRAP DOORS / LADDER DOORS WERE IMPLEMENTED
+    //
+    /*placeDoorOld(toRoom: Room, type: DoorType, x1?: number, y1?: number) {
         switch (type) {
 
             case DoorType.TrapDoor: {
@@ -107,49 +143,8 @@ export class Room {
                 // break;
             }
 
-            case DoorType.NorthDoor: {
-                let y = 0;
-                let x = Math.floor(this.getWidth() / 2);
-                console.log('Placing NorthDoor: ', x, y);
-                this.objects[x][y] = new Door(x, y, this.wallDoorTile, toRoom);
-                return { x, y };
-                // toRoom.placeDoor(this, DoorType.SouthDoor);
-                break;
-            }
-
-            case DoorType.SouthDoor: {
-                let y = this.getHeight() - 1;
-                let x = Math.floor(this.getWidth() / 2);
-                this.objects[x][y] = new Door(x, y, this.wallDoorTile, toRoom);
-                return { x, y };
-                // toRoom.placeDoor(this, DoorType.NorthDoor);
-                break;
-            }
-
-            case DoorType.EastDoor: {
-                let y = this.getHeight() / 2;
-                let x = 0;
-                this.objects[x][y] = new Door(x, y, this.wallDoorTile, toRoom);
-                return { x, y };
-                // toRoom.placeDoor(this, DoorType.WestDoor);
-                break;
-            }
-
-            case DoorType.WestDoor: {
-                let y = this.getHeight() / 2;
-                let x = this.getWidth() - 1;
-                this.objects[x][y] = new Door(x, y, this.wallDoorTile, toRoom);
-                return { x, y };
-                // toRoom.placeDoor(this, DoorType.EastDoor);
-                break;
-            }
-
-            default: {
-                console.log("DoorType:", type, " not supported by room:", this.name);
-                break;
-            }
         }
-    }
+    }*/
 
     placeItem(item: Item) {
         this.objects[item.x][item.y] = new Floor(item.x, item.y, this.floorTile); // reset this tile to a floor so that we can actually put an item on it
@@ -163,6 +158,7 @@ export class Room {
     }
 
     addActor(actor: Actor) {
+        console.log("actor added to room");
         this.actors.push(actor);
         this.objects[actor.x][actor.y] = new Floor(actor.x, actor.y, this.floorTile);
         (<Floor>this.objects[actor.x][actor.y]).setOccupation(actor);
@@ -207,8 +203,6 @@ export class Room {
         if (this.getObject(object.x,object.y) instanceof Wall) {
             // Find the nearest tiles that is not a wall
             
-            
-            // let objects = world.getActiveRoom().getObject();
             let d = 1;
             let x = object.x;
             let y = object.y;
