@@ -100,10 +100,10 @@ export class Renderer {
         }
     }
 
-    public renderRoom(room: Room, context: HTMLElement) {
+    public renderRoom(room: Room, contextName: string) {
         for (let i = 0; i < room.getWidth(); i++) {
             for (let j = 0; j < room.getHeight(); j++) {
-                this.renderGameObject(room.getObject(i, j), context);
+                this.renderGameObject(room.getObject(i, j), this.windows[contextName].getContext());
             }
         }
     }
@@ -219,26 +219,40 @@ export class Renderer {
     public renderObjectContext(obj: GameObject, room: Room, context: HTMLElement) {
         // If the player is in debug render their movements and local contexts in yellow
         if (obj instanceof Actor && (<Actor>obj).debug) {
-            this.updateTile(obj.x - 1, obj.y, new Tile(room.getObject(obj.x - 1, obj.y).getTile().ascii, room.getObject(obj.x - 1, obj.y).getTile().fg, 'yellow'), context);
-            this.updateTile(obj.x + 1, obj.y, new Tile(room.getObject(obj.x + 1, obj.y).getTile().ascii, room.getObject(obj.x + 1, obj.y).getTile().fg, 'yellow'), context);
-            this.updateTile(obj.x, obj.y - 1, new Tile(room.getObject(obj.x, obj.y - 1).getTile().ascii, room.getObject(obj.x, obj.y - 1).getTile().fg, 'yellow'), context);
-            this.updateTile(obj.x, obj.y + 1, new Tile(room.getObject(obj.x, obj.y + 1).getTile().ascii, room.getObject(obj.x, obj.y + 1).getTile().fg, 'yellow'), context);
+            if (!(obj.x == 0))
+                this.updateTile(obj.x - 1, obj.y, new Tile(room.getObject(obj.x - 1, obj.y).getTile().ascii, room.getObject(obj.x - 1, obj.y).getTile().fg, 'yellow'), context);
+            if (!(obj.x == room.getWidth() - 1))
+                this.updateTile(obj.x + 1, obj.y, new Tile(room.getObject(obj.x + 1, obj.y).getTile().ascii, room.getObject(obj.x + 1, obj.y).getTile().fg, 'yellow'), context);
+            if (!(obj.y == 0))
+                this.updateTile(obj.x, obj.y - 1, new Tile(room.getObject(obj.x, obj.y - 1).getTile().ascii, room.getObject(obj.x, obj.y - 1).getTile().fg, 'yellow'), context);
+            if (!(obj.y == room.getHeight() - 1))
+                this.updateTile(obj.x, obj.y + 1, new Tile(room.getObject(obj.x, obj.y + 1).getTile().ascii, room.getObject(obj.x, obj.y + 1).getTile().fg, 'yellow'), context);
 
-            this.updateTile(obj.x - 1, obj.y - 1, new Tile(room.getObject(obj.x - 1, obj.y - 1).getTile().ascii, room.getObject(obj.x - 1, obj.y - 1).getTile().fg, 'yellow'), context);
-            this.updateTile(obj.x + 1, obj.y - 1, new Tile(room.getObject(obj.x + 1, obj.y - 1).getTile().ascii, room.getObject(obj.x + 1, obj.y - 1).getTile().fg, 'yellow'), context);
-            this.updateTile(obj.x - 1, obj.y + 1, new Tile(room.getObject(obj.x - 1, obj.y + 1).getTile().ascii, room.getObject(obj.x - 1, obj.y + 1).getTile().fg, 'yellow'), context);
-            this.updateTile(obj.x + 1, obj.y + 1, new Tile(room.getObject(obj.x - 1, obj.y + 1).getTile().ascii, room.getObject(obj.x - 1, obj.y + 1).getTile().fg, 'yellow'), context);
+            if (!(obj.x == 0 || obj.y == 0))
+                this.updateTile(obj.x - 1, obj.y - 1, new Tile(room.getObject(obj.x - 1, obj.y - 1).getTile().ascii, room.getObject(obj.x - 1, obj.y - 1).getTile().fg, 'yellow'), context);
+            if (!(obj.x == room.getWidth() - 1|| obj.y == 0))
+                this.updateTile(obj.x + 1, obj.y - 1, new Tile(room.getObject(obj.x + 1, obj.y - 1).getTile().ascii, room.getObject(obj.x + 1, obj.y - 1).getTile().fg, 'yellow'), context);
+            if (!(obj.x == 0 || obj.x == room.getHeight() - 1))
+                this.updateTile(obj.x - 1, obj.y + 1, new Tile(room.getObject(obj.x - 1, obj.y + 1).getTile().ascii, room.getObject(obj.x - 1, obj.y + 1).getTile().fg, 'yellow'), context);
+            if (!(obj.x == room.getWidth() - 1 || obj.y == room.getHeight() - 1))
+                this.updateTile(obj.x + 1, obj.y + 1, new Tile(room.getObject(obj.x - 1, obj.y + 1).getTile().ascii, room.getObject(obj.x - 1, obj.y + 1).getTile().fg, 'yellow'), context);
         }
         else {
-            this.renderGameObject(room.getObject(obj.x - 1, obj.y), context);
-            this.renderGameObject(room.getObject(obj.x + 1, obj.y), context);
-            this.renderGameObject(room.getObject(obj.x, obj.y - 1), context);
-            this.renderGameObject(room.getObject(obj.x, obj.y + 1), context);
+            // Render in all 4 cardinal directions
+            if (!(obj.x == 0)) this.renderGameObject(room.getObject(obj.x - 1, obj.y), context);
+            if (!(obj.x == room.getWidth() - 1)) this.renderGameObject(room.getObject(obj.x + 1, obj.y), context);
+            if (!(obj.y == 0)) this.renderGameObject(room.getObject(obj.x, obj.y - 1), context);
+            if (!(obj.y == room.getHeight() - 1)) this.renderGameObject(room.getObject(obj.x, obj.y + 1), context);
 
-            this.renderGameObject(room.getObject(obj.x - 1, obj.y - 1), context);
-            this.renderGameObject(room.getObject(obj.x + 1, obj.y - 1), context);
-            this.renderGameObject(room.getObject(obj.x - 1, obj.y + 1), context);
-            this.renderGameObject(room.getObject(obj.x + 1, obj.y + 1), context);
+            // Render diagonals
+            if (!(obj.x == 0 || obj.y == 0))
+                this.renderGameObject(room.getObject(obj.x - 1, obj.y - 1), context);
+            if (!(obj.x == room.getWidth() - 1|| obj.y == 0)) 
+                this.renderGameObject(room.getObject(obj.x + 1, obj.y - 1), context);
+            if (!(obj.x == 0 || obj.x == room.getHeight() - 1))
+                this.renderGameObject(room.getObject(obj.x - 1, obj.y + 1), context);
+            if (!(obj.x == room.getWidth() - 1 || obj.y == room.getHeight() - 1)) 
+                this.renderGameObject(room.getObject(obj.x + 1, obj.y + 1), context);
         }
     }
 

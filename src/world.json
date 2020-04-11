@@ -5,8 +5,6 @@
             { 
                 "name": "Level0",
                 "depth": 0,
-                "width": 3,
-                "height": 3,
 
                 "defaultRoom":
                     {

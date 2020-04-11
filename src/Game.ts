@@ -1,5 +1,7 @@
 import { KeyQueue } from './util';
 import { IO } from './Systems/io';
+import { Renderer } from './Systems/renderer';
+import { World } from './world';
 
 export abstract class Game {
 
@@ -10,7 +12,12 @@ export abstract class Game {
     private last;
     private step;
 
+    protected algoVis = false;
+
     constructor() {}
+
+    abstract renderer: Renderer;
+    abstract world: World;
 
     // used to load json configs, audio samples, etc. Called one time after invoking run().
     abstract load();

@@ -1,5 +1,4 @@
 import { Room } from "./Room";
-import { Player } from "../Actors/Player";
 import { Tile } from "../tile";
 import { GameObject } from "../GameObject";
 
@@ -25,6 +24,7 @@ export class Door extends GameObject {
         super(x, y, tile);
         this.toRoom = toRoom;
         this.type = type;
+        this.name = 'Door';
     }
 
 }

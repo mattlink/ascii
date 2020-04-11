@@ -1,5 +1,4 @@
 // Used for converting JSON into object instances
-
 import { Room } from "./Rooms/Room";
 import { Player } from "./Actors/Player";
 import { Tile } from "./tile";
@@ -78,14 +77,7 @@ export class Importer {
                     console.error("IMPORTER (Level): Please provide a defaultRoom to use for this level. Edit the config file.");
                 }
                 let defRoom = this.importRoom({"room": levelJson.defaultRoom});
-                let level = new Level(levelJson.name, levelJson.depth, defRoom);
-
-                // if (levelJson.rooms) {
-                //     levelJson.rooms.forEach(roomJson => {
-                //         let room = this.importRoom({"room": roomJson});
-                //         level.addAvailableRoom(room);
-                //     });
-                // }
+                let level = new Level(world, levelJson.name, levelJson.depth, defRoom);
                 
                 level.init();
                 world.addLevel(level);
@@ -101,15 +93,6 @@ export class Importer {
 
         return world;
     }
-
-    // public static importLevel(json): Level {
-    //     if (!json.level) {
-    //         console.error("IMPORTER (Level): No `level` provided. Please alter the config file.");
-    //         return;
-    //     }
-
-    //     return level;
-    // }
 
     public static importRoom(json): Room {
 

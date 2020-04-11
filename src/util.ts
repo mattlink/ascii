@@ -31,14 +31,6 @@ export class KeyQueue {
     isHolding() {
         return !(this.holding == null);
     }
-    
-
-
-
-    // static s2Key(key: string): string {
-    //     return
-
-    // }
 }
 
 // enum Mouse {
@@ -49,6 +41,34 @@ export class KeyQueue {
 // export class MouseQueue {
 
 // }
+
+// A queue for holding steps of a path
+export class PathQueue {
+    
+    
+    private queue: [number, number][] = [];
+
+    // public start: [number, number];
+
+    // constructor(start: [number, number]) {
+        // this.start = start;
+    // }
+
+
+    enqueue(step: [number, number]) {
+        this.queue.push(step);
+    }
+    dequeue(): [number, number] {
+        return this.queue.pop()
+    }
+    peek(): [number, number] {
+        return this.queue[this.queue.length - 1];
+    }
+    length(): number {
+        return this.queue.length;
+    }
+
+}
 
 
 export class BSPTree<T> {

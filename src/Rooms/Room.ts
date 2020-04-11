@@ -4,8 +4,9 @@ import { Actor } from '../Actors/Actor';
 import { World } from '../world';
 import { Door, DoorType } from './Door';
 import { Wall, Floor, Tree } from './Environment';
-import { BSPTree } from '../util';
+import { BSPTree, PathQueue } from '../util';
 import { Item } from '../Items/Item';
+import { Game } from '../Game';
 
 // An instance of Area represents some area of a Room, usually walled off
 // Generally we apply our proc gen algorithms to Areas rather than ActionDirection to Rooms
@@ -32,10 +33,7 @@ export class Room {
     public actors: Actor[];
     public objects: GameObject[][];
 
-    public northDoor: Door = null;
-    public southDoor: Door = null;
-    public westDoor: Door = null;
-    public eastDoor: Door = null;
+    private doors: Door[];
 
     private wallDoorTile: Tile = new Tile('*', 'orange', 'black');
     private trapDoorTile: Tile = new Tile('#', 'orange', 'black');
@@ -49,10 +47,13 @@ export class Room {
     public floorTile = new Tile('.', this.defaultFgColor, this.defaultBgColor);
     public wallTile = new Tile('#', this.defaultFgColor, this.defaultBgColor);
 
+    public fullyGenerated = false;
+
     constructor(width: number, height: number, name: string) {
         this.width = width;
         this.height = height;
         this.objects = [];
+        this.doors = [];
         this.actors = [];
         this.name = name;
 
@@ -89,20 +90,23 @@ export class Room {
 
         if (dir == DoorType.NorthDoor) {
             let doorx = x || Math.floor(Math.random() * this.getWidth());
-            let doory = this.getHeight() - 1;
+            let doory = 0;
             this.objects[doorx][doory] = new Door(DoorType.NorthDoor, doorx, doory, this.wallDoorTile, toRoom);
+            this.doors.push(<Door>this.objects[doorx][doory]);
             return this.objects[doorx][doory];
         }
         if (dir == DoorType.SouthDoor) {
             let doorx = x || Math.floor(Math.random() * this.getWidth());
-            let doory = 0;
+            let doory = this.getHeight() - 1;
             this.objects[doorx][doory] = new Door(DoorType.SouthDoor, doorx, doory, this.wallDoorTile, toRoom);
+            this.doors.push(<Door>this.objects[doorx][doory]);
             return this.objects[doorx][doory];
         }
         if (dir == DoorType.WestDoor) {
             let doorx = 0;
             let doory = y || Math.floor(Math.random() * this.getHeight());
             this.objects[doorx][doory] = new Door(DoorType.WestDoor, doorx, doory, this.wallDoorTile, toRoom);
+            this.doors.push(<Door>this.objects[doorx][doory]);
             return this.objects[doorx][doory];
 
         }
@@ -110,6 +114,7 @@ export class Room {
             let doorx = this.getWidth() - 1;
             let doory = y || Math.floor(Math.random() * this.getHeight());
             this.objects[doorx][doory] = new Door(DoorType.EastDoor, doorx, doory, this.wallDoorTile, toRoom);
+            this.doors.push(<Door>this.objects[doorx][doory]);
             return this.objects[doorx][doory];
         }
 
@@ -162,6 +167,10 @@ export class Room {
         this.actors.push(actor);
         this.objects[actor.x][actor.y] = new Floor(actor.x, actor.y, this.floorTile);
         (<Floor>this.objects[actor.x][actor.y]).setOccupation(actor);
+    }
+
+    getDoors() {
+        return this.doors;
     }
 
     getActors() {
@@ -513,5 +522,55 @@ export class Room {
             }
         }
 
+    }
+
+    /**
+     * Method to clear a path between two game objects.
+     * This is useful for making sure the player can reach the door, and there is at least one path
+     * between two doors or objectives in the room.
+     */
+    clearPathBetween(obj1: GameObject, obj2: GameObject) {
+        // let pathQueue = new PathQueue();
+
+        // The cursor which clears the path will be a cross: 1 tiles tall and 1 tiles wide
+        let dx = obj2.x - obj1.x;
+        let dy = obj2.y - obj1.y;
+
+        let cursorX = obj1.x;
+        let cursorY = obj1.y;
+
+        while(!(Math.abs(dx) <= 1 && Math.abs(dy) <= 1)) {
+
+            let stepX = 0;
+            let stepY = 0;
+
+            dx = obj2.x - cursorX;
+            dy = obj2.y - cursorY;
+            
+            // correct cursor being on the edge of the room
+            if (cursorX == 0) cursorX = 1;
+            if (cursorY == 0) cursorY = 1;
+            if (cursorX == this.getWidth() - 1) cursorX -= 1;
+            if (cursorY == this.getHeight() - 1) cursorY -= 1;
+
+            if (Math.abs(dx) > Math.abs(dy)) {
+                // adjust the x pos
+                cursorX += 1  * (dx > 0 ? 1 : -1);
+                // stepX = 1  * (dx > 0 ? 1 : -1);
+
+            } else if (Math.abs(dy) >= Math.abs(dx)) {
+                // if dx == dy or dy > dx then adjust the y pos
+                cursorY += 1 * (dy > 0 ? 1 : - 1);
+                // stepY = 1 * (dy > 0 ? 1 : - 1);
+            }
+
+            // pathQueue.enqueue([cursorX, cursorY]);
+
+            // clear the actual area around the 1x1 cursor
+            // this.objects[cursorX][cursorY] = new Floor(cursorX, cursorY, new Tile(this.floorTile.ascii, 'black', 'yellow'));
+            this.objects[cursorX][cursorY] = new Floor(cursorX, cursorY, this.floorTile);
+        }
+        
+        // return pathQueue;
     }
 }
