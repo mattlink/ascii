@@ -47,6 +47,7 @@ export class Player extends Actor {
             this.nextAction = new WalkAction(ActionDirection.DownRight, this);
         }
 
+        // other world interactions
         else if (key == ',' || key == 'P') {
             this.nextAction = new PickupItemAction(this);
         }

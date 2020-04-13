@@ -249,7 +249,7 @@ export class Renderer {
                 this.renderGameObject(room.getObject(obj.x - 1, obj.y - 1), context);
             if (!(obj.x == room.getWidth() - 1|| obj.y == 0)) 
                 this.renderGameObject(room.getObject(obj.x + 1, obj.y - 1), context);
-            if (!(obj.x == 0 || obj.x == room.getHeight() - 1))
+            if (!(obj.x == 0 || obj.y == room.getHeight() - 1))
                 this.renderGameObject(room.getObject(obj.x - 1, obj.y + 1), context);
             if (!(obj.x == room.getWidth() - 1 || obj.y == room.getHeight() - 1)) 
                 this.renderGameObject(room.getObject(obj.x + 1, obj.y + 1), context);

@@ -1,8 +1,10 @@
 import { Room } from "./Rooms/Room";
 import { World } from "./world";
 import { Player } from "./Actors/Player";
+import { Mob } from "./Actors/Mob";
 import { Tile } from "./tile";
 import { DoorType, Door } from "./Rooms/Door";
+import { Sword } from './Items/Sword';
 import { Game } from "./Game";
 import { PathQueue } from './util';
 
@@ -50,8 +52,13 @@ export class Level {
             if (i == 0) {
                 // create a player!
                 let player = new Player(20, 20, new Tile('C', 'purple', 'black'));
+                player.equipt = new Sword(player.x, player.y, new Tile('(', 'red', 'purple'));
                 this.world.setPlayer(player);
                 room.addActor(player);
+
+                let mob = new Mob('Mob 1', 4, 4, new Tile('h', 'red', 'green'));
+                mob.equipt = new Sword(mob.x, mob.y, new Tile('(', 'red', 'purple'));
+                room.addActor(mob);
             }
             this.rooms.push(room);
         }

@@ -5,6 +5,7 @@ import { Wall, Floor } from "../Rooms/Environment";
 import { Item } from "./Item";
 import { Tile } from "../tile";
 import { Player } from "../Actors/Player";
+import { Mob } from "../Actors/Mob";
 
 class SwordAction extends Action {
     private dir: ActionDirection;
@@ -33,6 +34,7 @@ class SwordAction extends Action {
             if (hits) {
                 
                 if (this.actor instanceof Player) world.appendMessage("You hit the " + target.name + ".");
+                else if (this.actor instanceof Mob && target instanceof Player) world.appendMessage("The " + this.actor.name + " hits you.");
 
                 // TODO: target.health -= sword.damage + actor.damageMultiplier ...
                 

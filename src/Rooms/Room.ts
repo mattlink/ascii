@@ -1,6 +1,7 @@
 import { GameObject } from '../GameObject';
 import { Tile } from '../tile';
 import { Actor } from '../Actors/Actor';
+import { Mob } from '../Actors/Mob';
 import { World } from '../world';
 import { Door, DoorType } from './Door';
 import { Wall, Floor, Tree } from './Environment';
@@ -157,8 +158,9 @@ export class Room {
     }
 
     handleActorTurns(world: World) {
+        world.getPlayer().takeTurn(world);
         this.actors.forEach(actor => {
-            actor.takeTurn(world);
+            if (actor instanceof Mob) actor.takeTurn(world);
         });
     }
 
@@ -541,9 +543,6 @@ export class Room {
 
         while(!(Math.abs(dx) <= 1 && Math.abs(dy) <= 1)) {
 
-            let stepX = 0;
-            let stepY = 0;
-
             dx = obj2.x - cursorX;
             dy = obj2.y - cursorY;
             
@@ -556,12 +555,10 @@ export class Room {
             if (Math.abs(dx) > Math.abs(dy)) {
                 // adjust the x pos
                 cursorX += 1  * (dx > 0 ? 1 : -1);
-                // stepX = 1  * (dx > 0 ? 1 : -1);
 
             } else if (Math.abs(dy) >= Math.abs(dx)) {
                 // if dx == dy or dy > dx then adjust the y pos
                 cursorY += 1 * (dy > 0 ? 1 : - 1);
-                // stepY = 1 * (dy > 0 ? 1 : - 1);
             }
 
             // pathQueue.enqueue([cursorX, cursorY]);
