@@ -64,8 +64,6 @@ export class Mob extends Actor {
         // MobState.Hostile
         //
         else if (this.state == MobState.Hostile) {
-            console.log("A mob is hostile!");
-            console.log('dx:', dx, 'dy:', dy); 
             // figure out which direction to move to be closer to the player
             
             let action = new WaitAction(this);
