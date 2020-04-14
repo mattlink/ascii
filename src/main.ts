@@ -4,7 +4,7 @@ import { World } from "./world";
 import { Renderer } from "./Systems/renderer";
 import { Player } from "./Actors/Player";
 import { IO } from "./Systems/io";
-import { Menu, MenuOption, MenuInfo } from './Systems/Menu/Menu';
+import { Menu, MenuOption, MenuInfo, MenuTitle } from './Systems/Menu/Menu';
 import { InventoryMenu } from './Systems/Menu/InventoryMenu';
 import { GameObject } from './GameObject';
 import { Tile } from './tile';
@@ -60,6 +60,9 @@ class game extends Game {
          */
         this.world = Importer.importWorld(worldConfig);
 
+        (<MenuTitle>this.menus['start'].elements[0]).title = `Saravá!`;
+        // (<MenuTitle>this.menus['start'].elements[0]).title = `Caves of Bartle`;
+
         // Create the message box
         this.menus['messagebox'] = new Menu();
         this.menus['messagebox'].addElement(new MenuInfo('You feel tired.', ''));
@@ -71,7 +74,8 @@ class game extends Game {
 
         this.menus['status_info'] = new Menu();
         this.menus['status_info'].addElement(new MenuInfo('Turns: 0'));
-        this.menus['status_info'].addElement(new MenuInfo('Room: ' + this.world.getActiveRoom().name));
+        // this.menus['status_info'].addElement(new MenuInfo('Room: ' + this.world.getActiveRoom().name));
+        this.menus['status_info'].addElement(new MenuInfo('Health: ' + this.world.getPlayer().health + '/100'));
         
         
         this.renderer.hideAllWindows();
@@ -396,7 +400,8 @@ class game extends Game {
 
             // display status info
             (<MenuInfo>this.menus['status_info'].elements[0]).content = 'Turns: ' + this.world.getTurnsPassed();
-            (<MenuInfo>this.menus['status_info'].elements[1]).content = 'Room: ' + this.world.getActiveRoom().name;
+            // (<MenuInfo>this.menus['status_info'].elements[1]).content = 'Room: ' + this.world.getActiveRoom().name;
+            (<MenuInfo>this.menus['status_info'].elements[1]).content = 'Health: ' + this.world.getPlayer().health + '/100';
             this.renderer.renderMenu(this.menus['status_info'], this.renderer.windows['status_info'].getContext());
 
         }

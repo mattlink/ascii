@@ -37,6 +37,8 @@ class ShovelAction extends Action {
 
 export class Shovel extends Item {
 
+    public damage = 10;
+
     constructor(x: number, y: number, tile: Tile) {
         super(x, y, tile);
         this.name = "shovel";

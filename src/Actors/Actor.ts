@@ -27,6 +27,9 @@ export abstract class Actor extends GameObject {
 
     public debug: boolean = false;
 
+    // Shared Actor Stats
+    public health: number = 100;
+
     constructor(name: string, x: number, y: number, tile: Tile){
         super(x, y, tile);
         this.name = name;

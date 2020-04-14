@@ -8,5 +8,7 @@ export abstract class Item extends GameObject {
     // Associated action
     // abstract action: Action;
 
+    abstract damage: number;
+
     abstract use(actor: Actor, dir: ActionDirection, world: World);
 }

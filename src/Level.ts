@@ -51,14 +51,21 @@ export class Level {
             room.init(0, 12);
             if (i == 0) {
                 // create a player!
-                let player = new Player(20, 20, new Tile('C', 'purple', 'black'));
-                player.equipt = new Sword(player.x, player.y, new Tile('(', 'red', 'purple'));
+                let player = new Player(20, 20, new Tile('@', 'red', 'black'));
+                let sword = new Sword(player.x, player.y, new Tile('(', 'red', 'purple'));
+                player.addInventoryItem(sword);
+                player.equipt = sword;
                 this.world.setPlayer(player);
                 room.addActor(player);
 
-                let mob = new Mob('Mob 1', 4, 4, new Tile('h', 'red', 'green'));
-                mob.equipt = new Sword(mob.x, mob.y, new Tile('(', 'red', 'purple'));
-                room.addActor(mob);
+                let goat = new Mob('goat', 4, 4, new Tile('g', 'white', 'black'));
+                // mob.equipt = new Sword(mob.x, mob.y, new Tile('(', 'red', 'purple'));
+                room.addActor(goat);
+
+                let orc = new Mob('orc', 5, 5, new Tile('O', 'green', 'black'), true);
+                orc.equipt = new Sword(orc.x, orc.y, sword.getTile());
+                orc.equipt.damage = 20;
+                room.addActor(orc);
             }
             this.rooms.push(room);
         }

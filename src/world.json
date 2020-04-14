@@ -22,8 +22,8 @@
                             "bg": "black"
                         },
                         "wallTile": {
-                            "ascii": "Y",
-                            "fg": "green",
+                            "ascii": "N",
+                            "fg": "purple",
                             "bg": "black"
                         }
                     }

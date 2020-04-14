@@ -17,11 +17,13 @@ export class Mob extends Actor {
     dead: boolean = false;
     state: MobState = MobState.Idle;
     visionRadius: number = 5;
+    isHostile: boolean = false;
 
-    constructor(name: string, x: number, y: number, tile: Tile) {
+    constructor(name: string, x: number, y: number, tile: Tile, isHostile?: boolean) {
         super(name, x, y, tile);
         this.nextAction = new WaitAction(this);
         this.collides = true;
+        this.isHostile = isHostile || false;
     }
 
     takeTurn(world: World) {
@@ -46,7 +48,7 @@ export class Mob extends Actor {
         let dx = this.x - world.getPlayer().x;
         let dy = this.y - world.getPlayer().y;
 
-        if (Math.abs(dx) < this.visionRadius && Math.abs(dy) < this.visionRadius)
+        if (Math.abs(dx) < this.visionRadius && Math.abs(dy) < this.visionRadius && this.isHostile)
             this.state = MobState.Hostile;
         else 
             this.state = MobState.Idle;

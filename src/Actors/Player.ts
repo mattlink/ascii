@@ -12,7 +12,7 @@ export class Player extends Actor {
     visionDistance: number;
 
     constructor(x0: number, y0: number, tile: Tile) {
-        super("Player", x0, y0, tile);
+        super("You", x0, y0, tile);
         this.nextAction = new WaitAction(this);
         this.visionDistance = 2;
     }

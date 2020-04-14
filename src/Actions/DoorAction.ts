@@ -1,5 +1,6 @@
 import { Action } from './Action';
 import { Actor } from '../Actors/Actor';
+import { Player } from '../Actors/Player';
 import { World } from '../world';
 import { Door, DoorType } from '../Rooms/Door';
 
@@ -53,8 +54,9 @@ export class DoorAction extends Action {
                 this.actor.y = door.y;
             }
             
-            // Set the active room status on the world to the room that we're going to
-            world.getActiveLevel().setActiveRoom(door.toRoom);
+            // Set the active room status on the world to the room that we're going to (but only if its the player who went through the door)
+            if (this.actor instanceof Player) 
+                world.getActiveLevel().setActiveRoom(door.toRoom);
         }
     }
 

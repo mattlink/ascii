@@ -10,9 +10,12 @@ import { Mob } from "../Actors/Mob";
 class SwordAction extends Action {
     private dir: ActionDirection;
 
+    private sword: Sword;
+
     constructor(actor: Actor, dir: ActionDirection, sword: Sword) {
         super(actor);
         this.dir = dir;
+        this.sword = sword;
     }
 
     perform(world: World) {
@@ -37,18 +40,24 @@ class SwordAction extends Action {
                 else if (this.actor instanceof Mob && target instanceof Player) world.appendMessage("The " + this.actor.name + " hits you.");
 
                 // TODO: target.health -= sword.damage + actor.damageMultiplier ...
-                
-                // for now, always kill
-                target.death(world).forEach(obj => {
-                    (<Floor>room.objects[toPosX][toPosY]).addObject(obj);
-                });
+                target.health -= this.sword.damage;
 
-                if (this.actor instanceof Player) world.appendMessage("You kill the " + target.name + ".");
+                // check if the target was killed
+                if (target.health <= 0) {
 
-                (<Floor>obj).removeOccupation();
-                room.actors = room.actors.filter(a => {
-                    return a != target;
-                });
+                    // invoke the target's death (dropping some/all of its inventory)
+                    target.death(world).forEach(obj => {
+                        (<Floor>room.objects[toPosX][toPosY]).addObject(obj);
+                    });
+
+                    if (this.actor instanceof Player) world.appendMessage("You kill the " + target.name + ".");
+                    else if (this.actor instanceof Mob) world.appendMessage("The " + this.actor.name + " kills you.");
+
+                    (<Floor>obj).removeOccupation();
+                    room.actors = room.actors.filter(a => {
+                        return a != target;
+                    });
+                }
             } 
             
             return true;
@@ -60,7 +69,7 @@ class SwordAction extends Action {
 
 export class Sword extends Item {
 
-    damage: number = 2;
+    public damage = 25;
 
     constructor(x: number, y: number, tile: Tile) {
         super(x, y, tile);

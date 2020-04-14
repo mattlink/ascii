@@ -23,6 +23,9 @@ export class World {
     takeTurn() {
         this.messages = [];
 
+        // replenish player health
+        if (this.player.health < 100) this.player.health += 1;
+
         // instead of having every room in existence take a turn, only have the active room take a turn:
         this.activeLevel.takeTurn(this);
 
