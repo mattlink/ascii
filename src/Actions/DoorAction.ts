@@ -17,7 +17,8 @@ export class DoorAction extends Action {
         let door = fromRoom.getObject(this.actor.x, this.actor.y);
         if (door instanceof Door) {
 
-            if (door.toRoom == null) return; // door internal to a Room
+            // door internal to a Room, Trap and Ladder doors will have their own procedures.
+            if (door.toRoom == null || (<Door>door).type == DoorType.TrapDoor || (<Door>door).type == DoorType.LadderDoor) return; 
 
             // Remove the actor from the room they're leaving
             fromRoom.getActors().splice(fromRoom.getActors().indexOf(this.actor), 1);
@@ -31,6 +32,8 @@ export class DoorAction extends Action {
             // every door plops the actor out infront of the door that it leads to.
             // Start by setting the actor position to anything else, then determine
             // where to place the actor.
+
+            // Initially set the coordiantes to 20, 20 then adjust properly
             this.actor.x = 20;
             this.actor.y = 20;
 
@@ -52,6 +55,11 @@ export class DoorAction extends Action {
             if ((<Door>door).type == 3) {
                 this.actor.x = fromRoom.getWidth() - 2;
                 this.actor.y = door.y;
+            }
+
+            // TrapDoor
+            if ((<Door>door).type == DoorType.TrapDoor) {
+                // TrapDoor actions are handled in their own action (since they require a `>` to be pressed to use them)
             }
             
             // Set the active room status on the world to the room that we're going to (but only if its the player who went through the door)

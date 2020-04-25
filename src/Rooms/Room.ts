@@ -10,7 +10,7 @@ import { Item } from '../Items/Item';
 import { Game } from '../Game';
 
 // An instance of Area represents some area of a Room, usually walled off
-// Generally we apply our proc gen algorithms to Areas rather than ActionDirection to Rooms
+// Generally we apply our map generation algorithms to Areas rather than directly to Rooms themselves
 export class Area {
     public x: number;
     public y: number;
@@ -48,7 +48,11 @@ export class Room {
     public floorTile = new Tile('.', this.defaultFgColor, this.defaultBgColor);
     public wallTile = new Tile('#', this.defaultFgColor, this.defaultBgColor);
 
+    public BSPIterations = 0;
+    public CAIterations = 12;
+
     public fullyGenerated = false;
+    public level;
 
     constructor(width: number, height: number, name: string) {
         this.width = width;
@@ -87,28 +91,28 @@ export class Room {
         this.placeDoor(prevRoom, doorDirToPrevRoom);
     }
 
-    placeDoor(toRoom: Room, dir: DoorType, x?: number, y?: number) {
+    placeDoor(toRoom: Room, dir: DoorType, x?: number, y?: number): Door {
 
         if (dir == DoorType.NorthDoor) {
             let doorx = x || Math.floor(Math.random() * this.getWidth());
             let doory = 0;
             this.objects[doorx][doory] = new Door(DoorType.NorthDoor, doorx, doory, this.wallDoorTile, toRoom);
             this.doors.push(<Door>this.objects[doorx][doory]);
-            return this.objects[doorx][doory];
+            return <Door>this.objects[doorx][doory];
         }
         if (dir == DoorType.SouthDoor) {
             let doorx = x || Math.floor(Math.random() * this.getWidth());
             let doory = this.getHeight() - 1;
             this.objects[doorx][doory] = new Door(DoorType.SouthDoor, doorx, doory, this.wallDoorTile, toRoom);
             this.doors.push(<Door>this.objects[doorx][doory]);
-            return this.objects[doorx][doory];
+            return <Door>this.objects[doorx][doory];
         }
         if (dir == DoorType.WestDoor) {
             let doorx = 0;
             let doory = y || Math.floor(Math.random() * this.getHeight());
             this.objects[doorx][doory] = new Door(DoorType.WestDoor, doorx, doory, this.wallDoorTile, toRoom);
             this.doors.push(<Door>this.objects[doorx][doory]);
-            return this.objects[doorx][doory];
+            return <Door>this.objects[doorx][doory];
 
         }
         if (dir == DoorType.EastDoor) {
@@ -116,41 +120,29 @@ export class Room {
             let doory = y || Math.floor(Math.random() * this.getHeight());
             this.objects[doorx][doory] = new Door(DoorType.EastDoor, doorx, doory, this.wallDoorTile, toRoom);
             this.doors.push(<Door>this.objects[doorx][doory]);
-            return this.objects[doorx][doory];
+            return <Door>this.objects[doorx][doory];
+        }
+
+        if (dir == DoorType.TrapDoor) {
+            let doorx = x;
+            let doory = y;
+            this.objects[doorx][doory] = new Door(DoorType.TrapDoor, doorx, doory, new Tile('>', 'orange', this.defaultBgColor), toRoom);
+            (<Door>this.objects[doorx][doory]).toLevel = this.level + 1;
+            this.doors.push(<Door>this.objects[doorx][doory]);
+            return <Door>this.objects[doorx][doory];
+        }
+
+        if (dir == DoorType.LadderDoor) {
+            let doorx = x;
+            let doory = y;
+            this.objects[doorx][doory] = new Door(DoorType.LadderDoor, doorx, doory, new Tile('<', 'orange', this.defaultBgColor), toRoom);
+            (<Door>this.objects[doorx][doory]).toLevel = this.level - 1;
+            this.doors.push(<Door>this.objects[doorx][doory]);
+            return <Door>this.objects[doorx][doory];
         }
 
         return null;
     }
-
-    //
-    // LEAVING COMMENT TO PRESERVE HOW TRAP DOORS / LADDER DOORS WERE IMPLEMENTED
-    //
-    /*placeDoorOld(toRoom: Room, type: DoorType, x1?: number, y1?: number) {
-        switch (type) {
-
-            case DoorType.TrapDoor: {
-                let x = Math.floor(Math.random() * this.getWidth());
-                let y = Math.floor(Math.random() * this.getHeight());
-
-                this.objects[x][y] = new Door(x, y, this.trapDoorTile, toRoom);
-
-                return { x, y };
-                // toRoom.placeDoor(this, DoorType.LadderDoor, x, y);
-                break;
-            }
-
-            case DoorType.LadderDoor: {
-                // let y = Math.floor(Math.random() * this.getHeight() - 1) + 1;
-                // let x = Math.floor(Math.random() * this.getWidth() - 1) + 1;
-                this.objects[x1 + 1][y1 + 1] = new Door(x1+1, y1+1, this.ladderDoorTile, toRoom);
-                return { x1, y1 };
-                break;
-                // console.error('LadderDoor requires you to manually set the x and y of the door');
-                // break;
-            }
-
-        }
-    }*/
 
     placeItem(item: Item) {
         this.objects[item.x][item.y] = new Floor(item.x, item.y, this.floorTile); // reset this tile to a floor so that we can actually put an item on it
@@ -165,7 +157,6 @@ export class Room {
     }
 
     addActor(actor: Actor) {
-        console.log("actor added to room");
         this.actors.push(actor);
         this.objects[actor.x][actor.y] = new Floor(actor.x, actor.y, this.floorTile);
         (<Floor>this.objects[actor.x][actor.y]).setOccupation(actor);

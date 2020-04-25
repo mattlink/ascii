@@ -2,19 +2,16 @@ import { Actor } from './Actor';
 import { ActionDirection, Action } from '../Actions/Action';
 import { WaitAction } from '../Actions/WaitAction';
 import { WalkAction } from '../Actions/WalkAction';
-import { DoorAction } from '../Actions/DoorAction';
+import { TrapDoorAction } from '../Actions/TrapDoorAction';
 import { PickupItemAction } from '../Actions/PickupItemAction';
 import { Tile } from '../tile';
 import { World } from '../world';
 
 export class Player extends Actor {
-    
-    visionDistance: number;
 
     constructor(x0: number, y0: number, tile: Tile) {
         super("You", x0, y0, tile);
         this.nextAction = new WaitAction(this);
-        this.visionDistance = 2;
     }
 
     receiveKeyInput(key: string) {
@@ -53,7 +50,7 @@ export class Player extends Actor {
         }
 
         else if (key == '>') {
-            this.nextAction = new DoorAction(this);
+            this.nextAction = new TrapDoorAction(this);
         }
 
         else if (key == 'j')  {
@@ -62,7 +59,7 @@ export class Player extends Actor {
     }
 
     takeTurn(world: World) {
-        this.nextAction.perform(world);        
+        this.nextAction.perform(world);      
     }
 
     death(world: World) {

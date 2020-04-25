@@ -7,7 +7,6 @@ import { Floor } from "../Rooms/Environment";
 import { Camera } from "./camera";
 import { Menu, MenuInfo } from "./Menu/Menu";
 import { MenuTitle, MenuOption, MenuTable } from "./Menu/Menu";
-import { Player } from "../Actors/Player";
 
 export class Renderer {
 
@@ -86,11 +85,6 @@ export class Renderer {
             // MenuTable
             if (menu.elements[i] instanceof MenuTable) {
                 for (let j = 0; j < (<MenuTable>menu.elements[i]).elements.length; j++) {
-                    // // context.children[i] -> MenuTable, .children[0] -> tr, .children[j] -> td, .children[0] -> inner Div
-                    // (<HTMLElement>context.children[i].children[0].children[j].children[0]).innerHTML = (<MenuTable>menu.elements[i]).elements[j].tile.ascii;
-                    // (<HTMLElement>context.children[i].children[0].children[j].children[0]).style.color = (<MenuTable>menu.elements[i]).elements[j].tile.fg;
-                    // (<HTMLElement>context.children[i].children[0].children[j].children[0]).style.backgroundColor = (<MenuTable>menu.elements[i]).elements[j].tile.bg;
-
                     // context.children[i] -> MenuTable, .children[j] -> tr, .children[0] -> inner Div
                     (<HTMLElement>context.children[i].children[j].children[0]).innerHTML = (<MenuTable>menu.elements[i]).elements[j].tile.ascii;
                     (<HTMLElement>context.children[i].children[j].children[0]).style.color = (<MenuTable>menu.elements[i]).elements[j].tile.fg;
@@ -116,7 +110,7 @@ export class Renderer {
         }
     }
 
-    public renderView(player: Player, room: Room, context: HTMLElement) {
+    /*public renderView(player: Player, room: Room, context: HTMLElement) {
         let vd = player.visionDistance;
         while(vd > 0) {
 
@@ -147,42 +141,39 @@ export class Renderer {
             vd--;
         }
 
-    }
+    }*/
 
-    // More expenseive than simply updating the view of the camera
-    // public renderView(camera: Camera, window: Window) {
+    // More expensive than simply updating the view of the camera
+    /*public renderView(camera: Camera, window: Window) {
 
-    //     let context = window.getContext();
+        let context = window.getContext();
 
-    //     let room = camera.getRoom(); // the room that the camera is looking at
+        let room = camera.getRoom(); // the room that the camera is looking at
 
-    //     let viewStartX = camera.getStartX();
-    //     let viewStartY = camera.getStartY();
+        let viewStartX = camera.getStartX();
+        let viewStartY = camera.getStartY();
 
-    //     // render everything to the "test overlay (white/room default bg color)"
-    //     for (let i = 0; i < window.localWidth; i++) {
-    //         for (let j = 0; j < window.localHeight; j++) {
-                
-    //             // TEST: (just graying out what was there before)
-    //             // FOG OF WAR: (TODO: have specific room store information about their fog color)
-    //             this.updateTile(i, j, 
-    //                 new Tile(room.getObject(i, j).getTile().ascii, room.defaultFogFg, room.defaultFogBg), 
-    //                 context);
-    //         }
-    //     }
+        // render everything to the "test overlay (white/room default bg color)"
+        for (let i = 0; i < window.localWidth; i++) {
+            for (let j = 0; j < window.localHeight; j++) {
+                // FOG OF WAR:
+                this.updateTile(i, j, 
+                    new Tile(room.getObject(i, j).getTile().ascii, room.defaultFogFg, room.defaultFogBg), 
+                    context);
+            }
+        }
 
-    //     // render everything in view of our camera
-    //     for (let i = Math.max(viewStartX, 0); i < Math.min(viewStartX + camera.viewWidth, window.localWidth); i++) {
-    //         for (let j = Math.max(viewStartY, 0); j < Math.min(viewStartY + camera.viewHeight, window.localHeight); j++) {
-    //             this.updateTile(i, j, room.getObject(i, j).getTile(), context);
-    //         }
-    //     }
+        // render everything in view of our camera
+        for (let i = Math.max(viewStartX, 0); i < Math.min(viewStartX + camera.viewWidth, window.localWidth); i++) {
+            for (let j = Math.max(viewStartY, 0); j < Math.min(viewStartY + camera.viewHeight, window.localHeight); j++) {
+                this.updateTile(i, j, room.getObject(i, j).getTile(), context);
+            }
+        }
 
-    //     // TODO: note how this method is inefficient. We are first rendering the entire window as fog,
-    //     // then going back over the parts that are in view to render whats actually there. 
-    //     // (painters algorithm, back to front, style)
-    //     // It would be much better to only update the parts of fog that need to be updated.
-    // }
+        // TODO: note how this method is not efficient. We are first rendering the entire window as fog,
+        // then going back over the parts that are in view to render whats actually there. 
+        // It would be much better to only update the parts of fog that need to be updated.
+    }*/
 
     public updateCameraView (camera: Camera, window: Window) {
 

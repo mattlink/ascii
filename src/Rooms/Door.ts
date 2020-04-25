@@ -17,6 +17,7 @@ export class Door extends GameObject {
     // If internal, toRoom will be null
     // An "internal" door is a door which opens to a sub-room structure within an actual Room instance
     toRoom: Room;
+    toLevel: number;
     
     public type: DoorType;
 

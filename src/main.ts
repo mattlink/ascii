@@ -13,7 +13,6 @@ import * as worldConfig from "./world.json";
 import * as menusConfig from "./menus.json";
 import { Floor } from "./Rooms/Environment";
 import { EquipAction } from "./Actions/EquipAction";
-import { PathQueue } from "./util";
 
 enum GameState {
     Play,
@@ -44,7 +43,7 @@ class game extends Game {
 
         this.lookCursor = new GameObject(0, 0, new Tile('X', 'white','black'));
 
-        // add windows for all the menus we imported
+        // Add windows for all the menus we imported
         for (let key in this.menus) {
             this.renderer.addWindow(key, Menu.width, Menu.height);
         }
@@ -72,120 +71,34 @@ class game extends Game {
         this.menus['inventory'].options['Escape'] = new MenuOption("Exit", "Escape");
         this.menus['inventory'].options['Escape'].toState = 'Play';
 
+        // Create status info bar 
         this.menus['status_info'] = new Menu();
         this.menus['status_info'].addElement(new MenuInfo('Turns: 0'));
-        // this.menus['status_info'].addElement(new MenuInfo('Room: ' + this.world.getActiveRoom().name));
         this.menus['status_info'].addElement(new MenuInfo('Health: ' + this.world.getPlayer().health + '/100'));
+        this.menus['status_info'].addElement(new MenuInfo('Level: ' + this.world.getActiveLevel().depth));
         
         
         this.renderer.hideAllWindows();
 
-
-        // initially render everything for the first time
-
+        // Pre-Render the game area for the first time, while still hidden
         this.renderer.renderRoom(this.world.getActiveRoom(), 'game');
-
-        // this.renderer.renderMenu(this.menus['start'], this.renderer.windows['start'].getContext());
+        this.renderer.renderMenu(this.menus['start'], this.renderer.windows['start'].getContext());
+    
         
-
-        /*this.world.getActiveRoom().getActors().forEach(actor => {
-            if (actor instanceof Player && this.world.getPlayer() == null) 
-            {
-                this.world.setPlayer(actor);
-                (<InventoryMenu>this.menus['inventory']).establishInventory(this.world.getPlayer().inventory);
-
-                // this.renderer.renderArea(this.world.getPlayer().x - 6,  this.world.getPlayer().y - 6, 12, 12, this.world.getActiveRoom(), this.window.getContext());
-
-                this.renderer.renderGameObject(actor, this.renderer.windows['game'].getContext());
-                this.renderer.renderObjectContext(actor, this.world.getActiveRoom(), this.renderer.windows['game'].getContext());
-                return;
-            }
-        });*/
-
-
-        // Show algo vis here?
-        if (this.algoVis) {
-            /*let cursor = new GameObject(0, 0, new Tile('#', 'black', 'yellow'));
-
-            let renderIteration: Function = function(cursor: GameObject, pathQueue: PathQueue, renderer: Renderer) {
-                setTimeout(function() {
-
-                    let step = pathQueue.dequeue();
-                    cursor.x = step[0];
-                    cursor.y = step[1];
-                    renderer.renderGameObject(cursor, renderer.windows['game'].getContext());
-
-
-                    if (pathQueue.length() > 0) {
-                        renderIteration(cursor, pathQueue, renderer);
-                    }
-                    
-                }, 50)
-            }
-
-            for (let k in this.world.getActiveLevel().pathQueues) {
-                console.log('trying to visualize generation of Room: ',k);
-                let pathQueue = this.world.getActiveLevel().pathQueues[k];
-                console.log("path queue: ", pathQueue);
-
-                // show the room
-                let room = this.world.getActiveLevel().rooms[k];
-                this.renderer.renderRoom(room, 'game');
-                // set the cursor in the room
-                let start = pathQueue.dequeue();
-                cursor.x = start[0];
-                cursor.y = start[1];
-                room.objects[cursor.x][cursor.y] = cursor;
-
-                // move the cursor based on PathQueue and continuusly render
-                // while (pathQueue.length() > 0) {
-                //     let step = pathQueue.dequeue();
-                //     cursor.x += step[0];
-                //     cursor.y += step[1];
-                //     this.renderer.renderObjectContext(cursor, room, this.renderer.windows['game'].getContext());
-                // }
-                renderIteration(cursor, pathQueue, this.renderer);
-
-            }*/
-        }
-        
-
-
-        // console.log("Now showing start menu");
-
+        // Show the start menu
         this.renderer.hideAllWindows();
         this.renderer.windows['start'].show();
 
     }
 
-    update(dt: number) {
+    update(key: string) {
 
-        let key = this.keyQueue.dequeue();
-        if (key == undefined) return;
-
+        /**
+         * Menu 
+         */
         if (this.state == GameState.Menu) {
 
             if (!(IO.validMenuControls.indexOf(key) > -1) && !(this.keyQueue.isHolding())) return;
-
-            /*if (key == 'ArrowUp') {
-                this.menus[this.activeMenu].selectedElement -= 1;
-
-                if (this.menus[this.activeMenu].selectedElement < 1) {
-                    this.menus[this.activeMenu].selectedElement = this.menus[this.activeMenu].elements.length - 1;
-                }
-
-                return;
-            }
-
-            if (key == 'ArrowDown') {
-                this.menus[this.activeMenu].selectedElement += 1;
-
-                if (this.menus[this.activeMenu].selectedElement > this.menus[this.activeMenu].elements.length - 1) {
-                    this.menus[this.activeMenu].selectedElement = 1;
-                }
-
-                return;
-            }*/
 
             // We're trying to equipt an item
             if (this.keyQueue.isHoldingKey('E')) {
@@ -226,6 +139,9 @@ class game extends Game {
 
         }
 
+        /** 
+         * Look Mode
+         */
         if (this.state == GameState.Look) {
             if (!(IO.validLookControls.indexOf(key) > -1)) return;
 
@@ -269,6 +185,9 @@ class game extends Game {
 
         }
 
+        /**
+         * Play 
+         */
         if (this.state == GameState.Play) {
 
             if (!(IO.validGameControls.indexOf(key) > -1) && !(this.keyQueue.isHolding())) return;
@@ -345,7 +264,7 @@ class game extends Game {
 
         if (this.state == GameState.Look) {
 
-            // Render the actual look cursor
+            // Render the look cursor's context
             this.renderer.renderObjectContext(this.lookCursor, this.world.getActiveRoom(), this.renderer.windows['game'].getContext());
 
             // Render every actor in the room
@@ -353,8 +272,10 @@ class game extends Game {
                 this.renderer.renderGameObject(actor, this.renderer.windows['game'].getContext());    
             });
 
+            // Render the actual look cursor
             this.renderer.renderGameObject(this.lookCursor, this.renderer.windows['game'].getContext());
 
+            // Render the messagebox to display the look cursor info
             this.renderer.renderMenu(this.menus['messagebox'], this.renderer.windows['messagebox'].getContext());
 
         }
@@ -362,21 +283,17 @@ class game extends Game {
 
         if (this.state == GameState.Play) {
 
-            // if (!this.world.getActiveRoom().fullyGenerated) this.renderer.renderRoom(this.world.getActiveRoom(), 'game');
-            // this.renderer.renderRoom(this.world.getActiveRoom(), this.window.getContext());
-            // this.renderer.renderView(this.world.getPlayer(), this.world.getActiveRoom(), this.window.getContext());
-
+            // Update and render the world message box
             (<MenuInfo>this.menus['messagebox'].elements[0]).content = this.world.getCurrentMessages().join(" ");            
             this.renderer.renderMenu(this.menus['messagebox'], this.renderer.windows['messagebox'].getContext());
 
+            // If the active room has changed then we must render the entire room
             if (this.world.getActiveLevel().getActiveRoomChanged()) {
                 this.renderer.renderRoom(this.world.getActiveRoom(), 'game');
             }
 
-            // Draw everything /around/ each actor
-            // console.log("DRAWING (everything around) ACTORS IN " + this.world.getActiveRoom().name);
+            // Draw everything around each actor (above, below, left, and right)
             this.world.getActiveRoom().getActors().forEach(actor => {
-                // console.log("Drawing actor: ", actor.name, "(", actor.x, ", ", actor.y,")");
                 this.renderer.renderObjectContext(actor, this.world.getActiveRoom(), this.renderer.windows['game'].getContext());
             });
 
@@ -386,22 +303,10 @@ class game extends Game {
             });
             
 
-            let vd = this.world.getPlayer().visionDistance;
-            for (let i = 0; i < 4; i++) {
-                // i == 0 --> up
-
-                // i == 1 --> right
-
-                // i == 2 --> down
-
-                // i == 3 --> left
-
-            }
-
-            // display status info
+            // Update the status info and render it
             (<MenuInfo>this.menus['status_info'].elements[0]).content = 'Turns: ' + this.world.getTurnsPassed();
-            // (<MenuInfo>this.menus['status_info'].elements[1]).content = 'Room: ' + this.world.getActiveRoom().name;
             (<MenuInfo>this.menus['status_info'].elements[1]).content = 'Health: ' + this.world.getPlayer().health + '/100';
+            (<MenuInfo>this.menus['status_info'].elements[2]).content = 'Level: ' + this.world.getActiveLevel().depth;
             this.renderer.renderMenu(this.menus['status_info'], this.renderer.windows['status_info'].getContext());
 
         }
@@ -421,4 +326,9 @@ class game extends Game {
 }
 
 let g = new game();
-g.run();
+g.load();
+IO.genericKeyBinding(function(key: string) {
+    g.update(key);
+    g.draw();
+});
+

@@ -2,9 +2,39 @@
     "world": {
 
         "levels":[
+            
             { 
-                "name": "Level0",
+                "name": "Forest Level",
                 "depth": 0,
+                "bgColor": "white",
+                "rooms": 1,
+
+                "defaultRoom":
+                    {
+                        "name": "Forest",
+
+                        "BSPIterations": 0,
+                        "CAIterations": 12,
+
+                        "width": 40,
+                        "height": 25,
+
+                        "floorTile": {
+                            "ascii": ".",
+                            "fg": "gray",
+                            "bg": "white"
+                        },
+                        "wallTile": {
+                            "ascii": "Y",
+                            "fg": "green",
+                            "bg": "white"
+                        }
+                    }
+            },
+            { 
+                "name": "Cave Level",
+                "depth": 1,
+                "rooms": 4,
 
                 "defaultRoom":
                     {
@@ -13,8 +43,8 @@
                         "BSPIterations": 0,
                         "CAIterations": 12,
 
-                        "width": 50,
-                        "height": 30,
+                        "width": 40,
+                        "height": 25,
 
                         "floorTile": {
                             "ascii": ".",
@@ -27,8 +57,35 @@
                             "bg": "black"
                         }
                     }
-                
+            },
+            { 
+                "name": "Cave Level 2",
+                "depth": 2,
+                "rooms": 4,
+
+                "defaultRoom":
+                    {
+                        "name": "Cave2",
+
+                        "BSPIterations": 0,
+                        "CAIterations": 12,
+
+                        "width": 40,
+                        "height": 25,
+
+                        "floorTile": {
+                            "ascii": ".",
+                            "fg": "gray",
+                            "bg": "black"
+                        },
+                        "wallTile": {
+                            "ascii": "C",
+                            "fg": "green",
+                            "bg": "black"
+                        }
+                    }
             }
+            
         ]
     }
 }

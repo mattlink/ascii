@@ -1,12 +1,6 @@
 import { Room } from "./Rooms/Room";
 import { World } from "./world";
-import { Player } from "./Actors/Player";
-import { Mob } from "./Actors/Mob";
-import { Tile } from "./tile";
 import { DoorType, Door } from "./Rooms/Door";
-import { Sword } from './Items/Sword';
-import { Game } from "./Game";
-import { PathQueue } from './util';
 
 // A level is an arrangement of Rooms representing a "full" dungeon floor, or layer of the world
 export class Level {
@@ -18,7 +12,7 @@ export class Level {
     
     private defaultRoom: Room;
     // the 2d grid of rooms representing this level
-    private roomCount = 4; // the number of rooms in this level
+    private roomCount = 1; // the number of rooms in this level
     public rooms: Room[] = [];
     private activeRoom: Room;
     private activeRoomChanged: boolean = false;
@@ -26,16 +20,19 @@ export class Level {
     private world; // the world that this level is a part of
     // public pathQueues: Record<number, PathQueue> = {};
 
-    constructor(world: World, name: string, depth: number, defaultRoom: Room) {
+    public bgColor = null;
+
+    constructor(world: World, name: string, depth: number, roomCount: number, defaultRoom: Room) {
         this.world = world;
         this.name = name;
         this.depth = depth;
+        this.roomCount = roomCount;
         this.defaultRoom = defaultRoom;
+        this.initializeRooms();
+        this.activeRoom = this.rooms[0];
     }
 
     init() {
-        this.initializeRooms();
-        this.activeRoom = this.rooms[0];
         this.generateRoomLayout();
         this.guaranteePathsToDoors();
     }
@@ -47,28 +44,12 @@ export class Level {
             let room = new Room(this.defaultRoom.getWidth(), this.defaultRoom.getHeight(), "Room ("+i+")");
             room.wallTile = this.defaultRoom.wallTile;
             room.floorTile = this.defaultRoom.floorTile;
+            room.level = this.depth;
             
-            room.init(0, 12);
-            if (i == 0) {
-                // create a player!
-                let player = new Player(20, 20, new Tile('@', 'red', 'black'));
-                let sword = new Sword(player.x, player.y, new Tile('(', 'red', 'purple'));
-                player.addInventoryItem(sword);
-                player.equipt = sword;
-                this.world.setPlayer(player);
-                room.addActor(player);
-
-                let goat = new Mob('goat', 4, 4, new Tile('g', 'white', 'black'));
-                // mob.equipt = new Sword(mob.x, mob.y, new Tile('(', 'red', 'purple'));
-                room.addActor(goat);
-
-                let orc = new Mob('orc', 5, 5, new Tile('O', 'green', 'black'), true);
-                orc.equipt = new Sword(orc.x, orc.y, sword.getTile());
-                orc.equipt.damage = 20;
-                room.addActor(orc);
-            }
+            room.init(this.defaultRoom.BSPIterations, this.defaultRoom.CAIterations);
             this.rooms.push(room);
         }
+        this.activeRoom = this.rooms[0];
     }
 
     private generateRoomLayout() {
@@ -99,7 +80,7 @@ export class Level {
         for (let i = 0; i < this.rooms.length; i++) {
             let room = this.rooms[i];
             let doors = room.getDoors();
-            if (room == this.getActiveRoom()) {
+            if (room == this.getActiveRoom() && doors.length > 0) {
                 // just make sure the player can reach the first door
                 room.clearPathBetween(this.world.getPlayer(), doors[0]);
             }
@@ -109,6 +90,43 @@ export class Level {
             }
             
         }
+    }
+
+    // Returns the index of the room belonging the below level and the door placed in that room
+                            // r -> room index on this level, r2 -> room index on below level, trapDoor -> that actual door that was placed
+    placeTrapDoorTo(level: Level): [number, number, Door] {
+        // Choose a random place on the level to place this door to the below room
+        // First, choose a random room
+        let r = Math.floor(Math.random() * this.rooms.length);
+        let room = this.rooms[r];
+        // Second, choose a random place in the room 
+        let x = Math.floor(Math.random() * room.getWidth());
+        let y = Math.floor(Math.random() * room.getHeight());
+        // Now, create the door and place it in the room. 
+        // Choose a random room in the below level
+        let r2 = Math.floor(Math.random() * level.rooms.length);
+
+        let trapDoor: Door = room.placeDoor(level.rooms[r2], DoorType.TrapDoor, x, y);
+
+        // Clear a path from every door in the room to the trap door
+        room.getDoors().forEach(door => {
+            if (door == trapDoor) return;
+            room.clearPathBetween(door, trapDoor);
+        });
+
+        return [r, r2, trapDoor];
+    }
+
+    placeLadderDoorTo(level: Level, roomIndex: number, roomIndex2: number, x: number, y: number) {
+        let room = this.rooms[roomIndex2];
+        let ladderDoor = room.placeDoor(level.rooms[roomIndex], DoorType.LadderDoor, x, y);
+
+        // Clear a path from every door in the room to this ladder door
+        room.getDoors().forEach(door => {
+            if (door == ladderDoor) return;
+            room.clearPathBetween(door, ladderDoor);
+        });
+        return ladderDoor;
     }
 
     takeTurn(world: World) {
@@ -132,18 +150,4 @@ export class Level {
         this.activeRoom = room;
         this.activeRoomChanged = true;
     }
-
-    /*addRoom(room: Room) {
-        if (this.rooms.length == 0) this.activeRoom = room;
-        else {
-            // Place a door from the activeRoom to the new room
-            // this.activeRoom.placeDoor(room);
-            // room.placeDoor(this.activeRoom);
-
-            // // Place a door leading back from the new to the room that is currently active
-            // room.placeDoor(new Door(this.activeRoom));
-        }
-
-        this.rooms.push(room);   
-    }*/
 }
