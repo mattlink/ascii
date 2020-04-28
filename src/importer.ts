@@ -72,17 +72,27 @@ export class Importer {
 
         if (json.world.levels) {
             json.world.levels.forEach(levelJson => {
-
                 if (!levelJson.defaultRoom) {
                     console.error("IMPORTER (Level): Please provide a defaultRoom to use for this level. Edit the config file.");
                 }
+
                 let defRoom = this.importRoom({"room": levelJson.defaultRoom});
-                let level = new Level(world, levelJson.name, levelJson.depth, defRoom);
+                defRoom.BSPIterations = levelJson.defaultRoom.BSPIterations;
+                defRoom.CAIterations = levelJson.defaultRoom.CAIterations;
+                let level = new Level(world, levelJson.name, levelJson.depth, levelJson.rooms, defRoom);
+
+                if (levelJson.bgColor) {
+                    level.bgColor = levelJson.bgColor;
+                }
                 
-                level.init();
+                // level.init();
                 world.addLevel(level);
-            })
+            });
         }
+
+        world.spawnThings();
+        world.initLevels();
+        world.connectLevels();
 
         /*if (json.world.rooms) {
             json.world.rooms.forEach(roomJson => {
