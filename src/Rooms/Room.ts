@@ -150,7 +150,7 @@ export class Room {
     }
 
     handleActorTurns(world: World) {
-        world.getPlayer().takeTurn(world);
+        // world.getPlayer().takeTurn(world);
         this.actors.forEach(actor => {
             if (actor instanceof Mob) actor.takeTurn(world);
         });

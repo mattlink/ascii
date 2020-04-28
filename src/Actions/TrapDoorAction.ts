@@ -27,8 +27,8 @@ export class TrapDoorAction extends Action {
             
             // Set the active room status on the world to the room that we're going to (but only if its the player who went through the door)
             if (this.actor instanceof Player) {
-                world.updateActiveLevel(door.toLevel);
-                world.getActiveLevel().setActiveRoom(door.toRoom);
+                // world.updateActiveLevel(door.toLevel);
+                // world.getActiveLevel().setActiveRoom(door.toRoom);
             }
         }
     }

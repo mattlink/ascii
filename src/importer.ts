@@ -86,13 +86,13 @@ export class Importer {
                 }
                 
                 // level.init();
-                world.addLevel(level);
+                // world.addLevel(level);
             });
         }
 
-        world.spawnThings();
-        world.initLevels();
-        world.connectLevels();
+        // world.spawnThings();
+        // world.initLevels();
+        // world.connectLevels();
 
         /*if (json.world.rooms) {
             json.world.rooms.forEach(roomJson => {
