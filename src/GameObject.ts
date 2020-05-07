@@ -6,7 +6,7 @@ export class GameObject {
 
     public x: number;
     public y: number;
-    private tile: Tile;
+    public tile: Tile;
 
     public collides: boolean;
 

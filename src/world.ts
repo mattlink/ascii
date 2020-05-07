@@ -2,8 +2,6 @@ import { Nexus } from './TD/Nexus';
 import { Room } from './Rooms/Room';
 import { Tile } from './tile';
 
-const WORLD_HEIGHT = 40;
-const WORLD_WIDTH = 70;
 
 export class World {
 
@@ -19,7 +17,7 @@ export class World {
 
     constructor() {}
 
-    init() {
+    init(WORLD_WIDTH, WORLD_HEIGHT) {
         // Initialize the Room
         this.room = new Room(WORLD_WIDTH, WORLD_HEIGHT, 'World Room');
         this.room.init(0, 12);
