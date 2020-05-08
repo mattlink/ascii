@@ -24,7 +24,11 @@ export class IO {
         }
     }
 
-    // public static defineMouseClick(elem:)
+    public static defineMouseClick(elem: HTMLElement, func: Function, game: Game) {
+        elem.onclick = function(e) {
+            func(e, game);
+        }
+    } 
 
     public static genericKeyBinding(func: Function) {
         document.addEventListener('keydown', function(event){

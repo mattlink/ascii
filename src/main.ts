@@ -112,6 +112,20 @@ class game extends Game {
                         colrows[j].style.backgroundColor = (<Tile>objs[i][j].tile).bg;
                     }
                 }, this);
+                IO.defineMouseClick(colrows[j], function(e, game){
+
+                    switch(game.cursorState) {
+                        case CursorState.Turret:
+                            game.world.getRoom().objects[i][j] = new Turret(i, j);
+                            break;
+                        case CursorState.Wall: 
+                            game.world.getRoom().objects[i][j] = new Wall(i, j);
+                            break;
+                        default:
+                            break;
+                    }
+                    game.renderer.renderGameObject(game.world.getRoom().objects[i][j], game.renderer.windows['game'].getContext());
+                }, this);
             }
         }
     }
@@ -136,7 +150,7 @@ class game extends Game {
 
         if (!(IO.shopControls.indexOf(key) > -1) && !(IO.gameControls.indexOf(key) > -1)) return;
 
-        if (key == 'f')  this.world.takeTurn();
+        if (key == 'f') this.world.takeTurn();
 
         if (key == 'w') {
             this.cursorState = CursorState.Wall;
