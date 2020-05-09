@@ -2,16 +2,14 @@ import { Game } from "./Game";
 import { World } from "./world";
 import { Renderer } from "./Systems/renderer";
 import { IO } from "./Systems/io";
-import { Menu, MenuInfo, MenuTitle, MenuOption } from './Systems/Menu/Menu';
-import { Room } from "./Rooms/Room";
+import { Menu, MenuInfo, MenuOption } from './Systems/Menu/Menu';
 import { Tile } from "./tile";
-import { Player } from "./Actors/Player";
-import { Level } from "./Level";
 import { Floor } from "./Rooms/Environment";
 import { Mob } from "./Actors/Mob";
 import { GameObject } from "./GameObject";
 import { Turret } from "./TD/Turret";
 import { Wall } from "./TD/Wall";
+import { ShopItem } from "./TD/ShopItem";
 
 enum CursorState {
     Default,
@@ -46,8 +44,6 @@ class game extends Game {
 
         this.cursor = new GameObject(this.world.getRoom().getWidth() / 2, this.world.getRoom().getHeight() / 2, new Tile('X', 'red', 'white'));
         this.cursorState = CursorState.Default;
-        // this.world.getRoom().objects[this.cursor.x][this.cursor.y] = this.cursor;
-        
 
         this.funds = 500; // start with this much cash
 
@@ -69,7 +65,7 @@ class game extends Game {
 
         this.menus['shop'] = new Menu();
         this.menus['shop'].addElement(new MenuInfo('SHOP:'));
-        this.menus['shop'].addElement(new MenuOption('Turret $50', 't'));
+        this.menus['shop'].addElement(new MenuOption('Turret $20', 't'));
         this.menus['shop'].addElement(new MenuOption('Wall $10', 'w'));
 
         // Render world and menus for the first time
@@ -84,7 +80,6 @@ class game extends Game {
 
     // Bind basic mouse behavior to every tile
     initMouse() {
-        // let tiles = this.world.getRoom().getTiles();
         let cols = Array.prototype.slice.call(this.renderer.windows['game'].getContext().children);
         for (let i = 0; i < cols.length; i++) {
             let colrows = Array.prototype.slice.call(cols[i].children);
@@ -113,13 +108,12 @@ class game extends Game {
                     }
                 }, this);
                 IO.defineMouseClick(colrows[j], function(e, game){
-
                     switch(game.cursorState) {
                         case CursorState.Turret:
-                            game.world.getRoom().objects[i][j] = new Turret(i, j);
+                            game.placeShopItem(new Turret(i, j));
                             break;
                         case CursorState.Wall: 
-                            game.world.getRoom().objects[i][j] = new Wall(i, j);
+                            game.placeShopItem(new Wall(i, j));
                             break;
                         default:
                             break;
@@ -129,6 +123,35 @@ class game extends Game {
             }
         }
     }
+
+    placeShopItem(item: ShopItem) {
+
+        // the object that we're trting to place the item on
+        let obj = this.world.getRoom().objects[item.x][item.y];
+
+        // check if we're trying to place this item on top of another item we've already placed
+        if (obj instanceof ShopItem) {
+           // refund its value
+           this.funds += obj.cost;
+
+           // replace the object with the new item
+           this.world.getRoom().objects[item.x][item.y] = item;
+           
+           // charge the user for this item
+           this.funds -= item.cost;
+        }
+
+        // otherwise just place the item and charge the user
+        else {
+            this.world.getRoom().objects[item.x][item.y] = item;
+            this.funds -= item.cost;
+        }
+
+        // update the display of currently available funds
+        (<MenuInfo>this.menus['gameinfo'].elements[1]).content = '$ ' + this.funds;
+        this.renderer.renderMenu(this.menus['gameinfo'], this.renderer.windows['gameinfo'].getContext());
+    }
+
 
     updateCursor() {
         switch(this.cursorState) {
