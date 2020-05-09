@@ -50,6 +50,9 @@ export class Window {
         if (this.isTiled) this.context.style.display = 'flex'; 
         else this.context.style.display = 'block';
 
+        // turn off user select:
+        this.context.className += 'noselect ';
+
         if (this.startX == -1 && this.startY == -1) {
             this.context.style.margin = 'auto';
             this.context.style.marginTop = Renderer.pxs(5);
