@@ -10,6 +10,7 @@ import { GameObject } from "./GameObject";
 import { Turret } from "./TD/Turret";
 import { Wall } from "./TD/Wall";
 import { ShopItem } from "./TD/ShopItem";
+import { Orc } from './Actors/Orc';
 
 enum CursorState {
     Default,
@@ -49,8 +50,8 @@ class game extends Game {
 
         // Add some test orcs to the world
         for (let i = 0; i < 10; i++)
-            this.world.getRoom().addActor(new Mob("Orc", 10, 10, new Tile('O', 'green', 'purple')));
-        
+            this.world.getRoom().addActor(new Orc("Orc", 10, 10, new Tile('O', 'green', 'purple')));
+
 
         // Create windows
         this.renderer.addWindow('gameinfo', this.world.getRoom().getWidth(), 3);
@@ -112,7 +113,7 @@ class game extends Game {
                         case CursorState.Turret:
                             game.placeShopItem(new Turret(i, j));
                             break;
-                        case CursorState.Wall: 
+                        case CursorState.Wall:
                             game.placeShopItem(new Wall(i, j));
                             break;
                         default:
@@ -136,7 +137,7 @@ class game extends Game {
 
            // replace the object with the new item
            this.world.getRoom().objects[item.x][item.y] = item;
-           
+
            // charge the user for this item
            this.funds -= item.cost;
         }
@@ -166,7 +167,7 @@ class game extends Game {
                 break;
         }
         this.renderer.renderGameObject(this.cursor, this.renderer.windows['game'].getContext());
-        
+
     }
 
     update(key: string) {
@@ -190,7 +191,7 @@ class game extends Game {
             this.cursorState = CursorState.Default;
             this.updateCursor();
         }
-       
+
     }
 
     draw() {
@@ -208,7 +209,7 @@ class game extends Game {
         // Update Menus' content
         (<MenuInfo>this.menus['gameinfo'].elements[0]).content = 'Wave: ' + this.world.wave;
         (<MenuInfo>this.menus['gameinfo'].elements[1]).content = '$ ' + this.funds;
-    
+
         // Render Menus
         for (let key in this.menus) {
             this.renderer.renderMenu(this.menus[key], this.renderer.windows[key].getContext());
@@ -224,4 +225,3 @@ IO.genericKeyBinding(function(key: string) {
     g.update(key);
     g.draw();
 });
-

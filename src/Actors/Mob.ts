@@ -50,7 +50,7 @@ export class Mob extends Actor {
 
         if (Math.abs(dx) < this.visionRadius && Math.abs(dy) < this.visionRadius && this.isHostile)
             this.state = MobState.Hostile;
-        else 
+        else
             this.state = MobState.Idle;
 
         //
@@ -67,7 +67,7 @@ export class Mob extends Actor {
         //
         else if (this.state == MobState.Hostile) {
             // figure out which direction to move to be closer to the player
-            
+
             let action = new WaitAction(this);
             if (dy > 0) {
                 // Move down towards the player
@@ -89,15 +89,15 @@ export class Mob extends Actor {
             action.perform(world);
             return;
         }
-        
+
     }
 
     death(world: World) {
-        
+
         this.dead = true;
         let objects = [];
         objects.push(new Corpse(this));
-        
+
         // TODO: randomly select things from this mob's inventory to be dropped
 
         return objects;
