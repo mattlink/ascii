@@ -9,32 +9,7 @@ import { World } from '../world';
 import { Sword } from '../Items/Sword';
 import { Mob } from './Mob';
 import { Shovel } from '../Items/Shovel';
-
-// Breadth first search
-function bfs(world: World, start: GameObject, goal: GameObject) {
-    const room = world.getActiveRoom();
-
-    const frontier: GameObject[] = [];
-    frontier.push(start);
-    const cameFrom = {};
-
-    while (frontier.length > 0) {
-        const current = frontier.shift();
-
-        if (current == goal) {
-            break;
-        }
-
-        for (var next of room.getNeighboringSpaces(current.x, current.y)) {
-            if (cameFrom[next.key()] == null) {
-                frontier.push(next);
-                cameFrom[next.key()] = current;
-            }
-        }
-    }
-
-    return cameFrom;
-}
+import { bfs } from '../util';
 
 export class Orc extends Mob {
 

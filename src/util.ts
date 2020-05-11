@@ -1,3 +1,6 @@
+import { GameObject } from './GameObject'
+import { World } from './world';
+
 export class KeyQueue {
     
     private queue: string[] = [];
@@ -32,6 +35,33 @@ export class KeyQueue {
         return !(this.holding == null);
     }
 }
+
+// Breadth first search
+export function bfs(world: World, start: GameObject, goal: GameObject) {
+    const room = world.getActiveRoom();
+
+    const frontier: GameObject[] = [];
+    frontier.push(start);
+    const cameFrom = {};
+
+    while (frontier.length > 0) {
+        const current = frontier.shift();
+
+        if (current == goal) {
+            break;
+        }
+
+        for (var next of room.getNeighboringSpaces(current.x, current.y)) {
+            if (cameFrom[next.key()] == null) {
+                frontier.push(next);
+                cameFrom[next.key()] = current;
+            }
+        }
+    }
+
+    return cameFrom;
+}
+
 
 // enum Mouse {
 //     RightDown,

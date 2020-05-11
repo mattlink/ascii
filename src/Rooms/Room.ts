@@ -7,6 +7,7 @@ import { Door, DoorType } from './Door';
 import { Wall, Floor, Tree } from './Environment';
 import { BSPTree, PathQueue } from '../util';
 import { Item } from '../Items/Item';
+import { Spawner } from '../TD/Spawner';
 import { Game } from '../Game';
 
 // An instance of Area represents some area of a Room, usually walled off
@@ -150,9 +151,9 @@ export class Room {
     }
 
     handleActorTurns(world: World) {
-        // world.getPlayer().takeTurn(world);
         this.actors.forEach(actor => {
             if (actor instanceof Mob) actor.takeTurn(world);
+            if (actor instanceof Spawner) actor.takeTurn(world);
         });
     }
 

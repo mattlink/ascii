@@ -2,6 +2,8 @@ import { Nexus } from './TD/Nexus';
 import { Room } from './Rooms/Room';
 import { Tile } from './tile';
 import { ShopItem } from './TD/ShopItem';
+import { Spawner } from './TD/Spawner';
+import { bfs } from './util';
 
 
 export class World {
@@ -27,7 +29,39 @@ export class World {
 
         // Create the Nexus and add it to the room
         this.nexus = new Nexus(this.room.getWidth() / 2, this.room.getHeight() / 2, new Tile('*', 'red', 'white'));
-        this.room.objects[this.nexus.x][this.nexus.y] = this.nexus;        
+        this.room.objects[this.nexus.x][this.nexus.y] = this.nexus;
+
+        const spawner = new Spawner(0, 0, this.room);
+        // Add the spawner
+
+        let attempts = 0;
+        while (attempts < 1000) {
+            const randX = Math.floor((Math.random() * WORLD_WIDTH) + 1);
+            const randY = Math.floor((Math.random() * WORLD_HEIGHT) + 1);
+
+            const dx = Math.abs(this.nexus.x - randX);
+            const dy = Math.abs(this.nexus.y - randY);
+
+            // Ensure that the spawner is at least 10 tiles away
+            if (dx + dy < 10) {
+                attempts++;
+                continue;
+            }
+
+            spawner.x = randX;
+            spawner.y = randY;
+
+            const cameFrom = bfs(this, this.nexus, spawner);
+
+            // Check if there is a valid path from the spawner to the nexus
+            if (!(spawner.key() in cameFrom)) {
+                attempts++;
+                continue;
+            }
+
+            this.room.addActor(spawner);
+            break;
+        }
     }
 
     takeTurn() {

@@ -11,6 +11,7 @@ import { Turret } from "./TD/Turret";
 import { Wall } from "./TD/Wall";
 import { ShopItem } from "./TD/ShopItem";
 import { Orc } from './Actors/Orc';
+import { Spawner } from './TD/Spawner';
 
 enum CursorState {
     Default,
@@ -47,10 +48,6 @@ class game extends Game {
         this.cursorState = CursorState.Default;
 
         this.funds = 500; // start with this much cash
-
-        // Add some test orcs to the world
-        for (let i = 0; i < 1; i++)
-            this.world.getRoom().addActor(new Orc("Orc", 10, 10, new Tile('O', 'green', 'purple')));
 
         // Create windows
         this.renderer.addWindow('gameinfo', this.world.getRoom().getWidth(), 3);
