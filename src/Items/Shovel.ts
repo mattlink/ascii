@@ -36,6 +36,11 @@ class ShovelAction extends Action {
             // Add the Turret to the actors inventory
             this.actor.addInventoryItem(room.objects[toPosX][toPosY]);
 
+            // Remove the Turret from the World items
+            world.items = world.items.filter(item => {
+                return item != room.objects[toPosX][toPosY];
+            });
+
             // Put a floor tile where the Turret that we just dug was
             room.objects[toPosX][toPosY] = new Floor(toPosX, toPosY, room.floorTile);
             return true;
