@@ -12,7 +12,8 @@ export class Turret extends ShopItem {
 
     constructor(x: number, y: number) {
         super(x, y, Turret.tile);
-        this.collides = true;
+        //this.collides = true;
+        this.destructible = true;
     }
 
     takeTurn(world: World) {
@@ -65,18 +66,18 @@ export class Turret extends ShopItem {
             }
         }
 
-        // Attack the closest enemy 
+        // Attack the closest enemy
         if (enemy == null) {
             return;
         }
-        
+
         // Invoke the enemy's death (this is where the enemy is actually removed)
         if (enemy.health == 0) {
             enemy.death(world);
 
             // Remove the enemy from the room.
             (<Floor>world.getRoom().objects[enemy.x][enemy.y]).removeOccupation();
-            
+
             world.getRoom().actors = world.getRoom().actors.filter(a => {
                 return a != enemy;
             });
