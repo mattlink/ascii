@@ -247,6 +247,43 @@ export class Renderer {
         }
     }
 
+    public renderObjectContextExtended(obj: GameObject, room: Room, context: HTMLElement) {
+        
+        // Render in all 4 cardinal directions
+        if (!(obj.x == 0)) this.renderGameObject(room.getObject(obj.x - 1, obj.y), context);
+        if (!(obj.x == room.getWidth() - 1)) this.renderGameObject(room.getObject(obj.x + 1, obj.y), context);
+        if (!(obj.y == 0)) this.renderGameObject(room.getObject(obj.x, obj.y - 1), context);
+        if (!(obj.y == room.getHeight() - 1)) this.renderGameObject(room.getObject(obj.x, obj.y + 1), context);
+
+        // Render diagonals
+        if (!(obj.x == 0 || obj.y == 0))
+            this.renderGameObject(room.getObject(obj.x - 1, obj.y - 1), context);
+        if (!(obj.x == room.getWidth() - 1|| obj.y == 0)) 
+            this.renderGameObject(room.getObject(obj.x + 1, obj.y - 1), context);
+        if (!(obj.x == 0 || obj.y == room.getHeight() - 1))
+            this.renderGameObject(room.getObject(obj.x - 1, obj.y + 1), context);
+        if (!(obj.x == room.getWidth() - 1 || obj.y == room.getHeight() - 1)) 
+            this.renderGameObject(room.getObject(obj.x + 1, obj.y + 1), context);
+
+            // Go one further...
+
+        // Render in all 4 cardinal directions
+        if (!(obj.x == 1)) this.renderGameObject(room.getObject(obj.x - 2, obj.y), context);
+        if (!(obj.x == room.getWidth() - 2)) this.renderGameObject(room.getObject(obj.x + 2, obj.y), context);
+        if (!(obj.y == 1)) this.renderGameObject(room.getObject(obj.x, obj.y - 2), context);
+        if (!(obj.y == room.getHeight() - 2)) this.renderGameObject(room.getObject(obj.x, obj.y + 2), context);
+
+        // Render diagonals
+        if (!(obj.x == 1 || obj.y == 1))
+            this.renderGameObject(room.getObject(obj.x - 2, obj.y - 2), context);
+        if (!(obj.x == room.getWidth() - 2|| obj.y == 1)) 
+            this.renderGameObject(room.getObject(obj.x + 2, obj.y - 2), context);
+        if (!(obj.x == 1 || obj.y == room.getHeight() - 2))
+            this.renderGameObject(room.getObject(obj.x - 2, obj.y + 2), context);
+        if (!(obj.x == room.getWidth() - 2 || obj.y == room.getHeight() - 2)) 
+            this.renderGameObject(room.getObject(obj.x + 2, obj.y + 2), context);
+    }
+
 
     public showWindows(names: string[]) {
         this.hideAllWindows();

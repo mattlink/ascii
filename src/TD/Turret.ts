@@ -69,9 +69,19 @@ export class Turret extends ShopItem {
         if (enemy == null) {
             return;
         }
-        
-        // Invoke the enemy's death (this is where the enemy is actually removed)
+    
+    
+
+        // Damage the enemy
+        enemy.tile.bg = 'red';
+        enemy.health -= 1;
+
+        // Invoke the enemy's death 
         if (enemy.health == 0) {
+            
+            // reward the player for killing the Orc
+            world.addFunds(5);
+
             enemy.death(world);
 
             // Remove the enemy from the room.
@@ -81,19 +91,11 @@ export class Turret extends ShopItem {
                 return a != enemy;
             });
 
+            world.getGame().renderer.renderGameObject(world.getRoom().objects[enemy.x][enemy.y], world.getGame().renderer.windows['game'].getContext());
+            world.getGame().renderer.renderObjectContext(world.getRoom().objects[enemy.x][enemy.y], world.getRoom(), world.getGame().renderer.windows['game'].getContext());
+            world.getGame().renderer.renderObjectContextExtended(this, world.getRoom(), world.getGame().renderer.windows['game'].getContext());
+
             return;
-        }
-
-        // Damage the enemy
-        enemy.tile.bg = 'red';
-        enemy.health -= 1;
-
-        // Remove the enemy tile if it has run out of health (this is where the enemy is visually removed)
-        if (enemy.health == 0) {
-            enemy.tile = world.getRoom().floorTile;
-
-            // reward the player for killing the Orc
-            world.addFunds(5);
 
         }
     }

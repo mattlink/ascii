@@ -87,10 +87,15 @@ export class World {
                 this.messageHistory.push(message);
             });
         }
+
     }
 
     addFunds(funds: number) {
         this.game.funds += funds;
+    }
+
+    getGame() {
+        return this.game;
     }
 
     getActiveRoom(): Room {
