@@ -5,7 +5,6 @@ import { IO } from "./Systems/io";
 import { Menu, MenuInfo, MenuOption } from './Systems/Menu/Menu';
 import { Tile } from "./tile";
 import { Floor } from "./Rooms/Environment";
-import { Mob } from "./Actors/Mob";
 import { GameObject } from "./GameObject";
 import { Turret } from "./TD/Turret";
 import { Wall } from "./TD/Wall";
@@ -40,20 +39,20 @@ class game extends Game {
         const WORLD_HEIGHT = 30;
         const WORLD_WIDTH = 50;
 
-        this.world = new World();
+        this.world = new World(this);
         this.world.init(WORLD_WIDTH, WORLD_HEIGHT);
 
         this.cursor = new GameObject(this.world.getRoom().getWidth() / 2, this.world.getRoom().getHeight() / 2, new Tile('X', 'red', 'white'));
         this.cursorState = CursorState.Default;
 
-        this.funds = 500; // start with this much cash
+        this.funds = 30; // start with this much cash
 
         // Add some test orcs to the world
         for (let i = 0; i < 1; i++)
             this.world.getRoom().addActor(new Orc("Orc", 10, 10, new Tile('O', 'green', 'purple')));
 
         // Create windows
-        this.renderer.addWindow('gameinfo', this.world.getRoom().getWidth(), 3);
+        this.renderer.addWindow('gameinfo', this.world.getRoom().getWidth(), 4.5);
         this.renderer.addWindow('game', this.world.getRoom().getWidth(), this.world.getRoom().getHeight(), true);
         this.renderer.addWindow('shop', this.world.getRoom().getWidth(), 8);
         this.renderer.hideAllWindows();
@@ -61,7 +60,8 @@ class game extends Game {
         // Create Menus for gameinfo and shop
         this.menus['gameinfo'] = new Menu();
         this.menus['gameinfo'].addElement(new MenuInfo('Wave: 0'));
-        this.menus['gameinfo'].addElement(new MenuInfo('$ 500'));
+        this.menus['gameinfo'].addElement(new MenuInfo('$ 30'));
+        this.menus['gameinfo'].addElement(new MenuInfo('Welcome to Orc Seige!'));
 
         this.menus['shop'] = new Menu();
         this.menus['shop'].addElement(new MenuInfo('SHOP:'));
@@ -131,6 +131,16 @@ class game extends Game {
 
         // check if we're trying to place this item on top of another item we've already placed
         if (obj instanceof ShopItem) {
+
+            if (this.funds + obj.cost < item.cost) {
+                this.world.appendMessage("You don't have enough money for that.");
+                (<MenuInfo>this.menus['gameinfo'].elements[2]).content = this.world.getCurrentMessages().join(" ");
+                this.renderer.renderMenu(this.menus['gameinfo'], this.renderer.windows['gameinfo'].getContext());
+                this.world.clearMessage();
+                return;
+            }
+
+
             // refund its value
             this.funds += obj.cost;
             // remove the the old item from the world
@@ -145,6 +155,15 @@ class game extends Game {
 
         // otherwise just place the item and charge the user
         else {
+
+            if (this.funds < item.cost) {
+                this.world.appendMessage("You don't have enough money for that.");
+                (<MenuInfo>this.menus['gameinfo'].elements[2]).content = this.world.getCurrentMessages().join(" ");
+                this.renderer.renderMenu(this.menus['gameinfo'], this.renderer.windows['gameinfo'].getContext());
+                this.world.clearMessage();
+                return;
+            }
+
             this.world.getRoom().objects[item.x][item.y] = item;
             this.funds -= item.cost;
         }
@@ -213,6 +232,7 @@ class game extends Game {
         // Update Menus' content
         (<MenuInfo>this.menus['gameinfo'].elements[0]).content = 'Wave: ' + this.world.wave;
         (<MenuInfo>this.menus['gameinfo'].elements[1]).content = '$ ' + this.funds;
+        (<MenuInfo>this.menus['gameinfo'].elements[2]).content = this.world.getCurrentMessages().join(" ");
 
         // Render Menus
         for (let key in this.menus) {

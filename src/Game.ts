@@ -8,6 +8,7 @@ export abstract class Game {
     protected keyQueue: KeyQueue = new KeyQueue();
 
     protected algoVis = false;
+    public funds = 0;
 
     constructor() {}
 

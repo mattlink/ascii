@@ -91,6 +91,10 @@ export class Turret extends ShopItem {
         // Remove the enemy tile if it has run out of health (this is where the enemy is visually removed)
         if (enemy.health == 0) {
             enemy.tile = world.getRoom().floorTile;
+
+            // reward the player for killing the Orc
+            world.addFunds(5);
+
         }
     }
 }
