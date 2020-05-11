@@ -9,7 +9,7 @@ import { World } from '../world';
 import { Sword } from '../Items/Sword';
 import { Mob } from './Mob';
 import { Shovel } from '../Items/Shovel';
-import { bfs } from '../util';
+import { bfs, dijkstra } from '../util';
 
 export class Orc extends Mob {
 
@@ -30,7 +30,7 @@ export class Orc extends Mob {
         const nexus = world.getPlayer();
         const room = world.getActiveRoom();
         const start = room.objects[this.x][this.y];
-        const cameFrom = bfs(world, start, nexus);
+        const cameFrom = dijkstra(world, start, nexus);
 
         let current = nexus;
         const path = []
