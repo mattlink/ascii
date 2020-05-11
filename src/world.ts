@@ -4,6 +4,7 @@ import { Tile } from './tile';
 import { ShopItem } from './TD/ShopItem';
 import { Spawner } from './TD/Spawner';
 import { bfs } from './util';
+import { Game } from './Game';
 
 
 export class World {
@@ -20,7 +21,11 @@ export class World {
     private messageHistory: string[] = [];
     private messages: string[] = [];
 
-    constructor() {}
+    private game: Game;
+
+    constructor(game?: Game) {
+        this.game = game || null;
+    }
 
     init(WORLD_WIDTH, WORLD_HEIGHT) {
         // Initialize the Room
@@ -70,9 +75,6 @@ export class World {
         // TODO: turn aka "tick" code
         this.room.handleActorTurns(this);
 
-        console.log("world, actor count: ", this.getRoom().actors.length);
-
-
         // Let all items take a turn (Turrets, Walls, etc)
         this.items.forEach(item => {
             item.takeTurn(this);
@@ -85,6 +87,10 @@ export class World {
                 this.messageHistory.push(message);
             });
         }
+    }
+
+    addFunds(funds: number) {
+        this.game.funds += funds;
     }
 
     getActiveRoom(): Room {
