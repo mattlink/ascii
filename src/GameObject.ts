@@ -8,18 +8,20 @@ export class GameObject {
     public y: number;
     public tile: Tile;
 
-    public collides: boolean;
+    public collides: boolean = false;
+    public destructible: boolean = false;
 
     constructor(x: number, y: number, tile: Tile) {
         this.x = x;
         this.y = y;
         this.tile = tile;
-
-        this.collides = false;
     }
 
     public getTile() {
         return this.tile;
     }
-    
+
+    public key()  {
+        return this.x + ' ' + this.y;
+    }
 }

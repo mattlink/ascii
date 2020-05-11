@@ -8,6 +8,6 @@ export class Wall extends ShopItem {
 
     constructor(x: number, y: number) {
         super(x, y, Wall.tile);
-        this.collides = true;
+        this.destructible = true;
     }
 }

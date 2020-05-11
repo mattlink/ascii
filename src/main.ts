@@ -49,7 +49,7 @@ class game extends Game {
         this.funds = 500; // start with this much cash
 
         // Add some test orcs to the world
-        for (let i = 0; i < 10; i++)
+        for (let i = 0; i < 1; i++)
             this.world.getRoom().addActor(new Orc("Orc", 10, 10, new Tile('O', 'green', 'purple')));
 
 

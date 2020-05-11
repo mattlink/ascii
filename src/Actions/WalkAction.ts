@@ -7,7 +7,7 @@ import { World } from "../world";
 import { DoorAction } from "./DoorAction";
 
 export class WalkAction extends Action {
-    
+
     private dir: ActionDirection;
 
     constructor(dir: ActionDirection, actor: Actor) {
@@ -38,7 +38,7 @@ export class WalkAction extends Action {
         if (this.dir == ActionDirection.DownRight) toObject = room.getObject(this.actor.x + 1, this.actor. y + 1);
 
 
-        if (!toObject.collides) {
+        if (!toObject.collides && !toObject.destructible) {
             if (fromObject instanceof Floor) {
                 (<Floor>room.objects[this.actor.x][this.actor.y]).removeOccupation();
             }
@@ -58,7 +58,7 @@ export class WalkAction extends Action {
             if (this.dir == ActionDirection.Down) this.actor.y = this.actor.y + 1;
             if (this.dir == ActionDirection.Left) this.actor.x = this.actor.x - 1;
             if (this.dir == ActionDirection.Right) this.actor.x = this.actor.x + 1;
-            
+
             // diagonals:
             if (this.dir == ActionDirection.UpLeft) {
                 this.actor.x -= 1
@@ -81,6 +81,8 @@ export class WalkAction extends Action {
             if (toObject instanceof Floor) {
                 (<Floor>room.objects[this.actor.x][this.actor.y]).setOccupation(this.actor);
             }
+        } else if (toObject.destructible) {
+            // TODO Add attacking interaction
         } else {
             if (this.actor.debug) {
                 console.log('COLLISION: ', this.actor);

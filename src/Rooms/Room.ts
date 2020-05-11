@@ -324,6 +324,25 @@ export class Room {
         return wallCount;
     }
 
+    getNeighboringSpaces(x: number, y: number) {
+        let result = [];
+        const dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+
+        for(var dir of dirs) {
+            const nX = x + dir[0];
+            const nY = y + dir[1];
+
+            if (nX >= 0 && nY >= 0 && nX < this.width && nY < this.height) {
+                const neighbor = this.objects[nX][nY];
+                if (!neighbor.collides) {
+                    result.push(neighbor);
+                }
+            }
+        }
+
+        return result;
+    }
+
     generateSymmetricBSPTreeVertical(iterationsLeft: number, tree: BSPTree<Area>) {
         if (iterationsLeft == 0) return;
 
