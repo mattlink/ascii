@@ -5,6 +5,7 @@ import { Mob } from '../Actors/Mob';
 import { World } from '../world';
 import { Door, DoorType } from './Door';
 import { Wall, Floor, Tree } from './Environment';
+import { Wall as TDWall } from '../TD/Wall';
 import { BSPTree, PathQueue } from '../util';
 import { Item } from '../Items/Item';
 import { Spawner } from '../TD/Spawner';
@@ -342,6 +343,14 @@ export class Room {
         }
 
         return result;
+    }
+
+    movementCost(pos: GameObject): number {
+        if (pos instanceof TDWall) {
+            return 10;
+        }
+
+        return 1;
     }
 
     generateSymmetricBSPTreeVertical(iterationsLeft: number, tree: BSPTree<Area>) {

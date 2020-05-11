@@ -35,7 +35,7 @@ class game extends Game {
 
         // TODO: Check for an existing save in localStorage
         this.renderer = new Renderer();
-        
+
         // Create the world
         const WORLD_HEIGHT = 30;
         const WORLD_WIDTH = 50;
