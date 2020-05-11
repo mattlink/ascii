@@ -8,6 +8,7 @@ import { Action } from '../Actions/Action';
 import { World } from '../world';
 import { Sword } from '../Items/Sword';
 import { Mob } from './Mob';
+import { Shovel } from '../Items/Shovel';
 
 // Breadth first search
 function bfs(world: World, start: GameObject, goal: GameObject) {
@@ -42,6 +43,8 @@ export class Orc extends Mob {
     constructor(name: string, x: number, y: number, tile: Tile) {
         super(name, x, y, tile, true);
         this.nextAction = new WaitAction(this);
+        // Give Orcs a shovel so they can break down walls
+        this.equipt = new Shovel(this.x, this.y, new Tile('/', 'black', 'black'));
     }
 
     takeTurn(world: World) {

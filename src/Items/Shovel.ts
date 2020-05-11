@@ -1,7 +1,8 @@
 import { Action, ActionDirection } from "../Actions/Action";
 import { Actor } from "../Actors/Actor";
 import { World } from "../world";
-import { Wall, Floor } from "../Rooms/Environment";
+import { Floor } from "../Rooms/Environment";
+import { Wall } from "../TD/Wall";
 import { GameObject } from "../GameObject";
 import { Item } from "./Item";
 import { Tile } from "../tile";
