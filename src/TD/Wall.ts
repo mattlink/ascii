@@ -10,4 +10,8 @@ export class Wall extends ShopItem {
         super(x, y, Wall.tile);
         this.destructible = true;
     }
+
+    takeTurn() {
+        // wall's should do nothing as part of their turn
+    }
 }

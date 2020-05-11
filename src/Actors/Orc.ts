@@ -37,6 +37,8 @@ function bfs(world: World, start: GameObject, goal: GameObject) {
 
 export class Orc extends Mob {
 
+    public health = 2;
+
     constructor(name: string, x: number, y: number, tile: Tile) {
         super(name, x, y, tile, true);
         this.nextAction = new WaitAction(this);

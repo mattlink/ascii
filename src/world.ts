@@ -1,12 +1,15 @@
 import { Nexus } from './TD/Nexus';
 import { Room } from './Rooms/Room';
 import { Tile } from './tile';
+import { ShopItem } from './TD/ShopItem';
 
 
 export class World {
 
     private nexus: Nexus;
     private room: Room; // This represents the playable environment of the world
+
+    public items: ShopItem[] = [];
 
     public wave: number = 0; // Keeps track of how many waves have occurred. this is essentially the level of the game
     private turnsPassed: number = 0; // Keeps track of total game ticks (turns)
@@ -32,6 +35,14 @@ export class World {
 
         // TODO: turn aka "tick" code
         this.room.handleActorTurns(this);
+
+        console.log("world, actor count: ", this.getRoom().actors.length);
+
+
+        // Let all items take a turn (Turrets, Walls, etc)
+        this.items.forEach(item => {
+            item.takeTurn(this);
+        });
 
         this.turnsPassed++;
 

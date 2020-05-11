@@ -35,7 +35,7 @@ class game extends Game {
 
         // TODO: Check for an existing save in localStorage
         this.renderer = new Renderer();
-
+        
         // Create the world
         const WORLD_HEIGHT = 30;
         const WORLD_WIDTH = 50;
@@ -51,7 +51,6 @@ class game extends Game {
         // Add some test orcs to the world
         for (let i = 0; i < 1; i++)
             this.world.getRoom().addActor(new Orc("Orc", 10, 10, new Tile('O', 'green', 'purple')));
-
 
         // Create windows
         this.renderer.addWindow('gameinfo', this.world.getRoom().getWidth(), 3);
@@ -132,8 +131,10 @@ class game extends Game {
 
         // check if we're trying to place this item on top of another item we've already placed
         if (obj instanceof ShopItem) {
-           // refund its value
-           this.funds += obj.cost;
+            // refund its value
+            this.funds += obj.cost;
+            // remove the the old item from the world
+            this.world.items.splice(this.world.items.indexOf(obj));
 
            // replace the object with the new item
            this.world.getRoom().objects[item.x][item.y] = item;
@@ -147,6 +148,9 @@ class game extends Game {
             this.world.getRoom().objects[item.x][item.y] = item;
             this.funds -= item.cost;
         }
+
+        // add the item to the world
+        this.world.items.push(item);
 
         // update the display of currently available funds
         (<MenuInfo>this.menus['gameinfo'].elements[1]).content = '$ ' + this.funds;
