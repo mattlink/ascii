@@ -41,6 +41,8 @@ class game extends Game {
 
     cursorState: CursorState;
 
+    selected : GameObject;
+
     funds: number; // How much cash the player has available
     cashMilestone: number = 0;
 
@@ -74,6 +76,7 @@ class game extends Game {
         // Create windows
         this.renderer.addWindow('gameinfo', this.world.getRoom().getWidth(), 4.5);
         this.renderer.addWindow('game', this.world.getRoom().getWidth(), this.world.getRoom().getHeight(), true);
+        this.renderer.addWindow('selection', this.world.getRoom().getWidth(), 5);
         this.renderer.addWindow('shop', this.world.getRoom().getWidth(), 8);
         this.renderer.hideAllWindows();
 
@@ -82,6 +85,12 @@ class game extends Game {
         this.menus['gameinfo'].addElement(new MenuInfo('Nexus Health: 100'));
         this.menus['gameinfo'].addElement(new MenuInfo('$ 30'));
         this.menus['gameinfo'].addElement(new MenuInfo(''));
+
+        this.menus['selection'] = new Menu();
+        this.menus['selection'].addElement(new MenuInfo('SELECTED:'));
+        this.menus['selection'].addElement(new MenuInfo('Nothing selected'));
+        this.menus['selection'].addElement(new MenuInfo(''));
+        this.menus['selection'].addElement(new MenuInfo(''));
 
         this.menus['shop'] = new Menu();
         this.menus['shop'].addElement(new MenuInfo('SHOP:'));
@@ -144,6 +153,16 @@ class game extends Game {
                             break;
                         case CursorState.Wall:
                             game.placeShopItem(new Wall(i, j));
+                            break;
+                        case CursorState.Default:
+                            let item = game.world.getActiveRoom().getObject(i, j);
+                            if (item instanceof Floor && item.getOccupation()) {
+                                item = item.getOccupation();
+                            }
+                            game.selected = item;
+                            game.draw();
+                            // item.tile.bg = 'blue';
+                            // game.renderer.renderGameObject(item, game.renderer.windows['game'].getContext());
                             break;
                         default:
                             break;
@@ -285,7 +304,7 @@ class game extends Game {
                     this.gameState = GameState.Play;
 
                     this.activeMenu = 'game';
-                    this.renderer.showWindows(['gameinfo', 'game', 'shop']);
+                    this.renderer.showWindows(['gameinfo', 'game', 'selection', 'shop']);
                     return;
                 }
             }
@@ -309,6 +328,21 @@ class game extends Game {
             (<MenuInfo>this.menus['gameinfo'].elements[0]).content = 'Nexus Health: ' + this.world.getPlayer().health;
             (<MenuInfo>this.menus['gameinfo'].elements[1]).content = '$ ' + this.funds;
             (<MenuInfo>this.menus['gameinfo'].elements[2]).content = this.world.getCurrentMessages().join(" ");
+
+            if (this.selected) {
+                if (this.selected instanceof Orc) {
+                    (<MenuInfo>this.menus['selection'].elements[1]).content = `${this.selected.name} (HP: ${this.selected.health})`;
+                    (<MenuInfo>this.menus['selection'].elements[2]).content = '';
+                } else if (this.selected instanceof Turret) {
+                    (<MenuInfo>this.menus['selection'].elements[1]).content = this.selected.name;
+                    (<MenuInfo>this.menus['selection'].elements[2]).content = 's - Sell $10';
+                } else {
+                    (<MenuInfo>this.menus['selection'].elements[1]).content = this.selected.name;
+                    (<MenuInfo>this.menus['selection'].elements[2]).content = '';
+                }
+            } else {
+                (<MenuInfo>this.menus['selection'].elements[1]).content = 'Nothing selected';
+            }
 
             // Render Menus
             for (let key in this.menus) {
