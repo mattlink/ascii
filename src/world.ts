@@ -37,10 +37,10 @@ export class World {
 
         let attempts = 0;
         while (attempts < 1000) {
-            const randX = Math.floor((Math.random() * WORLD_WIDTH) + 1);
-            const randY = Math.floor((Math.random() * WORLD_HEIGHT) + 1);
-            const nexusX = Math.floor((Math.random() * WORLD_WIDTH) + 1);
-            const nexusY = Math.floor((Math.random() * WORLD_HEIGHT) + 1);
+            const randX = Math.floor((Math.random() * WORLD_WIDTH));
+            const randY = Math.floor((Math.random() * WORLD_HEIGHT));
+            const nexusX = Math.floor((Math.random() * WORLD_WIDTH));
+            const nexusY = Math.floor((Math.random() * WORLD_HEIGHT));
 
             // Create the Nexus and add it to the room
             this.nexus = new Nexus(nexusX, nexusY, new Tile('N', '#8A2BE2', '#00FFFF'));
