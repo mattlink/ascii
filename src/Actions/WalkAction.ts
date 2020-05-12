@@ -1,7 +1,9 @@
 import { Action, ActionDirection } from "./Action";
 import { Actor }  from "../Actors/Actor";
 import { Floor, Wall } from "../Rooms/Environment";
+import { Nexus } from '../TD/Nexus';
 import { Door, DoorType } from "../Rooms/Door";
+import { Menu, MenuInfo, MenuOption } from '../Systems/Menu/Menu';
 
 import { World } from "../world";
 import { DoorAction } from "./DoorAction";
@@ -41,6 +43,14 @@ export class WalkAction extends Action {
         if (!toObject.collides && !toObject.destructible) {
             if (fromObject instanceof Floor) {
                 (<Floor>room.objects[this.actor.x][this.actor.y]).removeOccupation();
+            }
+
+            if (toObject instanceof Nexus) {
+                (<Floor>room.objects[this.actor.x][this.actor.y]).removeOccupation();
+                room.getActors().splice(room.getActors().indexOf(this.actor), 1);
+                const nexus = world.getPlayer();
+                nexus.health -= 10;
+                return;
             }
 
             // Check if the actor just walked through a door:
