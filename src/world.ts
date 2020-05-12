@@ -75,7 +75,7 @@ export class World {
     takeTurn() {
         this.messages = [];
 
-        // TODO: turn aka "tick" code
+        // Turn aka "tick" code
         this.room.handleActorTurns(this);
 
         // Let all items take a turn (Turrets, Walls, etc)
