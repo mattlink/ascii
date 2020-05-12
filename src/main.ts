@@ -41,8 +41,6 @@ class game extends Game {
 
     cursorState: CursorState;
 
-    selected : GameObject;
-
     funds: number; // How much cash the player has available
     cashMilestone: number = 0;
 
@@ -95,7 +93,7 @@ class game extends Game {
         this.menus['shop'] = new Menu();
         this.menus['shop'].addElement(new MenuInfo('SHOP:'));
         this.menus['shop'].addElement(new MenuOption('Turret $20', 't'));
-        this.menus['shop'].addElement(new MenuOption('Wall $10', 'w'));
+        this.menus['shop'].addElement(new MenuOption('Wall $5', 'w'));
 
         // Render world and menus for the first time
         this.renderer.renderRoom(this.world.getRoom(), 'game');
@@ -296,11 +294,15 @@ class game extends Game {
                         return item != this.selected;
                     });
 
+                    this.funds += this.selected.cost/2;
+
                     room.objects[x][y] = new Floor(x, y, room.floorTile);
                     this.renderer.renderGameObject(room.objects[x][y], this.renderer.windows['game'].getContext());
                 } else if (this.selected && this.selected instanceof Wall) {
                     const x = this.selected.x;
                     const y = this.selected.y;
+
+                    this.funds += this.selected.cost;
 
                     room.objects[x][y] = new Floor(x, y, room.floorTile);
                     this.renderer.renderGameObject(room.objects[x][y], this.renderer.windows['game'].getContext());
@@ -366,6 +368,9 @@ class game extends Game {
                 } else if (this.selected instanceof Turret) {
                     (<MenuInfo>this.menus['selection'].elements[1]).content = this.selected.name;
                     (<MenuInfo>this.menus['selection'].elements[2]).content = 's - Sell $10';
+                } else if (this.selected instanceof Wall) {
+                    (<MenuInfo>this.menus['selection'].elements[1]).content = this.selected.name;
+                    (<MenuInfo>this.menus['selection'].elements[2]).content = 's - Sell $5';
                 } else {
                     (<MenuInfo>this.menus['selection'].elements[1]).content = this.selected.name;
                     (<MenuInfo>this.menus['selection'].elements[2]).content = '';

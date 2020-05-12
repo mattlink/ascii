@@ -4,7 +4,7 @@ import { Tile } from "../tile";
 export class Wall extends ShopItem {
 
     static tile = new Tile('W', 'brown', 'black');
-    public cost = 10;
+    public cost = 5;
 
     constructor(x: number, y: number) {
         super(x, y, Wall.tile);
