@@ -34,12 +34,16 @@ export class Orc extends Mob {
 
         let current = nexus;
         const path = []
-        while (current != start) {
+        while (current != start && current != null) {
             path.push(current);
             current = cameFrom[current.key()];
         }
 
         const next = path.pop();
+
+        if (next == null) {
+            return;
+        }
 
         let dx = this.x - next.x;
         let dy = this.y - next.y;
