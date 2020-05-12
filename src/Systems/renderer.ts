@@ -113,9 +113,17 @@ export class Renderer {
 
     public renderRangeArea(x: number, y: number, width: number, height: number, room: Room, context: HTMLElement) {
         for (let i = x-3; i < x-5 + width; i++) {
+            if (i < 0 || i > room.getWidth()) continue;
             for (let j = y-3; j < y-5 + height; j++) {
-              let test = room.getObject(i, j).getTile();
-              if((test.ascii == ".")) {
+              let obj = room.getObject(i, j);
+
+              if (j < 0 || j > room.getHeight()) continue;
+
+              if (obj instanceof Floor && (<Floor>obj).getOccupation() != null) {
+                let occ = (<Floor>obj).getOccupation();
+                this.updateTile(i,j, occ.getTile(), context);
+              }
+              else if((obj.getTile().ascii == ".")) {
                 this.updateTile(i, j, new Tile('+','blue','black'), context);
               }
             }
@@ -124,9 +132,17 @@ export class Renderer {
 
     public renderResetArea(x: number, y: number, width: number, height: number, room: Room, context: HTMLElement) {
         for (let i = x-3; i < x-5 + width; i++) {
+            if (i < 0 || i > room.getWidth()) continue;
             for (let j = y-3; j < y-5 + height; j++) {
-              let test = room.getObject(i, j).getTile();
-              if((test.ascii == ".")) {
+              let obj = room.getObject(i, j);
+
+              if (j < 0 || j > room.getHeight()) continue;
+
+              if (obj instanceof Floor && (<Floor>obj).getOccupation() != null) {
+                let occ = (<Floor>obj).getOccupation();
+                this.updateTile(i,j, occ.getTile(), context);
+              }
+              else if((obj.getTile().ascii == ".")) {
                 this.updateTile(i, j, new Tile('.','white','black'), context);
               }
             }

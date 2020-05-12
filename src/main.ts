@@ -46,7 +46,7 @@ class game extends Game {
 
         // TODO: Check for an existing save in localStorage
         this.renderer = new Renderer();
-        
+
         this.menus = Importer.importMenus(menuConfig);
         this.activeMenu = 'start';
         // Add windows for all the menus we imported
@@ -132,7 +132,7 @@ class game extends Game {
                         colrows[j].innerHTML = (<Tile>objs[i][j].tile).ascii;
                         colrows[j].style.color = (<Tile>objs[i][j].tile).fg;
                         colrows[j].style.backgroundColor = (<Tile>objs[i][j].tile).bg;
-                        game.renderer.renderResetArea(i,j,9,9, game.world.getRoom(), game.renderer.windows['game'].getContext());
+                        if (game.cursorState == CursorState.Turret) game.renderer.renderResetArea(i,j,9,9, game.world.getRoom(), game.renderer.windows['game'].getContext());
                     }
                 }, this);
                 IO.defineMouseClick(colrows[j], function(e, game){
@@ -208,9 +208,11 @@ class game extends Game {
     updateCursor() {
         switch(this.cursorState) {
             case CursorState.Turret:
+                this.renderer.renderRangeArea(this.cursor.x,this.cursor.y,9,9, this.world.getRoom(), this.renderer.windows['game'].getContext());
                 this.cursor.tile = Turret.tile;
                 break;
             case CursorState.Wall:
+                this.renderer.renderResetArea(this.cursor.x,this.cursor.y,9,9, this.world.getRoom(), this.renderer.windows['game'].getContext());
                 this.cursor.tile = Wall.tile;
                 break;
             default:
@@ -247,7 +249,7 @@ class game extends Game {
                 this.updateCursor();
             }
 
-            if (key == 'Backspace') {
+            if (key == 'Escape') {
                 this.cursorState = CursorState.Default;
                 this.updateCursor();
             }
@@ -270,7 +272,7 @@ class game extends Game {
             if (toState != null) {
                 if (toState == 'Play') {
                     this.gameState = GameState.Play;
-                    
+
                     this.activeMenu = 'game';
                     this.renderer.showWindows(['gameinfo', 'game', 'shop']);
                     return;

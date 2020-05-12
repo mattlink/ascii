@@ -9,7 +9,7 @@ export class IO {
     public static shopControls: string[] = [
         't', // change cursor to turret
         'w', // change cursor to wall
-        'Backspace', // clear the current cursor state
+        'Escape', // clear the current cursor state
     ];
 
     public static defineMouseOver(elem: HTMLElement, func: Function, game: Game) {
