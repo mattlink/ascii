@@ -10,5 +10,6 @@ export class Nexus extends GameObject {
 
     constructor(x: number, y: number, tile: Tile) {
         super(x, y, tile);
+        this.name = 'Nexus';
     }
 }

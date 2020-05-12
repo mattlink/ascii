@@ -14,6 +14,7 @@ export class Turret extends ShopItem {
         super(x, y, Turret.tile);
         //this.collides = true;
         this.destructible = true;
+        this.name = 'Turret';
     }
 
     takeTurn(world: World) {
