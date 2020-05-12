@@ -32,10 +32,6 @@ export class World {
         this.room = new Room(WORLD_WIDTH, WORLD_HEIGHT, 'World Room');
         this.room.init(0, 12);
 
-        // Create the Nexus and add it to the room
-        this.nexus = new Nexus(this.room.getWidth() / 2, this.room.getHeight() / 2, new Tile('*', 'red', 'white'));
-        this.room.objects[this.nexus.x][this.nexus.y] = this.nexus;
-
         const spawner = new Spawner(0, 0, this.room);
         // Add the spawner
 
@@ -43,6 +39,12 @@ export class World {
         while (attempts < 1000) {
             const randX = Math.floor((Math.random() * WORLD_WIDTH) + 1);
             const randY = Math.floor((Math.random() * WORLD_HEIGHT) + 1);
+            const nexusX = Math.floor((Math.random() * WORLD_WIDTH) + 1);
+            const nexusY = Math.floor((Math.random() * WORLD_HEIGHT) + 1);
+
+            // Create the Nexus and add it to the room
+            this.nexus = new Nexus(nexusX, nexusY, new Tile('N', '#8A2BE2', '#00FFFF'));
+            this.room.correctSpawn(this.nexus);
 
             const dx = Math.abs(this.nexus.x - randX);
             const dy = Math.abs(this.nexus.y - randY);
@@ -67,6 +69,7 @@ export class World {
             this.room.addActor(spawner);
             break;
         }
+        this.room.objects[this.nexus.x][this.nexus.y] = this.nexus;
     }
 
     takeTurn() {
