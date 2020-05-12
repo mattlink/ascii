@@ -314,9 +314,9 @@ class game extends Game {
             }
 
             // Check if we should scale difficulty of Orcs
-            if (this.funds - this.cashMilestone >= 100) {
-                Orc.maxHealth += 1;
-                this.cashMilestone += 100;
+            if (this.funds - this.cashMilestone >= 50) {
+                Orc.maxHealth += 2;
+                this.cashMilestone += 50;
                 this.world.appendMessage("Orcs just got stronger.");
             }
         }
