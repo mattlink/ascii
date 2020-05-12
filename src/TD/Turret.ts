@@ -26,7 +26,7 @@ export class Turret extends ShopItem {
         for (let i = this.x; i < Math.min(this.x + Turret.range, world.getRoom().getWidth()); i++) {
             if (world.getRoom().objects[i][this.y] instanceof Floor && (<Floor>world.getRoom().objects[i][this.y]).getOccupation() != null) {
                 let d = i - this.x;
-                if (d < shortestDist) {
+                if (d <= shortestDist) {
                     shortestDist = d;
                     enemy = (<Floor>world.getRoom().objects[i][this.y]).getOccupation();
                 }
@@ -37,7 +37,7 @@ export class Turret extends ShopItem {
         for (let i = Math.max(this.x - Turret.range, 0); i < this.x; i++) {
             if (world.getRoom().objects[i][this.y] instanceof Floor && (<Floor>world.getRoom().objects[i][this.y]).getOccupation() != null) {
                 let d = this.x - i;
-                if (d < shortestDist) {
+                if (d <= shortestDist) {
                     shortestDist = d;
                     enemy = (<Floor>world.getRoom().objects[i][this.y]).getOccupation();
                 }
@@ -48,7 +48,7 @@ export class Turret extends ShopItem {
         for (let j = this.y; j < Math.min(this.y + Turret.range, world.getRoom().getHeight()); j++) {
             if (world.getRoom().objects[this.x][j] instanceof Floor && (<Floor>world.getRoom().objects[this.x][j]).getOccupation() != null) {
                 let d = j - this.y;
-                if (d < shortestDist) {
+                if (d <= shortestDist) {
                     shortestDist = d;
                     enemy = (<Floor>world.getRoom().objects[this.x][j]).getOccupation();
                 }
@@ -59,7 +59,7 @@ export class Turret extends ShopItem {
         for (let j = Math.max(this.y - Turret.range, 0); j < this.y; j++) {
             if (world.getRoom().objects[this.x][j] instanceof Floor && (<Floor>world.getRoom().objects[this.x][j]).getOccupation() != null) {
                 let d = this.y - j;
-                if (d < shortestDist) {
+                if (d <= shortestDist) {
                     shortestDist = d;
                     enemy = (<Floor>world.getRoom().objects[this.x][j]).getOccupation();
                 }

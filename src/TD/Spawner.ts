@@ -16,7 +16,7 @@ export class Spawner extends Actor {
     }
 
     takeTurn(world: World): void {
-        if (this.turn % 2 == 0) {
+        if (this.turn % 3 == 0) {
             this.room.addActor(new Orc("Orc", this.x, this.y, new Tile('O', 'green', 'purple')));
         }
 
