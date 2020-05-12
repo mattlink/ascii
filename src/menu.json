@@ -12,7 +12,7 @@
     "menus": [
         {
             "name": "start",
-            "title": "Start",
+            "title": "Orc Siege",
             "options": [
                 {
                     "letter": "s",

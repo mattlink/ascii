@@ -51,7 +51,7 @@ class game extends Game {
         for (let key in this.menus) {
             this.renderer.addWindow(key, Menu.width, Menu.height);
         }
-        (<MenuTitle>this.menus['start'].elements[0]).title = `Orc Seige`;
+
         // Pre-render the start menu
         this.renderer.renderMenu(this.menus['start'], this.renderer.windows['start'].getContext());
 
@@ -93,7 +93,7 @@ class game extends Game {
         // this.renderer.showWindows(['gameinfo', 'game', 'shop']);
         this.renderer.windows['start'].show();
 
-        this.world.appendMessage("Welcome to Orc Seige!");
+        this.world.appendMessage("Welcome to Orc Siege!");
 
 
     }
