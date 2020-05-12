@@ -254,6 +254,7 @@ class game extends Game {
 
             if (key == 'Escape') {
                 this.cursorState = CursorState.Default;
+                this.renderer.renderResetArea(this.cursor.x,this.cursor.y,9,9, this.world.getRoom(), this.renderer.windows['game'].getContext());
                 this.updateCursor();
             }
 
