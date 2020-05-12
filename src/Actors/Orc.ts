@@ -13,7 +13,9 @@ import { bfs, dijkstra } from '../util';
 
 export class Orc extends Mob {
 
-    public health = 2;
+    static maxHealth = 1;
+
+    public health = Orc.maxHealth;
 
     constructor(name: string, x: number, y: number, tile: Tile) {
         super(name, x, y, tile, true);

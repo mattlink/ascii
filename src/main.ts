@@ -12,6 +12,7 @@ import { ShopItem } from "./TD/ShopItem";
 import { Importer } from "./importer";
 
 import * as menuConfig from "./menu.json";
+import { Orc } from "./Actors/Orc";
 
 enum GameState {
     Start,
@@ -41,6 +42,7 @@ class game extends Game {
     cursorState: CursorState;
 
     funds: number; // How much cash the player has available
+    cashMilestone: number = 0;
 
     load() {
 
@@ -234,6 +236,7 @@ class game extends Game {
                 this.gameState = GameState.Over;
                 (<MenuInfo>this.menus['gameinfo'].elements[2]).content = this.world.getCurrentMessages().join(" ");
                 this.renderer.renderMenu(this.menus['gameinfo'], this.renderer.windows['gameinfo'].getContext());
+                return;
             }
 
             if (key == 'f') this.world.takeTurn();
@@ -252,6 +255,13 @@ class game extends Game {
             if (key == 'Escape') {
                 this.cursorState = CursorState.Default;
                 this.updateCursor();
+            }
+
+            // Check if we should scale difficulty of Orcs
+            if (this.funds - this.cashMilestone >= 100) {
+                Orc.maxHealth += 1;
+                this.cashMilestone += 100;
+                this.world.appendMessage("Orcs just got stronger.");
             }
         }
 
