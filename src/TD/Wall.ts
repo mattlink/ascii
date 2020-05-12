@@ -9,6 +9,7 @@ export class Wall extends ShopItem {
     constructor(x: number, y: number) {
         super(x, y, Wall.tile);
         this.destructible = true;
+        this.name = 'Wall';
     }
 
     takeTurn() {

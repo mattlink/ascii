@@ -34,7 +34,7 @@ class ShovelAction extends Action {
         }
         else if (room.objects[toPosX][toPosY] instanceof Turret) {
             // Add the Turret to the actors inventory
-            this.actor.addInventoryItem(room.objects[toPosX][toPosY]);
+            // this.actor.addInventoryItem(room.objects[toPosX][toPosY]);
 
             // Remove the Turret from the World items
             world.items = world.items.filter(item => {

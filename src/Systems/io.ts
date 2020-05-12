@@ -10,6 +10,7 @@ export class IO {
         't', // change cursor to turret
         'w', // change cursor to wall
         'Escape', // clear the current cursor state
+        's'
     ];
 
     public static defineMouseOver(elem: HTMLElement, func: Function, game: Game) {

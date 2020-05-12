@@ -280,7 +280,31 @@ class game extends Game {
             if (key == 'Escape') {
                 this.cursorState = CursorState.Default;
                 this.renderer.renderArea(this.cursor.x - (Turret.range + 1), this.cursor.y - (Turret.range + 1), 2 * (Turret.range + 2), 2 * (Turret.range + 2), this.world.getRoom(), this.renderer.windows['game'].getContext());
+                this.selected = null;
+                (<MenuInfo>this.menus['selection'].elements[2]).content = '';
                 this.updateCursor();
+            }
+
+            if (key == 's') {
+                const room = this.world.getActiveRoom();
+
+                if (this.selected && this.selected instanceof Turret) {
+                    const x = this.selected.x;
+                    const y = this.selected.y;
+
+                    this.world.items = this.world.items.filter(item => {
+                        return item != this.selected;
+                    });
+
+                    room.objects[x][y] = new Floor(x, y, room.floorTile);
+                    this.renderer.renderGameObject(room.objects[x][y], this.renderer.windows['game'].getContext());
+                } else if (this.selected && this.selected instanceof Wall) {
+                    const x = this.selected.x;
+                    const y = this.selected.y;
+
+                    room.objects[x][y] = new Floor(x, y, room.floorTile);
+                    this.renderer.renderGameObject(room.objects[x][y], this.renderer.windows['game'].getContext());
+                }
             }
 
             // Check if we should scale difficulty of Orcs

@@ -229,7 +229,6 @@ export class Room {
                     object.x = x;
                     object.y = y-d;
                     positionFound = true;
-                    console.log("Moved player to:", object.x, object.y);
                     break;
                 }
 
@@ -242,7 +241,6 @@ export class Room {
                     object.x = x;
                     object.y = y+d;
                     positionFound = true;
-                    console.log("Moved player to:", object.x, object.y);
                     break;
                 }
 
