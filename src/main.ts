@@ -247,7 +247,7 @@ class game extends Game {
                 this.updateCursor();
             }
 
-            if (key == 'Backspace') {
+            if (key == 'Escape') {
                 this.cursorState = CursorState.Default;
                 this.updateCursor();
             }
