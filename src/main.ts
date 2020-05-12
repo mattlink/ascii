@@ -41,8 +41,6 @@ class game extends Game {
 
     cursorState: CursorState;
 
-    selected : GameObject;
-
     funds: number; // How much cash the player has available
     cashMilestone: number = 0;
 

@@ -50,6 +50,11 @@ export class WalkAction extends Action {
                 room.getActors().splice(room.getActors().indexOf(this.actor), 1);
                 const nexus = world.getPlayer();
                 nexus.health -= 10;
+
+                if (world.getGame().selected == this.actor) {
+                    world.getGame().selected = null;
+                    world.getGame().draw();
+                }
                 return;
             }
 
