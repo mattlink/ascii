@@ -84,6 +84,12 @@ export class Turret extends ShopItem {
 
             enemy.death(world);
 
+            // Remove enemy from selected 
+            if (world.getGame().selected == enemy) {
+                world.getGame().selected = null;
+                world.getGame().draw();
+            }
+
             // Remove the enemy from the room.
             (<Floor>world.getRoom().objects[enemy.x][enemy.y]).removeOccupation();
 

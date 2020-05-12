@@ -3,6 +3,7 @@ import { IO } from './Systems/io';
 import { Renderer } from './Systems/renderer';
 import { World } from './world';
 import { Menu } from './Systems/Menu/Menu';
+import { GameObject } from './GameObject';
 
 export abstract class Game {
 
@@ -12,6 +13,9 @@ export abstract class Game {
     public funds = 0;
 
     public menus: Record<string, Menu> = {};
+
+
+    public selected : GameObject;
 
 
     constructor() {}
