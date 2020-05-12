@@ -234,12 +234,10 @@ class game extends Game {
     updateCursor() {
         switch(this.cursorState) {
             case CursorState.Turret:
-                // this.renderer.renderRangeArea(this.cursor.x,this.cursor.y,9,9, this.world.getRoom(), this.renderer.windows['game'].getContext());
                 this.renderer.renderTurretCursor(this.cursor, this.world.getRoom(), this.renderer.windows['game'].getContext());
                 this.cursor.tile = Turret.tile;
                 break;
             case CursorState.Wall:
-                // this.renderer.renderResetArea(this.cursor.x,this.cursor.y,9,9, this.world.getRoom(), this.renderer.windows['game'].getContext());
                 this.renderer.renderArea(this.cursor.x - (Turret.range + 1), this.cursor.y - (Turret.range + 1), 2 * (Turret.range + 2), 2 * (Turret.range + 2), this.world.getRoom(), this.renderer.windows['game'].getContext());
                 this.cursor.tile = Wall.tile;
                 break;
@@ -281,7 +279,7 @@ class game extends Game {
 
             if (key == 'Escape') {
                 this.cursorState = CursorState.Default;
-                this.renderer.renderResetArea(this.cursor.x,this.cursor.y,9,9, this.world.getRoom(), this.renderer.windows['game'].getContext());
+                this.renderer.renderArea(this.cursor.x - (Turret.range + 1), this.cursor.y - (Turret.range + 1), 2 * (Turret.range + 2), 2 * (Turret.range + 2), this.world.getRoom(), this.renderer.windows['game'].getContext());
                 this.updateCursor();
             }
 
