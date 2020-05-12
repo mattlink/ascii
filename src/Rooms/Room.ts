@@ -347,7 +347,7 @@ export class Room {
 
     movementCost(pos: GameObject): number {
         if (pos instanceof TDWall) {
-            return 10;
+            return 200;
         }
 
         return 1;
