@@ -15,7 +15,8 @@ import * as menuConfig from "./menu.json";
 
 enum GameState {
     Start,
-    Play
+    Play,
+    Over
 }
 
 enum CursorState {
@@ -75,7 +76,7 @@ class game extends Game {
 
         // Create Menus for gameinfo and shop
         this.menus['gameinfo'] = new Menu();
-        this.menus['gameinfo'].addElement(new MenuInfo('Wave: 0'));
+        this.menus['gameinfo'].addElement(new MenuInfo('Nexus Health: 100'));
         this.menus['gameinfo'].addElement(new MenuInfo('$ 30'));
         this.menus['gameinfo'].addElement(new MenuInfo(''));
 
@@ -94,6 +95,7 @@ class game extends Game {
         this.renderer.windows['start'].show();
 
         this.world.appendMessage("Welcome to Orc Siege!");
+        this.world.appendMessage("Protect your Nexus with Walls and Turrets.");
 
 
     }
@@ -218,6 +220,14 @@ class game extends Game {
         if (this.gameState == GameState.Play) {
             if (!(IO.shopControls.indexOf(key) > -1) && !(IO.gameControls.indexOf(key) > -1)) return;
 
+            // Check if the nexus is dead
+            if (this.world.getPlayer().health <= 0) {
+                this.world.appendMessage("The Orcs destroyed your Nexus. Refresh page to try again.");
+                this.gameState = GameState.Over;
+                (<MenuInfo>this.menus['gameinfo'].elements[2]).content = this.world.getCurrentMessages().join(" ");
+                this.renderer.renderMenu(this.menus['gameinfo'], this.renderer.windows['gameinfo'].getContext());
+            }
+
             if (key == 'f') this.world.takeTurn();
 
             if (key == 'w') {
@@ -277,7 +287,7 @@ class game extends Game {
             });
 
             // Update Menus' content
-            (<MenuInfo>this.menus['gameinfo'].elements[0]).content = 'Wave: ' + this.world.wave;
+            (<MenuInfo>this.menus['gameinfo'].elements[0]).content = 'Nexus Health: ' + this.world.getPlayer().health;
             (<MenuInfo>this.menus['gameinfo'].elements[1]).content = '$ ' + this.funds;
             (<MenuInfo>this.menus['gameinfo'].elements[2]).content = this.world.getCurrentMessages().join(" ");
 
