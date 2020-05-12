@@ -27,6 +27,7 @@ class game extends Game {
     world: World;
 
     cursor: GameObject;
+
     cursorState: CursorState;
 
     funds: number; // How much cash the player has available
@@ -89,6 +90,10 @@ class game extends Game {
                         game.cursor.tile.fg = colrows[j].style.color;
                         game.cursor.tile.bg = colrows[j].style.backgroundColor;
                     }
+                    else if (game.cursorState == CursorState.Turret) {
+                        game.renderer.renderRangeArea(i,j,9,9, game.world.getRoom(), game.renderer.windows['game'].getContext());
+                    }
+
                     game.renderer.renderGameObject(game.cursor, game.renderer.windows['game'].getContext());
                 }, this);
                 IO.defineMouseOut(colrows[j], function(e, game) {
@@ -102,6 +107,7 @@ class game extends Game {
                         colrows[j].innerHTML = (<Tile>objs[i][j].tile).ascii;
                         colrows[j].style.color = (<Tile>objs[i][j].tile).fg;
                         colrows[j].style.backgroundColor = (<Tile>objs[i][j].tile).bg;
+                        game.renderer.renderResetArea(i,j,9,9, game.world.getRoom(), game.renderer.windows['game'].getContext());
                     }
                 }, this);
                 IO.defineMouseClick(colrows[j], function(e, game){

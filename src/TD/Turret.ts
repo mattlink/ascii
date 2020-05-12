@@ -70,14 +70,14 @@ export class Turret extends ShopItem {
         if (enemy == null) {
             return;
         }
-    
+
         // Damage the enemy
         enemy.tile.bg = 'red';
         enemy.health -= 1;
 
-        // Invoke the enemy's death 
+        // Invoke the enemy's death
         if (enemy.health == 0) {
-            
+
             // reward the player for killing the Orc
             world.addFunds(5);
 

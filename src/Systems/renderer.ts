@@ -4,6 +4,7 @@ import { GameObject } from "../GameObject";
 import { Window } from "./window";
 import { Room } from "../Rooms/Room";
 import { Floor } from "../Rooms/Environment";
+import { Wall } from "../Rooms/Environment";
 import { Camera } from "./camera";
 import { Menu, MenuInfo } from "./Menu/Menu";
 import { MenuTitle, MenuOption, MenuTable } from "./Menu/Menu";
@@ -110,6 +111,31 @@ export class Renderer {
         }
     }
 
+    public renderRangeArea(x: number, y: number, width: number, height: number, room: Room, context: HTMLElement) {
+        for (let i = x-3; i < x-5 + width; i++) {
+            for (let j = y-3; j < y-5 + height; j++) {
+              let test = room.getObject(i, j).getTile();
+              console.log(test);
+              if((test.ascii == ".")) {
+                this.updateTile(i, j, new Tile('+','blue','black'), context);
+              }
+            }
+        }
+    }
+
+    public renderResetArea(x: number, y: number, width: number, height: number, room: Room, context: HTMLElement) {
+        for (let i = x-3; i < x-5 + width; i++) {
+            for (let j = y-3; j < y-5 + height; j++) {
+              let test = room.getObject(i, j).getTile();
+              console.log(test);
+              if((test.ascii == ".")) {
+                this.updateTile(i, j, new Tile('.','white','black'), context);
+              }
+            }
+        }
+    }
+
+
     /*public renderView(player: Player, room: Room, context: HTMLElement) {
         let vd = player.visionDistance;
         while(vd > 0) {
@@ -157,8 +183,8 @@ export class Renderer {
         for (let i = 0; i < window.localWidth; i++) {
             for (let j = 0; j < window.localHeight; j++) {
                 // FOG OF WAR:
-                this.updateTile(i, j, 
-                    new Tile(room.getObject(i, j).getTile().ascii, room.defaultFogFg, room.defaultFogBg), 
+                this.updateTile(i, j,
+                    new Tile(room.getObject(i, j).getTile().ascii, room.defaultFogFg, room.defaultFogBg),
                     context);
             }
         }
@@ -171,7 +197,7 @@ export class Renderer {
         }
 
         // TODO: note how this method is not efficient. We are first rendering the entire window as fog,
-        // then going back over the parts that are in view to render whats actually there. 
+        // then going back over the parts that are in view to render whats actually there.
         // It would be much better to only update the parts of fog that need to be updated.
     }*/
 
@@ -238,17 +264,17 @@ export class Renderer {
             // Render diagonals
             if (!(obj.x == 0 || obj.y == 0))
                 this.renderGameObject(room.getObject(obj.x - 1, obj.y - 1), context);
-            if (!(obj.x == room.getWidth() - 1|| obj.y == 0)) 
+            if (!(obj.x == room.getWidth() - 1|| obj.y == 0))
                 this.renderGameObject(room.getObject(obj.x + 1, obj.y - 1), context);
             if (!(obj.x == 0 || obj.y == room.getHeight() - 1))
                 this.renderGameObject(room.getObject(obj.x - 1, obj.y + 1), context);
-            if (!(obj.x == room.getWidth() - 1 || obj.y == room.getHeight() - 1)) 
+            if (!(obj.x == room.getWidth() - 1 || obj.y == room.getHeight() - 1))
                 this.renderGameObject(room.getObject(obj.x + 1, obj.y + 1), context);
         }
     }
 
     public renderObjectContextExtended(obj: GameObject, room: Room, context: HTMLElement) {
-        
+
         // Render in all 4 cardinal directions
         if (!(obj.x == 0)) this.renderGameObject(room.getObject(obj.x - 1, obj.y), context);
         if (!(obj.x == room.getWidth() - 1)) this.renderGameObject(room.getObject(obj.x + 1, obj.y), context);
@@ -258,11 +284,11 @@ export class Renderer {
         // Render diagonals
         if (!(obj.x == 0 || obj.y == 0))
             this.renderGameObject(room.getObject(obj.x - 1, obj.y - 1), context);
-        if (!(obj.x == room.getWidth() - 1|| obj.y == 0)) 
+        if (!(obj.x == room.getWidth() - 1|| obj.y == 0))
             this.renderGameObject(room.getObject(obj.x + 1, obj.y - 1), context);
         if (!(obj.x == 0 || obj.y == room.getHeight() - 1))
             this.renderGameObject(room.getObject(obj.x - 1, obj.y + 1), context);
-        if (!(obj.x == room.getWidth() - 1 || obj.y == room.getHeight() - 1)) 
+        if (!(obj.x == room.getWidth() - 1 || obj.y == room.getHeight() - 1))
             this.renderGameObject(room.getObject(obj.x + 1, obj.y + 1), context);
 
             // Go one further...
@@ -276,11 +302,11 @@ export class Renderer {
         // Render diagonals
         if (!(obj.x == 1 || obj.y == 1))
             this.renderGameObject(room.getObject(obj.x - 2, obj.y - 2), context);
-        if (!(obj.x == room.getWidth() - 2|| obj.y == 1)) 
+        if (!(obj.x == room.getWidth() - 2|| obj.y == 1))
             this.renderGameObject(room.getObject(obj.x + 2, obj.y - 2), context);
         if (!(obj.x == 1 || obj.y == room.getHeight() - 2))
             this.renderGameObject(room.getObject(obj.x - 2, obj.y + 2), context);
-        if (!(obj.x == room.getWidth() - 2 || obj.y == room.getHeight() - 2)) 
+        if (!(obj.x == room.getWidth() - 2 || obj.y == room.getHeight() - 2))
             this.renderGameObject(room.getObject(obj.x + 2, obj.y + 2), context);
     }
 
