@@ -113,13 +113,12 @@ export class Renderer {
 
     public renderRangeArea(x: number, y: number, width: number, height: number, room: Room, context: HTMLElement) {
         for (let i = x-3; i < x-5 + width; i++) {
-            if (i < 0 || i > room.getWidth()) continue;
+            if (i < 0 ||  x-5 + width > room.getWidth()) continue;
             for (let j = y-3; j < y-5 + height; j++) {
+              if (j < 0 || y-5 + height > room.getHeight()) continue;
               let obj = room.getObject(i, j);
 
-              if (j < 0 || j > room.getHeight()) continue;
-
-              if (obj instanceof Floor && (<Floor>obj).getOccupation() != null) {
+            if (obj instanceof Floor && (<Floor>obj).getOccupation() != null) {
                 let occ = (<Floor>obj).getOccupation();
                 this.updateTile(i,j, occ.getTile(), context);
               }
@@ -132,11 +131,10 @@ export class Renderer {
 
     public renderResetArea(x: number, y: number, width: number, height: number, room: Room, context: HTMLElement) {
         for (let i = x-3; i < x-5 + width; i++) {
-            if (i < 0 || i > room.getWidth()) continue;
+            if (i < 0 ||  x-5 + width > room.getWidth()) continue;
             for (let j = y-3; j < y-5 + height; j++) {
+              if (j < 0 || y-5+ height > room.getHeight()) continue;
               let obj = room.getObject(i, j);
-
-              if (j < 0 || j > room.getHeight()) continue;
 
               if (obj instanceof Floor && (<Floor>obj).getOccupation() != null) {
                 let occ = (<Floor>obj).getOccupation();
