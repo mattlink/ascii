@@ -10,6 +10,7 @@ import { Turret } from "./TD/Turret";
 import { Wall } from "./TD/Wall";
 import { ShopItem } from "./TD/ShopItem";
 import { Importer } from "./importer";
+import { Wall as EWall } from './Rooms/Environment';
 
 import * as menuConfig from "./menu.json";
 import { Orc } from "./Actors/Orc";
@@ -147,11 +148,14 @@ class game extends Game {
                     }
                 }, this);
                 IO.defineMouseClick(colrows[j], function(e, game){
+                    let objs = game.world.getRoom().objects;
                     switch(game.cursorState) {
                         case CursorState.Turret:
+                            if (objs[i][j] instanceof Floor && objs[i][j].getOccupation() != null || objs[i][j] instanceof GameObject && !(objs[i][j] instanceof Floor)) break;
                             game.placeShopItem(new Turret(i, j));
                             break;
                         case CursorState.Wall:
+                            if (objs[i][j] instanceof Floor && objs[i][j].getOccupation() != null || objs[i][j] instanceof GameObject && !(objs[i][j] instanceof Floor)) break;
                             game.placeShopItem(new Wall(i, j));
                             break;
                         case CursorState.Default:
