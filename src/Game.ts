@@ -2,6 +2,7 @@ import { KeyQueue } from './util';
 import { IO } from './Systems/io';
 import { Renderer } from './Systems/renderer';
 import { World } from './world';
+import { Menu } from './Systems/Menu/Menu';
 
 export abstract class Game {
 
@@ -9,6 +10,9 @@ export abstract class Game {
 
     protected algoVis = false;
     public funds = 0;
+
+    public menus: Record<string, Menu> = {};
+
 
     constructor() {}
 

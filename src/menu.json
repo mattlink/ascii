@@ -1,0 +1,62 @@
+{
+    "width": 40,
+    "height": 25,
+
+    "defaultFg": "white",
+    "defaultBg": "black",
+
+    "defaultSelectedFg": "black",
+    "defaultSelectedBg": "lightgrey",
+
+
+    "menus": [
+        {
+            "name": "start",
+            "title": "Orc Siege",
+            "options": [
+                {
+                    "letter": "s",
+                    "name": "Start",
+                    "toState": "Play"
+                },
+                {
+                    "letter": "?",
+                    "name": "How to Play",
+                    "toMenu": "about_game"
+                }
+            ]
+        },
+        {
+            "name": "about_game",
+            "title": "About Game",
+            "options": [
+                {
+                    "letter": "Escape",
+                    "name": "",
+                    "toMenu": "start",
+                    "hidden": true
+                }
+            ],
+            "infos": [
+                {
+                    "content": "Press `f` to advance the game by one tick."
+                },
+                {
+                    "content": "Select a shop item by pressing its key binding."
+                },
+                {
+                    "content": "Place an item by clicking on the space you want to put it."
+                },
+                {
+                    "content": "Get money by killing Orcs. Kill Orcs with Turrets."
+                },
+                {
+                    "content": "Oh no did the game break? Refresh the page to restart."
+                },
+                {
+                    "content": "(Press esc to go back)"
+                }
+            ]
+        }
+    ]
+}

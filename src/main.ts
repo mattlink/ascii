@@ -2,15 +2,22 @@ import { Game } from "./Game";
 import { World } from "./world";
 import { Renderer } from "./Systems/renderer";
 import { IO } from "./Systems/io";
-import { Menu, MenuInfo, MenuOption } from './Systems/Menu/Menu';
+import { Menu, MenuInfo, MenuOption, MenuTitle } from './Systems/Menu/Menu';
 import { Tile } from "./tile";
 import { Floor } from "./Rooms/Environment";
 import { GameObject } from "./GameObject";
 import { Turret } from "./TD/Turret";
 import { Wall } from "./TD/Wall";
 import { ShopItem } from "./TD/ShopItem";
-import { Orc } from './Actors/Orc';
-import { Spawner } from './TD/Spawner';
+import { Importer } from "./importer";
+
+import * as menuConfig from "./menu.json";
+
+enum GameState {
+    Start,
+    Play,
+    Over
+}
 
 enum CursorState {
     Default,
@@ -20,7 +27,10 @@ enum CursorState {
 
 class game extends Game {
 
+    gameState: GameState = GameState.Start;
+
     menus: Record<string, Menu> = {};
+    activeMenu: string = null;
 
     renderer: Renderer;
 
@@ -36,6 +46,16 @@ class game extends Game {
 
         // TODO: Check for an existing save in localStorage
         this.renderer = new Renderer();
+        
+        this.menus = Importer.importMenus(menuConfig);
+        this.activeMenu = 'start';
+        // Add windows for all the menus we imported
+        for (let key in this.menus) {
+            this.renderer.addWindow(key, Menu.width, Menu.height);
+        }
+
+        // Pre-render the start menu
+        this.renderer.renderMenu(this.menus['start'], this.renderer.windows['start'].getContext());
 
         // Create the world
         const WORLD_HEIGHT = 30;
@@ -57,9 +77,9 @@ class game extends Game {
 
         // Create Menus for gameinfo and shop
         this.menus['gameinfo'] = new Menu();
-        this.menus['gameinfo'].addElement(new MenuInfo('Wave: 0'));
+        this.menus['gameinfo'].addElement(new MenuInfo('Nexus Health: 100'));
         this.menus['gameinfo'].addElement(new MenuInfo('$ 30'));
-        this.menus['gameinfo'].addElement(new MenuInfo('Welcome to Orc Seige!'));
+        this.menus['gameinfo'].addElement(new MenuInfo(''));
 
         this.menus['shop'] = new Menu();
         this.menus['shop'].addElement(new MenuInfo('SHOP:'));
@@ -72,7 +92,12 @@ class game extends Game {
             this.renderer.renderMenu(this.menus[key], this.renderer.windows[key].getContext());
         }
         // Show all the windows
-        this.renderer.showWindows(['gameinfo', 'game', 'shop']);
+        // this.renderer.showWindows(['gameinfo', 'game', 'shop']);
+        this.renderer.windows['start'].show();
+
+        this.world.appendMessage("Welcome to Orc Siege!");
+        this.world.appendMessage("Protect your Nexus with Walls and Turrets.");
+
 
     }
 
@@ -198,48 +223,84 @@ class game extends Game {
 
     update(key: string) {
 
-        if (!(IO.shopControls.indexOf(key) > -1) && !(IO.gameControls.indexOf(key) > -1)) return;
+        if (this.gameState == GameState.Play) {
+            if (!(IO.shopControls.indexOf(key) > -1) && !(IO.gameControls.indexOf(key) > -1)) return;
 
-        if (key == 'f') this.world.takeTurn();
+            // Check if the nexus is dead
+            if (this.world.getPlayer().health <= 0) {
+                this.world.appendMessage("The Orcs destroyed your Nexus. Refresh page to try again.");
+                this.gameState = GameState.Over;
+                (<MenuInfo>this.menus['gameinfo'].elements[2]).content = this.world.getCurrentMessages().join(" ");
+                this.renderer.renderMenu(this.menus['gameinfo'], this.renderer.windows['gameinfo'].getContext());
+            }
 
-        if (key == 'w') {
-            this.cursorState = CursorState.Wall;
-            this.updateCursor();
+            if (key == 'f') this.world.takeTurn();
+
+            if (key == 'w') {
+                this.cursorState = CursorState.Wall;
+                this.updateCursor();
+            }
+
+            if (key == 't') {
+                // set the cursor to a turret
+                this.cursorState = CursorState.Turret;
+                this.updateCursor();
+            }
+
+            if (key == 'Backspace') {
+                this.cursorState = CursorState.Default;
+                this.updateCursor();
+            }
         }
 
-        if (key == 't') {
-            // set the cursor to a turret
-            this.cursorState = CursorState.Turret;
-            this.updateCursor();
-        }
+        // Start menu logic
+        if (this.gameState == GameState.Start) {
+            let i = Object.keys(this.menus[this.activeMenu].options).indexOf(key);
+            if (i == -1) return;
 
-        if (key == 'Backspace') {
-            this.cursorState = CursorState.Default;
-            this.updateCursor();
+            // toMenu
+            if (this.menus[this.activeMenu].options[key].toMenu != null) {
+                this.activeMenu = this.menus[this.activeMenu].options[key].toMenu;
+                this.renderer.showWindows([this.activeMenu]);
+                return;
+            }
+
+            // toState
+            let toState = this.menus[this.activeMenu].options[key].toState;
+            if (toState != null) {
+                if (toState == 'Play') {
+                    this.gameState = GameState.Play;
+                    
+                    this.activeMenu = 'game';
+                    this.renderer.showWindows(['gameinfo', 'game', 'shop']);
+                    return;
+                }
+            }
         }
 
     }
 
     draw() {
+        if (this.gameState == GameState.Play) {
+            // Draw everything around each actor (above, below, left, and right)
+            this.world.getRoom().getActors().forEach(actor => {
+                this.renderer.renderObjectContext(actor, this.world.getRoom(), this.renderer.windows['game'].getContext());
+            });
 
-        // Draw everything around each actor (above, below, left, and right)
-        this.world.getRoom().getActors().forEach(actor => {
-            this.renderer.renderObjectContext(actor, this.world.getRoom(), this.renderer.windows['game'].getContext());
-        });
+            // Draw every actor (this drawing order makes sure actors contexts don't render over eachother)
+            this.world.getRoom().getActors().forEach(actor => {
+                this.renderer.renderGameObject(actor, this.renderer.windows['game'].getContext());
+            });
 
-        // Draw every actor (this drawing order makes sure actors contexts don't render over eachother)
-        this.world.getRoom().getActors().forEach(actor => {
-            this.renderer.renderGameObject(actor, this.renderer.windows['game'].getContext());
-        });
+            // Update Menus' content
+            (<MenuInfo>this.menus['gameinfo'].elements[0]).content = 'Nexus Health: ' + this.world.getPlayer().health;
+            (<MenuInfo>this.menus['gameinfo'].elements[1]).content = '$ ' + this.funds;
+            (<MenuInfo>this.menus['gameinfo'].elements[2]).content = this.world.getCurrentMessages().join(" ");
 
-        // Update Menus' content
-        (<MenuInfo>this.menus['gameinfo'].elements[0]).content = 'Wave: ' + this.world.wave;
-        (<MenuInfo>this.menus['gameinfo'].elements[1]).content = '$ ' + this.funds;
-        (<MenuInfo>this.menus['gameinfo'].elements[2]).content = this.world.getCurrentMessages().join(" ");
-
-        // Render Menus
-        for (let key in this.menus) {
-            this.renderer.renderMenu(this.menus[key], this.renderer.windows[key].getContext());
+            // Render Menus
+            for (let key in this.menus) {
+                this.renderer.renderMenu(this.menus[key], this.renderer.windows[key].getContext());
+            }
         }
     }
 
