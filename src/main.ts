@@ -307,6 +307,9 @@ class game extends Game {
                     room.objects[x][y] = new Floor(x, y, room.floorTile);
                     this.renderer.renderGameObject(room.objects[x][y], this.renderer.windows['game'].getContext());
                 }
+
+                this.selected = null;
+                (<MenuInfo>this.menus['selection'].elements[2]).content = '';
             }
 
             // Check if we should scale difficulty of Orcs
