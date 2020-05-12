@@ -118,7 +118,8 @@ class game extends Game {
                         game.cursor.tile.bg = colrows[j].style.backgroundColor;
                     }
                     else if (game.cursorState == CursorState.Turret) {
-                        game.renderer.renderRangeArea(i,j,9,9, game.world.getRoom(), game.renderer.windows['game'].getContext());
+                        // game.renderer.renderRangeArea(i,j,9,9, game.world.getRoom(), game.renderer.windows['game'].getContext());
+                        game.renderer.renderTurretCursor(game.cursor, game.world.getRoom(), game.renderer.windows['game'].getContext());
                     }
 
                     game.renderer.renderGameObject(game.cursor, game.renderer.windows['game'].getContext());
@@ -134,7 +135,11 @@ class game extends Game {
                         colrows[j].innerHTML = (<Tile>objs[i][j].tile).ascii;
                         colrows[j].style.color = (<Tile>objs[i][j].tile).fg;
                         colrows[j].style.backgroundColor = (<Tile>objs[i][j].tile).bg;
-                        if (game.cursorState == CursorState.Turret) game.renderer.renderResetArea(i,j,9,9, game.world.getRoom(), game.renderer.windows['game'].getContext());
+                        // if (game.cursorState == CursorState.Turret) game.renderer.renderResetArea(i,j,9,9, game.world.getRoom(), game.renderer.windows['game'].getContext());
+                        if (game.cursorState == CursorState.Turret) {
+                            game.renderer.renderArea(game.cursor.x - (Turret.range + 1), game.cursor.y - (Turret.range + 1), 2 * (Turret.range + 2), 2 * (Turret.range + 2), game.world.getRoom(), game.renderer.windows['game'].getContext());
+                            // game.renderer.resetTurretCursor(game.cursor, game.world.getRoom(), game.renderer.windows['game'].getContext());
+                        }
                     }
                 }, this);
                 IO.defineMouseClick(colrows[j], function(e, game){
@@ -210,15 +215,18 @@ class game extends Game {
     updateCursor() {
         switch(this.cursorState) {
             case CursorState.Turret:
-                this.renderer.renderRangeArea(this.cursor.x,this.cursor.y,9,9, this.world.getRoom(), this.renderer.windows['game'].getContext());
+                // this.renderer.renderRangeArea(this.cursor.x,this.cursor.y,9,9, this.world.getRoom(), this.renderer.windows['game'].getContext());
+                this.renderer.renderTurretCursor(this.cursor, this.world.getRoom(), this.renderer.windows['game'].getContext());
                 this.cursor.tile = Turret.tile;
                 break;
             case CursorState.Wall:
-                this.renderer.renderResetArea(this.cursor.x,this.cursor.y,9,9, this.world.getRoom(), this.renderer.windows['game'].getContext());
+                // this.renderer.renderResetArea(this.cursor.x,this.cursor.y,9,9, this.world.getRoom(), this.renderer.windows['game'].getContext());
+                this.renderer.renderArea(this.cursor.x - (Turret.range + 1), this.cursor.y - (Turret.range + 1), 2 * (Turret.range + 2), 2 * (Turret.range + 2), this.world.getRoom(), this.renderer.windows['game'].getContext());
                 this.cursor.tile = Wall.tile;
                 break;
             default:
-                this.cursor.tile = new Tile('X', 'red', 'white')
+                this.cursor.tile = new Tile('', 'black', 'black')
+                this.renderer.renderArea(this.cursor.x - (Turret.range + 1), this.cursor.y - (Turret.range + 1), 2 * (Turret.range + 2), 2 * (Turret.range + 2), this.world.getRoom(), this.renderer.windows['game'].getContext());
                 break;
         }
         this.renderer.renderGameObject(this.cursor, this.renderer.windows['game'].getContext());

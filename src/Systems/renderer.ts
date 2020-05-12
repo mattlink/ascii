@@ -8,6 +8,7 @@ import { Wall } from "../Rooms/Environment";
 import { Camera } from "./camera";
 import { Menu, MenuInfo } from "./Menu/Menu";
 import { MenuTitle, MenuOption, MenuTable } from "./Menu/Menu";
+import { Turret } from "../TD/Turret";
 
 export class Renderer {
 
@@ -104,49 +105,41 @@ export class Renderer {
     }
 
     public renderArea(x: number, y: number, width: number, height: number, room: Room, context: HTMLElement) {
-        for (let i = x; i < x + width; i++) {
-            for (let j = y; j < y + height; j++) {
-                this.updateTile(i, j, room.getObject(i, j).getTile(), context);
+        for (let i = Math.max(0, x); i < Math.min(x + width, room.getWidth()); i++) {
+            for (let j = Math.max(0, y); j < Math.min(y + height, room.getHeight()); j++) {
+                
+                let obj = room.getObject(i, j);
+                if (obj instanceof Floor && (<Floor>obj).getOccupation() != null) {
+                    this.updateTile(i, j, (<Floor>obj).getOccupation().getTile(), context);    
+                } else {
+                    this.updateTile(i, j, obj.getTile(), context);
+                }
+                
             }
         }
     }
 
-    public renderRangeArea(x: number, y: number, width: number, height: number, room: Room, context: HTMLElement) {
-        for (let i = x-3; i < x-5 + width; i++) {
-            if (i < 0 ||  x-5 + width > room.getWidth()) continue;
-            for (let j = y-3; j < y-5 + height; j++) {
-              if (j < 0 || y-5 + height > room.getHeight()) continue;
-              let obj = room.getObject(i, j);
+    public renderTurretCursor(turret: GameObject, room: Room, context: HTMLElement) {
+        // North/South
+        for (let i = Math.max(0, turret.x - Turret.range); i <= Math.min(turret.x + Turret.range, room.getWidth() - 1); i++) {
+            // if (i == turret.x) continue;
+            
+            let obj = room.getObject(i, turret.y);
+            if (obj instanceof Floor && (<Floor>obj).getOccupation() == null) {
+                this.updateTile(i, turret.y, new Tile('+', 'blue', 'black'), context);
+            }
+        } 
 
-            if (obj instanceof Floor && (<Floor>obj).getOccupation() != null) {
-                let occ = (<Floor>obj).getOccupation();
-                this.updateTile(i,j, occ.getTile(), context);
-              }
-              else if((obj.getTile().ascii == ".")) {
-                this.updateTile(i, j, new Tile('+','blue','black'), context);
-              }
+        // East/West
+        for (let j = Math.max(0, turret.y - Turret.range); j <= Math.min(turret.y + Turret.range, room.getHeight() - 1); j++) {
+            // if (j == turret.y) continue;
+
+            let obj = room.getObject(turret.x, j);
+            if (obj instanceof Floor && (<Floor>obj).getOccupation() == null) {
+                this.updateTile(turret.x, j, new Tile('+', 'blue', 'black'), context);
             }
         }
     }
-
-    public renderResetArea(x: number, y: number, width: number, height: number, room: Room, context: HTMLElement) {
-        for (let i = x-3; i < x-5 + width; i++) {
-            if (i < 0 ||  x-5 + width > room.getWidth()) continue;
-            for (let j = y-3; j < y-5 + height; j++) {
-              if (j < 0 || y-5+ height > room.getHeight()) continue;
-              let obj = room.getObject(i, j);
-
-              if (obj instanceof Floor && (<Floor>obj).getOccupation() != null) {
-                let occ = (<Floor>obj).getOccupation();
-                this.updateTile(i,j, occ.getTile(), context);
-              }
-              else if((obj.getTile().ascii == ".")) {
-                this.updateTile(i, j, new Tile('.','white','black'), context);
-              }
-            }
-        }
-    }
-
 
     /*public renderView(player: Player, room: Room, context: HTMLElement) {
         let vd = player.visionDistance;
