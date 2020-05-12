@@ -135,7 +135,7 @@ export class Window {
         let child = document.createElement('div');
         child.style.height = Renderer.pxs(menuOption.rowSize * Renderer.elementSize);
         child.style.lineHeight = Renderer.pxs(menuOption.rowSize * Renderer.elementSize);
-        child.style.margin = 'auto';
+        // child.style.margin = 'auto';
         child.style.fontSize = '18px';
         child.style.textAlign = 'left';
         child.style.width = '300px';
