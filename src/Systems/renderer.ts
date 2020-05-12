@@ -115,7 +115,6 @@ export class Renderer {
         for (let i = x-3; i < x-5 + width; i++) {
             for (let j = y-3; j < y-5 + height; j++) {
               let test = room.getObject(i, j).getTile();
-              console.log(test);
               if((test.ascii == ".")) {
                 this.updateTile(i, j, new Tile('+','blue','black'), context);
               }
@@ -127,7 +126,6 @@ export class Renderer {
         for (let i = x-3; i < x-5 + width; i++) {
             for (let j = y-3; j < y-5 + height; j++) {
               let test = room.getObject(i, j).getTile();
-              console.log(test);
               if((test.ascii == ".")) {
                 this.updateTile(i, j, new Tile('.','white','black'), context);
               }
