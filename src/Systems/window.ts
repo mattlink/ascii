@@ -134,7 +134,7 @@ export class Window {
         child.style.lineHeight = Renderer.pxs(menuOption.rowSize * Renderer.elementSize);
         child.style.margin = 'auto';
         child.style.fontSize = '18px';
-        child.style.textAlign = 'left';
+        child.style.textAlign = 'center';
         child.style.width = '300px';
         child.style.height = null;
         child.style.lineHeight = null;

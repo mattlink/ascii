@@ -64,16 +64,6 @@
                     "letter": "q",
                     "name": "Quick Start",
                     "toState": "Play"
-                },
-                {
-                    "letter": "c",
-                    "name": "Create Game",
-                    "toMenu": "create_game"
-                },
-                {
-                    "letter": "a",
-                    "name": "About Game",
-                    "toMenu": "about_game"
                 }
             ]
         },
