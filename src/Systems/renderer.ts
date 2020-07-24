@@ -6,7 +6,7 @@ import { Room } from "../Rooms/Room";
 import { Floor } from "../Rooms/Environment";
 import { Wall } from "../Rooms/Environment";
 import { Camera } from "./camera";
-import { Menu, MenuInfo } from "./Menu/Menu";
+import { Menu, MenuInfo, MenuElement } from "./Menu/Menu";
 import { MenuTitle, MenuOption, MenuTable } from "./Menu/Menu";
 import { Turret } from "../TD/Turret";
 
@@ -36,61 +36,79 @@ export class Renderer {
         (<HTMLElement>context.children[x].children[y]).style.backgroundColor = tile.bg;
         (<HTMLElement>context.children[x].children[y]).style.color = tile.fg;
     }
-
     public renderMenu(menu: Menu, context: HTMLElement) {
-
-        // For menus, we basically re-initialize the context each time we want to render (we don't do this for rendering game tiles because its more computationally more expensive)
-        while(context.firstChild) {
+        while (context.firstChild) {
             context.removeChild(context.lastChild);
         }
 
-        for (let i = 0; i < menu.elements.length; i++) {
-            // MenuTitle
-            if (menu.elements[i] instanceof MenuTitle) {
-                let child = Window.createMenuTitle(<MenuTitle>menu.elements[i]);
-                context.appendChild(child);
-                (<HTMLElement>context.children[i]).innerHTML = (<MenuTitle>menu.elements[i]).title;
-                (<HTMLElement>context.children[i]).style.color = Menu.defaultFg;
-            }
+        // Loop over ElementRow(s)
+        for (let i = 0; i < menu.rows.length; i++) {
 
-            if (menu.elements[i] instanceof MenuInfo) {
-                let child = Window.createMenuInfo(<MenuInfo>menu.elements[i]);
-                context.appendChild(child);
+            let rowChild = document.createElement('div');
 
-                (<HTMLElement>context.children[i]).innerHTML = (<MenuInfo>menu.elements[i]).getContent();
-                (<HTMLElement>context.children[i]).style.backgroundColor = Menu.defaultBg;
-                (<HTMLElement>context.children[i]).style.color = Menu.defaultFg;
-                (<HTMLElement>context.children[i]).style.border = 'none';
-            }
+            rowChild.style.display = 'flex';
+            rowChild.style.justifyContent = 'space-between';
+            
+            context.appendChild(rowChild);
+            for (let j = 0; j < menu.rows[i].length; j++) {
+                // MenuTitle
+                if (menu.rows[i][j] instanceof MenuTitle) {
+                    rowChild.style.textAlign = 'center';
+                    let child = Window.createMenuTitle(<MenuTitle>menu.rows[i][j]);
+                    rowChild.appendChild(child);
+                    // rowChild is (<HTMLElement>context.children[i])
+                    (<HTMLElement>context.children[i].children[j]).innerHTML = (<MenuTitle>menu.rows[i][j]).title;
+                    (<HTMLElement>context.children[i].children[j]).style.color = Menu.defaultFg;
+                    (<HTMLElement>context.children[i].children[j]).style.gridColumnStart = j.toString();
+                    (<HTMLElement>context.children[i].children[j]).style.gridColumnEnd = (j+1).toString();
+                    (<HTMLElement>context.children[i].children[j]).style.gridRowStart = i.toString();
+                    (<HTMLElement>context.children[i].children[j]).style.gridRowEnd = (i+1).toString();
 
-            // MenuOption
-            if(menu.elements[i] instanceof MenuOption) {
-                let child = Window.createMenuOption(<MenuOption>menu.elements[i]);
-                context.appendChild(child);
-
-                if (i == menu.selectedElement) {
-                    (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).letter + '  -  ' + (<MenuOption>menu.elements[i]).name;
-                    // (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).name;
-                    (<HTMLElement>context.children[i]).style.backgroundColor = Menu.defaultSelectedBg;
-                    (<HTMLElement>context.children[i]).style.color = Menu.defaultSelectedFg;
-                    // (<HTMLElement>context.children[i+1]).style.border = 'dashed 1px black';
                 }
-                else {
-                    (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).letter + '  -  ' + (<MenuOption>menu.elements[i]).name;
-                    // (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).name;
-                    (<HTMLElement>context.children[i]).style.backgroundColor = Menu.defaultBg;
-                    (<HTMLElement>context.children[i]).style.color = Menu.defaultFg;
-                    (<HTMLElement>context.children[i]).style.border = 'none';
+    
+                if (menu.rows[i][j] instanceof MenuInfo) {
+                    let child = Window.createMenuInfo(<MenuInfo>menu.rows[i][j]);
+                    rowChild.appendChild(child);
+                    (<HTMLElement>context.children[i].children[j]).innerHTML = (<MenuInfo>menu.rows[i][j]).getContent();
+                    (<HTMLElement>context.children[i].children[j]).style.backgroundColor = Menu.defaultBg;
+                    (<HTMLElement>context.children[i].children[j]).style.color = Menu.defaultFg;
+                    (<HTMLElement>context.children[i].children[j]).style.border = 'none';
+                    (<HTMLElement>context.children[i].children[j]).style.gridColumnEnd = (j+1).toString();
+                    (<HTMLElement>context.children[i].children[j]).style.gridRowStart = i.toString();
+                    (<HTMLElement>context.children[i].children[j]).style.gridRowEnd = (i+1).toString();
                 }
-            }
-
-            // MenuTable
-            if (menu.elements[i] instanceof MenuTable) {
-                for (let j = 0; j < (<MenuTable>menu.elements[i]).elements.length; j++) {
-                    // context.children[i] -> MenuTable, .children[j] -> tr, .children[0] -> inner Div
-                    (<HTMLElement>context.children[i].children[j].children[0]).innerHTML = (<MenuTable>menu.elements[i]).elements[j].tile.ascii;
-                    (<HTMLElement>context.children[i].children[j].children[0]).style.color = (<MenuTable>menu.elements[i]).elements[j].tile.fg;
-                    (<HTMLElement>context.children[i].children[j].children[0]).style.backgroundColor = (<MenuTable>menu.elements[i]).elements[j].tile.bg;
+    
+                // MenuOption
+                if(menu.rows[i][j] instanceof MenuOption) {
+                    let child = Window.createMenuOption(<MenuOption>menu.rows[i][j]);
+                    rowChild.appendChild(child);
+                    if (i == menu.selectedElement) {
+                        (<HTMLElement>context.children[i].children[j]).innerHTML = (<MenuOption>menu.rows[i][j]).letter + '  -  ' + (<MenuOption>menu.rows[i][j]).name;
+                        // (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).name;
+                        (<HTMLElement>context.children[i].children[j]).style.backgroundColor = Menu.defaultSelectedBg;
+                        (<HTMLElement>context.children[i].children[j]).style.color = Menu.defaultSelectedFg;
+                        // (<HTMLElement>context.children[i+1]).style.border = 'dashed 1px black';
+                    }
+                    else {
+                        (<HTMLElement>context.children[i].children[j]).innerHTML = (<MenuOption>menu.rows[i][j]).letter + '  -  ' + (<MenuOption>menu.rows[i][j]).name;
+                        // (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).name;
+                        (<HTMLElement>context.children[i].children[j]).style.backgroundColor = Menu.defaultBg;
+                        (<HTMLElement>context.children[i].children[j]).style.color = Menu.defaultFg;
+                        (<HTMLElement>context.children[i].children[j]).style.border = 'none';
+                    }
+                    (<HTMLElement>context.children[i].children[j]).style.gridColumnEnd = (j+1).toString();
+                    (<HTMLElement>context.children[i].children[j]).style.gridRowStart = i.toString();
+                    (<HTMLElement>context.children[i].children[j]).style.gridRowEnd = (i+1).toString();
+                }
+    
+                // MenuTable
+                if (menu.rows[i][j] instanceof MenuTable) {
+                    for (let n = 0; n < (<MenuTable>menu.rows[i][j]).elements.length; n++) {
+                        // context.children[i] -> MenuTable, .children[j] -> tr, .children[0] -> inner Div
+                        (<HTMLElement>context.children[i].children[n].children[0]).innerHTML = (<MenuTable>menu.rows[i][j]).elements[n].tile.ascii;
+                        (<HTMLElement>context.children[i].children[n].children[0]).style.color = (<MenuTable>menu.rows[i][j]).elements[n].tile.fg;
+                        (<HTMLElement>context.children[i].children[n].children[0]).style.backgroundColor = (<MenuTable>menu.rows[i][j]).elements[n].tile.bg;
+                    }
                 }
             }
         }

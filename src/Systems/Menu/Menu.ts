@@ -1,7 +1,3 @@
-import { Tile } from "../../tile";
-import { Game } from "../../Game";
-
-
 export abstract class MenuElement { 
 
     rowSize: number;
@@ -27,11 +23,15 @@ export class MenuOption extends MenuElement {
 
     toMenu: string = null; // name of menu which selecting this option takes you to
     toState: string = null;
+    hidden: boolean = false;
 
-    constructor(name: string, letter: string) { 
+    constructor(name: string, letter: string, toState?: string, toMenu?: string, hidden?: boolean) { 
         super(1);
         this.name = name;
         this.letter = letter;
+        this.toState = toState || null;
+        this.toMenu = toMenu || null;
+        this.hidden = hidden || false;
     }
 }
 
@@ -72,18 +72,20 @@ export class Menu {
     public name: string;
 
     public options: Record<string, MenuOption> = {};
-    public elements: MenuElement[] = [];
+    public rows = [];
     public selectedElement: number = -1;
 
-    constructor(elems?: MenuElement[]) {
-        if (!elems) return;
-        elems.forEach(elem => {
-            this.addElement(elem);
-        });
+    constructor(rows) {
+        this.rows = rows;
+        rows.forEach(row => {
+            for (let i = 0; i < row.length; i++) {
+                let element = row[i];
+                if (element instanceof MenuOption) this.options[element.letter] = element;
+            }
+        })
     }
-
+    
     addElement(element: MenuElement) {
         if (element instanceof MenuOption) this.options[element.letter] = element;
-        this.elements.push(element);
     }
 }

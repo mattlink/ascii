@@ -128,6 +128,7 @@ export class Window {
         child.style.fontSize = '30px';
         child.style.fontStyle = 'italic';
         child.style.textAlign = 'center';
+        child.style.margin = 'auto';
         return child;
     }
 
@@ -135,20 +136,17 @@ export class Window {
         let child = document.createElement('div');
         child.style.height = Renderer.pxs(menuOption.rowSize * Renderer.elementSize);
         child.style.lineHeight = Renderer.pxs(menuOption.rowSize * Renderer.elementSize);
-        // child.style.margin = 'auto';
         child.style.fontSize = '18px';
         child.style.textAlign = 'left';
         child.style.width = '300px';
         child.style.height = null;
         child.style.lineHeight = null;
+        if (menuOption.hidden) child.style.display = 'none';
         return child;
     }
 
     public static createMenuInfo(menuInfo: MenuInfo) {
         let child = document.createElement('div');
-        // child.style.height = Renderer.pxs(menuInfo.rowSize * Renderer.elementSize);
-        // child.style.lineHeight = Renderer.pxs(menuInfo.rowSize * Renderer.elementSize);
-        child.style.margin = 'auto';
         child.style.fontSize = '20px';
         child.style.textAlign = 'left';
         child.style.height = null;

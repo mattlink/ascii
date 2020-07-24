@@ -9,10 +9,7 @@ import { GameObject } from "./GameObject";
 import { Turret } from "./TD/Turret";
 import { Wall } from "./TD/Wall";
 import { ShopItem } from "./TD/ShopItem";
-import { Importer } from "./importer";
-import { Wall as EWall } from './Rooms/Environment';
 
-import * as menuConfig from "./menu.json";
 import { Orc } from "./Actors/Orc";
 
 enum GameState {
@@ -50,15 +47,7 @@ class game extends Game {
         // TODO: Check for an existing save in localStorage
         this.renderer = new Renderer();
 
-        this.menus = Importer.importMenus(menuConfig);
         this.activeMenu = 'start';
-        // Add windows for all the menus we imported
-        for (let key in this.menus) {
-            this.renderer.addWindow(key, Menu.width, Menu.height);
-        }
-
-        // Pre-render the start menu
-        this.renderer.renderMenu(this.menus['start'], this.renderer.windows['start'].getContext());
 
         // Create the world
         const WORLD_HEIGHT = 30;
@@ -72,29 +61,65 @@ class game extends Game {
 
         this.funds = 30; // start with this much cash
 
-        // Create windows
+        // Create windows for each menu and the game itself
+        this.renderer.addWindow('start', this.world.getRoom().getWidth(), this.world.getRoom().getHeight());
+        this.renderer.addWindow('about_game', this.world.getRoom().getWidth(), this.world.getRoom().getHeight());
         this.renderer.addWindow('gameinfo', this.world.getRoom().getWidth(), 4.5);
         this.renderer.addWindow('game', this.world.getRoom().getWidth(), this.world.getRoom().getHeight(), true);
         this.renderer.addWindow('selection', this.world.getRoom().getWidth(), 5);
         this.renderer.addWindow('shop', this.world.getRoom().getWidth(), 8);
         this.renderer.hideAllWindows();
 
-        // Create Menus for gameinfo and shop
-        this.menus['gameinfo'] = new Menu();
-        this.menus['gameinfo'].addElement(new MenuInfo('Nexus Health: 100'));
-        this.menus['gameinfo'].addElement(new MenuInfo('$ 30'));
-        this.menus['gameinfo'].addElement(new MenuInfo(''));
+        // Create Menus 
+        this.menus['start'] = new Menu([
+            [new MenuTitle('Orc Siege')],
+            [new MenuOption('Start', 's', 'Play')],
+            [new MenuOption('How to Play', '?', null, 'about_game')]
+        ]);
 
-        this.menus['selection'] = new Menu();
-        this.menus['selection'].addElement(new MenuInfo('SELECTED:'));
-        this.menus['selection'].addElement(new MenuInfo('Nothing selected'));
-        this.menus['selection'].addElement(new MenuInfo(''));
-        this.menus['selection'].addElement(new MenuInfo(''));
+        this.menus['about_game'] = new Menu([
+            [new MenuTitle('About Game (How to Play)')],
+            [new MenuOption('', 'Escape', null, 'start', true)],
+                [new MenuInfo("Controls:"   )],
+                [new MenuInfo("Press 'f' to advance the game by one tick.")],
+                [new MenuInfo("Select a shop item by pressing its key binding. (t for turret, w for wall, etc).")],
+                [new MenuInfo("Place an item by clicking on the space you want to put it.")],
+                [new MenuInfo("Press escape to clear the cursor.")],
+                [new MenuInfo("Using the default cursor, click an item to view it and then press 's' to sell it.")],
+                [new MenuInfo("-----------------------------------------------------------------------------------------")],
+                [new MenuInfo("Gameplay:")],
+                [new MenuInfo("Get money by killing Orcs. Kill Orcs with Turrets.")],
+                [new MenuInfo("You lose when the Orcs kill your Nexus.")],
+                [new MenuInfo("Orcs get increasingly stronger as you gain more money.")],
+                [new MenuInfo("See how long you can last, and how much money you can make.")],
+                [new MenuInfo("Oh no did the game break? Refresh the page to restart.")],
+                [new MenuInfo("(Press esc to go back)")] 
+        ]);
 
-        this.menus['shop'] = new Menu();
-        this.menus['shop'].addElement(new MenuInfo('SHOP:'));
-        this.menus['shop'].addElement(new MenuOption('Turret $20', 't'));
-        this.menus['shop'].addElement(new MenuOption('Wall $5', 'w'));
+        this.menus['gameinfo'] = new Menu(
+            [
+                [new MenuInfo('Nexus Health: 100'),         new MenuInfo('Orcs Killed: 0')],
+                [new MenuInfo('$ 30'),                      new MenuInfo('Turns: 0')],
+                [new MenuInfo('')]
+            ]
+        );
+
+        this.menus['selection'] = new Menu(
+            [
+                [new MenuInfo('SELECTED:')],
+                [new MenuInfo('Nothing selected')],
+                [new MenuInfo('')],
+                [new MenuInfo('')],
+            ]
+        );
+        
+        this.menus['shop'] = new Menu(
+            [
+                [new MenuInfo('SHOP:')],
+                [new MenuOption('Turret $20', 't')],
+                [new MenuOption('Wall $5', 'w')],
+            ]
+        );
 
         // Render world and menus for the first time
         this.renderer.renderRoom(this.world.getRoom(), 'game');
@@ -107,8 +132,6 @@ class game extends Game {
 
         this.world.appendMessage("Welcome to Orc Siege!");
         this.world.appendMessage("Protect your Nexus with Walls and Turrets.");
-
-
     }
 
     // Bind basic mouse behavior to every tile
@@ -187,7 +210,7 @@ class game extends Game {
 
             if (this.funds + obj.cost < item.cost) {
                 this.world.appendMessage("You don't have enough money for that.");
-                (<MenuInfo>this.menus['gameinfo'].elements[2]).content = this.world.getCurrentMessages().join(" ");
+                (<MenuInfo>this.menus['gameinfo'].rows[2][0]).content = this.world.getCurrentMessages().join(" ");
                 this.renderer.renderMenu(this.menus['gameinfo'], this.renderer.windows['gameinfo'].getContext());
                 this.world.clearMessage();
                 return;
@@ -211,7 +234,7 @@ class game extends Game {
 
             if (this.funds < item.cost) {
                 this.world.appendMessage("You don't have enough money for that.");
-                (<MenuInfo>this.menus['gameinfo'].elements[2]).content = this.world.getCurrentMessages().join(" ");
+                (<MenuInfo>this.menus['gameinfo'].rows[2][0]).content = this.world.getCurrentMessages().join(" ");
                 this.renderer.renderMenu(this.menus['gameinfo'], this.renderer.windows['gameinfo'].getContext());
                 this.world.clearMessage();
                 return;
@@ -225,7 +248,7 @@ class game extends Game {
         this.world.items.push(item);
 
         // update the display of currently available funds
-        (<MenuInfo>this.menus['gameinfo'].elements[1]).content = '$ ' + this.funds;
+        (<MenuInfo>this.menus['gameinfo'].rows[1][0]).content = '$ ' + this.funds;
         this.renderer.renderMenu(this.menus['gameinfo'], this.renderer.windows['gameinfo'].getContext());
     }
 
@@ -258,7 +281,7 @@ class game extends Game {
             if (this.world.getPlayer().health <= 0) {
                 this.world.appendMessage("The Orcs destroyed your Nexus. Refresh page to try again.");
                 this.gameState = GameState.Over;
-                (<MenuInfo>this.menus['gameinfo'].elements[2]).content = this.world.getCurrentMessages().join(" ");
+                (<MenuInfo>this.menus['gameinfo'].rows[2][0]).content = this.world.getCurrentMessages().join(" ");
                 this.renderer.renderMenu(this.menus['gameinfo'], this.renderer.windows['gameinfo'].getContext());
                 return;
             }
@@ -280,7 +303,7 @@ class game extends Game {
                 this.cursorState = CursorState.Default;
                 this.renderer.renderArea(this.cursor.x - (Turret.range + 1), this.cursor.y - (Turret.range + 1), 2 * (Turret.range + 2), 2 * (Turret.range + 2), this.world.getRoom(), this.renderer.windows['game'].getContext());
                 this.selected = null;
-                (<MenuInfo>this.menus['selection'].elements[2]).content = '';
+                (<MenuInfo>this.menus['selection'].rows[2][0]).content = '';
                 this.updateCursor();
             }
 
@@ -310,7 +333,7 @@ class game extends Game {
                 }
 
                 this.selected = null;
-                (<MenuInfo>this.menus['selection'].elements[2]).content = '';
+                (<MenuInfo>this.menus['selection'].rows[2][0]).content = '';
             }
 
             // Check if we should scale difficulty of Orcs
@@ -361,26 +384,28 @@ class game extends Game {
             });
 
             // Update Menus' content
-            (<MenuInfo>this.menus['gameinfo'].elements[0]).content = 'Nexus Health: ' + this.world.getPlayer().health;
-            (<MenuInfo>this.menus['gameinfo'].elements[1]).content = '$ ' + this.funds;
-            (<MenuInfo>this.menus['gameinfo'].elements[2]).content = this.world.getCurrentMessages().join(" ");
+            (<MenuInfo>this.menus['gameinfo'].rows[0][0]).content = 'Nexus Health: ' + this.world.getPlayer().health;
+            (<MenuInfo>this.menus['gameinfo'].rows[0][1]).content = 'Orcs Killed: ' + this.world.orcsKilled;
+            (<MenuInfo>this.menus['gameinfo'].rows[1][0]).content = '$ ' + this.funds;
+            (<MenuInfo>this.menus['gameinfo'].rows[1][1]).content = 'Turns: ' + this.world.turnsPassed;
+            (<MenuInfo>this.menus['gameinfo'].rows[2][0]).content = this.world.getCurrentMessages().join(" ");
 
             if (this.selected) {
                 if (this.selected instanceof Orc) {
-                    (<MenuInfo>this.menus['selection'].elements[1]).content = `${this.selected.name} (HP: ${this.selected.health})`;
-                    (<MenuInfo>this.menus['selection'].elements[2]).content = '';
+                    (<MenuInfo>this.menus['selection'].rows[1][0]).content = `${this.selected.name} (HP: ${this.selected.health})`;
+                    (<MenuInfo>this.menus['selection'].rows[2][0]).content = '';
                 } else if (this.selected instanceof Turret) {
-                    (<MenuInfo>this.menus['selection'].elements[1]).content = this.selected.name;
-                    (<MenuInfo>this.menus['selection'].elements[2]).content = 's - Sell $10';
+                    (<MenuInfo>this.menus['selection'].rows[1][0]).content = this.selected.name;
+                    (<MenuInfo>this.menus['selection'].rows[2][0]).content = 's - Sell $10';
                 } else if (this.selected instanceof Wall) {
-                    (<MenuInfo>this.menus['selection'].elements[1]).content = this.selected.name;
-                    (<MenuInfo>this.menus['selection'].elements[2]).content = 's - Sell $5';
+                    (<MenuInfo>this.menus['selection'].rows[1][0]).content = this.selected.name;
+                    (<MenuInfo>this.menus['selection'].rows[2][0]).content = 's - Sell $5';
                 } else {
-                    (<MenuInfo>this.menus['selection'].elements[1]).content = this.selected.name;
-                    (<MenuInfo>this.menus['selection'].elements[2]).content = '';
+                    (<MenuInfo>this.menus['selection'].rows[1][0]).content = this.selected.name;
+                    (<MenuInfo>this.menus['selection'].rows[2][0]).content = '';
                 }
             } else {
-                (<MenuInfo>this.menus['selection'].elements[1]).content = 'Nothing selected';
+                (<MenuInfo>this.menus['selection'].rows[1][0]).content = 'Nothing selected';
             }
 
             // Render Menus

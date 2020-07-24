@@ -15,7 +15,8 @@ export class World {
     public items: ShopItem[] = [];
 
     public wave: number = 0; // Keeps track of how many waves have occurred. this is essentially the level of the game
-    private turnsPassed: number = 0; // Keeps track of total game ticks (turns)
+    public turnsPassed: number = 0; // Keeps track of total game ticks (turns)
+    public orcsKilled: number = 0;
 
     // Keep track of message information
     private messageHistory: string[] = [];

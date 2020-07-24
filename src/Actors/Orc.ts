@@ -74,6 +74,8 @@ export class Orc extends Mob {
 
     death(world: World) {
 
+        world.orcsKilled++;
+
         this.dead = true;
         let objects = [];
         objects.push(new Corpse(this));
