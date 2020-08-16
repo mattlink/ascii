@@ -2,7 +2,7 @@ import { Game } from "./Game";
 import { World } from "./world";
 import { Renderer } from "./Systems/renderer";
 import { IO } from "./Systems/io";
-import { Menu, MenuInfo, MenuOption, MenuTitle } from './Systems/Menu/Menu';
+import { Menu, MenuInfo, MenuOption, MenuTitle, MenuTextInput, MenuSubmit, MenuCheckBox } from './Systems/Menu/Menu';
 import { Tile } from "./tile";
 import { Floor } from "./Rooms/Environment";
 import { GameObject } from "./GameObject";
@@ -63,6 +63,8 @@ class game extends Game {
 
         // Create windows for each menu and the game itself
         this.renderer.addWindow('start', this.world.getRoom().getWidth(), this.world.getRoom().getHeight());
+        this.renderer.addWindow('login', this.world.getRoom().getWidth(), this.world.getRoom().getHeight());
+        this.renderer.addWindow('create_account', this.world.getRoom().getWidth(), this.world.getRoom().getHeight());
         this.renderer.addWindow('about_game', this.world.getRoom().getWidth(), this.world.getRoom().getHeight());
         this.renderer.addWindow('gameinfo', this.world.getRoom().getWidth(), 4.5);
         this.renderer.addWindow('game', this.world.getRoom().getWidth(), this.world.getRoom().getHeight(), true);
@@ -74,8 +76,30 @@ class game extends Game {
         this.menus['start'] = new Menu([
             [new MenuTitle('Orc Siege')],
             [new MenuOption('Start', 's', 'Play')],
+            [new MenuOption('Login', 'l', null, 'login')],
+            [new MenuOption('Create Account', 'c', null, 'create_account')],
             [new MenuOption('How to Play', '?', null, 'about_game')]
         ]);
+
+        this.menus['login'] = new Menu([
+            [new MenuTitle('Login')],
+            [new MenuInfo('Logging in allows your score to be recorded on the leaderboard', '', true, true)],
+            [new MenuInfo('')],
+            [new MenuTextInput('Username')],
+            [new MenuTextInput('Password', true)],
+            [new MenuCheckBox(true, 'Stay logged in')],
+            [new MenuSubmit('Login', IO.submitLogin)],
+            [new MenuOption('', 'Escape', null, 'start', true)],
+        ]);
+
+        this.menus['create_account'] = new Menu([
+            [new MenuTitle('Create Account')],
+            [new MenuTextInput('Username')],
+            [new MenuTextInput('Password', true)],
+            [new MenuTextInput('Repeat Passwprd', true)],
+            [new MenuSubmit('Create Account')],
+            [new MenuOption('', 'Escape', null, 'start', true)],
+        ])
 
         this.menus['about_game'] = new Menu([
             [new MenuTitle('About Game (How to Play)')],
@@ -101,7 +125,7 @@ class game extends Game {
                 [new MenuInfo('Nexus Health: 100'),         new MenuInfo('Orcs Killed: 0')],
                 [new MenuInfo('$ 30'),                      new MenuInfo('Turns: 0')],
                 [new MenuInfo('')]
-            ]
+            ], true
         );
 
         this.menus['selection'] = new Menu(
@@ -110,7 +134,7 @@ class game extends Game {
                 [new MenuInfo('Nothing selected')],
                 [new MenuInfo('')],
                 [new MenuInfo('')],
-            ]
+            ], true
         );
         
         this.menus['shop'] = new Menu(
@@ -118,7 +142,7 @@ class game extends Game {
                 [new MenuInfo('SHOP:')],
                 [new MenuOption('Turret $20', 't')],
                 [new MenuOption('Wall $5', 'w')],
-            ]
+            ], true
         );
 
         // Render world and menus for the first time
@@ -127,7 +151,6 @@ class game extends Game {
             this.renderer.renderMenu(this.menus[key], this.renderer.windows[key].getContext());
         }
         // Show all the windows
-        // this.renderer.showWindows(['gameinfo', 'game', 'shop']);
         this.renderer.windows['start'].show();
 
         this.world.appendMessage("Welcome to Orc Siege!");
@@ -368,7 +391,6 @@ class game extends Game {
                 }
             }
         }
-
     }
 
     draw() {

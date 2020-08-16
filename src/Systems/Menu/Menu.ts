@@ -16,6 +16,38 @@ export class MenuTitle extends MenuElement {
     }
 }
 
+export class MenuTextInput extends MenuElement {
+    shadowText: string;
+    isPassword: boolean = false;
+    isEmail: boolean = false;
+    constructor(shadowText: string, isPassword?: boolean, isEmail?: boolean) {
+        super(1);
+        this.shadowText = shadowText;
+        this.isPassword = isPassword || false;
+        this.isEmail = isEmail || false;
+    }
+}
+
+export class MenuCheckBox extends MenuElement {
+    checked: boolean = true;
+    text: string = '';
+    constructor(checked: boolean, text: string) {
+        super(1);
+        this.checked = checked;
+        this.text = text;
+    }
+}
+
+export class MenuSubmit extends MenuElement {
+    text: string;
+    onSubmit: (this: GlobalEventHandlers, ev: MouseEvent) => any;
+    constructor(text: string, onSubmit?: (this: GlobalEventHandlers, ev: MouseEvent) => any) {
+        super(1);
+        this.text = text;
+        this.onSubmit = onSubmit;
+    }
+}
+
 export class MenuOption extends MenuElement {
     name: string;
     letter: string; // the letter used to select this option
@@ -38,10 +70,14 @@ export class MenuOption extends MenuElement {
 export class MenuInfo extends MenuElement {
     label: string = '';
     content: string = '';
-    constructor(content: string, label?: string) {
+    italic: boolean = false;
+    center: boolean = false;
+    constructor(content: string, label?: string, italic?: boolean, center?: boolean) {
         super(2);
         this.content = content;
         this.label = label || '';
+        this.italic = italic || false;
+        this.center = center || false;
     }
     getContent() {
         if (this.label != '') {
@@ -74,15 +110,20 @@ export class Menu {
     public options: Record<string, MenuOption> = {};
     public rows = [];
     public selectedElement: number = -1;
+    public dontCenter: boolean = false;
 
-    constructor(rows) {
+    public formSubmit: (this: GlobalEventHandlers, ev: MouseEvent) => any;
+
+    constructor(rows, dontCenter?: boolean) {
         this.rows = rows;
         rows.forEach(row => {
             for (let i = 0; i < row.length; i++) {
                 let element = row[i];
+                if (element instanceof MenuSubmit) this.formSubmit = element.onSubmit;
                 if (element instanceof MenuOption) this.options[element.letter] = element;
             }
         })
+        this.dontCenter = dontCenter || false;
     }
     
     addElement(element: MenuElement) {

@@ -42,4 +42,8 @@ export class IO {
             keyQueue.enqueue(e.key);
         });
     }
+
+    public static submitLogin(ev: Event) {
+        console.log('submit button pressed');
+    }
 }
