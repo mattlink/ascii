@@ -1,7 +1,9 @@
 import { Action, ActionDirection } from "../Actions/Action";
 import { Actor } from "../Actors/Actor";
 import { World } from "../world";
-import { Wall, Floor } from "../Rooms/Environment";
+import { Floor } from "../Rooms/Environment";
+import { Wall } from "../TD/Wall";
+import { Turret } from "../TD/Turret";
 import { GameObject } from "../GameObject";
 import { Item } from "./Item";
 import { Tile } from "../tile";
@@ -16,7 +18,7 @@ class ShovelAction extends Action {
 
     perform(world: World) {
         let room = world.getActiveRoom();
-        
+
         let toCoords = Action.DirectionToCoords(this.actor.x, this.actor.y, this.dir);
 
         let toPosX = toCoords[0];
@@ -27,6 +29,19 @@ class ShovelAction extends Action {
             this.actor.addInventoryItem(room.objects[toPosX][toPosY]);
 
             // Put a floor tile where the Wall that we just dug was
+            room.objects[toPosX][toPosY] = new Floor(toPosX, toPosY, room.floorTile);
+            return true;
+        }
+        else if (room.objects[toPosX][toPosY] instanceof Turret) {
+            // Add the Turret to the actors inventory
+            // this.actor.addInventoryItem(room.objects[toPosX][toPosY]);
+
+            // Remove the Turret from the World items
+            world.items = world.items.filter(item => {
+                return item != room.objects[toPosX][toPosY];
+            });
+
+            // Put a floor tile where the Turret that we just dug was
             room.objects[toPosX][toPosY] = new Floor(toPosX, toPosY, room.floorTile);
             return true;
         }
@@ -46,7 +61,7 @@ export class Shovel extends Item {
 
     use(actor: Actor, dir: ActionDirection, world: World) {
         let action = new ShovelAction(actor, dir);
-        let success = action.perform(world);  
+        let success = action.perform(world);
         return success;
     }
 }

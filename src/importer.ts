@@ -28,32 +28,39 @@ export class Importer {
         let menus: Record<string, Menu> = {};
 
         json.menus.forEach(m => {
-            let menu = new Menu();
-            menu.name = m.name;
-
-            menu.addElement(new MenuTitle(m.title));
-
+            let rows = []
+            // parse options into single element rows
             m.options.forEach(o => {
                 let option = new MenuOption(o.name, o.letter);
                 if (o.toMenu != null) option.toMenu = o.toMenu;
                 if (o.toState != null) option.toState = o.toState;
-
-                if (o.hidden) {
-                    menu.options[o.letter] = option;
-                } else {
-                    menu.addElement(option);
+                if (!o.hidden) {
+                    rows.push(
+                        [
+                            option
+                        ]
+                    )
                 }
             });
-
+            // parse infos into single element rows
             if (m.infos) {
                 m.infos.forEach(i => {
                     let info = new MenuInfo(i.content);
                     if (i.label) {
                         info.label = i.label;
                     }
-                    menu.addElement(info);
+                    rows.push(
+                        [
+                            info
+                        ]
+                    );
                 });
             }
+            
+            let menu = new Menu(rows);
+            menu.name = m.name;
+
+            menu.addElement(new MenuTitle(m.title));
 
             menus[m.name] = menu;
         });
@@ -86,13 +93,13 @@ export class Importer {
                 }
                 
                 // level.init();
-                world.addLevel(level);
+                // world.addLevel(level);
             });
         }
 
-        world.spawnThings();
-        world.initLevels();
-        world.connectLevels();
+        // world.spawnThings();
+        // world.initLevels();
+        // world.connectLevels();
 
         /*if (json.world.rooms) {
             json.world.rooms.forEach(roomJson => {

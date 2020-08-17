@@ -4,9 +4,11 @@ import { GameObject } from "../GameObject";
 import { Window } from "./window";
 import { Room } from "../Rooms/Room";
 import { Floor } from "../Rooms/Environment";
+import { Wall } from "../Rooms/Environment";
 import { Camera } from "./camera";
-import { Menu, MenuInfo } from "./Menu/Menu";
-import { MenuTitle, MenuOption, MenuTable } from "./Menu/Menu";
+import { Menu, MenuInfo, MenuElement, MenuSubmit, MenuCheckBox } from "./Menu/Menu";
+import { MenuTitle, MenuOption, MenuTable, MenuTextInput } from "./Menu/Menu";
+import { Turret } from "../TD/Turret";
 
 export class Renderer {
 
@@ -34,61 +36,107 @@ export class Renderer {
         (<HTMLElement>context.children[x].children[y]).style.backgroundColor = tile.bg;
         (<HTMLElement>context.children[x].children[y]).style.color = tile.fg;
     }
-
     public renderMenu(menu: Menu, context: HTMLElement) {
-
-        // For menus, we basically re-initialize the context each time we want to render (we don't do this for rendering game tiles because its more computationally more expensive)
-        while(context.firstChild) {
+        while (context.firstChild) {
             context.removeChild(context.lastChild);
         }
 
-        for (let i = 0; i < menu.elements.length; i++) {
-            // MenuTitle
-            if (menu.elements[i] instanceof MenuTitle) {
-                let child = Window.createMenuTitle(<MenuTitle>menu.elements[i]);
-                context.appendChild(child);
-                (<HTMLElement>context.children[i]).innerHTML = (<MenuTitle>menu.elements[i]).title;
-                (<HTMLElement>context.children[i]).style.color = Menu.defaultFg;
+        let menuContext = context;
+
+        // Loop over ElementRow(s)
+        for (let i = 0; i < menu.rows.length; i++) {
+
+            let rowChild = document.createElement('div');
+
+            rowChild.style.display = 'flex';
+            rowChild.style.justifyContent = 'space-between';
+
+            if (menu.rows[i].length == 1 && !menu.dontCenter) {
+                rowChild.style.justifyContent = 'center';
             }
+            
+            menuContext.appendChild(rowChild);
+            for (let j = 0; j < menu.rows[i].length; j++) {
+                // MenuTitle
+                if (menu.rows[i][j] instanceof MenuTitle) {
+                    rowChild.style.textAlign = 'center';
+                    let child = Window.createMenuTitle(<MenuTitle>menu.rows[i][j]);
+                    rowChild.appendChild(child);
+                    // rowChild is (<HTMLElement>context.children[i])
+                    (<HTMLElement>menuContext.children[i].children[j]).innerHTML = (<MenuTitle>menu.rows[i][j]).title;
+                    (<HTMLElement>menuContext.children[i].children[j]).style.color = Menu.defaultFg;
+                    (<HTMLElement>menuContext.children[i].children[j]).style.gridColumnStart = j.toString();
+                    (<HTMLElement>menuContext.children[i].children[j]).style.gridColumnEnd = (j+1).toString();
+                    (<HTMLElement>menuContext.children[i].children[j]).style.gridRowStart = i.toString();
+                    (<HTMLElement>menuContext.children[i].children[j]).style.gridRowEnd = (i+1).toString();
 
-            if (menu.elements[i] instanceof MenuInfo) {
-                let child = Window.createMenuInfo(<MenuInfo>menu.elements[i]);
-                context.appendChild(child);
-
-                (<HTMLElement>context.children[i]).innerHTML = (<MenuInfo>menu.elements[i]).getContent();
-                (<HTMLElement>context.children[i]).style.backgroundColor = Menu.defaultBg;
-                (<HTMLElement>context.children[i]).style.color = Menu.defaultFg;
-                (<HTMLElement>context.children[i]).style.border = 'none';
-            }
-
-            // MenuOption
-            if(menu.elements[i] instanceof MenuOption) {
-                let child = Window.createMenuOption(<MenuOption>menu.elements[i]);
-                context.appendChild(child);
-
-                if (i == menu.selectedElement) {
-                    (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).letter + '  -  ' + (<MenuOption>menu.elements[i]).name;
-                    // (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).name;
-                    (<HTMLElement>context.children[i]).style.backgroundColor = Menu.defaultSelectedBg;
-                    (<HTMLElement>context.children[i]).style.color = Menu.defaultSelectedFg;
-                    // (<HTMLElement>context.children[i+1]).style.border = 'dashed 1px black';
                 }
-                else {
-                    (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).letter + '  -  ' + (<MenuOption>menu.elements[i]).name;
-                    // (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).name;
-                    (<HTMLElement>context.children[i]).style.backgroundColor = Menu.defaultBg;
-                    (<HTMLElement>context.children[i]).style.color = Menu.defaultFg;
-                    (<HTMLElement>context.children[i]).style.border = 'none';
+    
+                if (menu.rows[i][j] instanceof MenuInfo) {
+                    let child = Window.createMenuInfo(<MenuInfo>menu.rows[i][j]);
+                    rowChild.appendChild(child);
+                    (<HTMLElement>menuContext.children[i].children[j]).innerHTML = (<MenuInfo>menu.rows[i][j]).getContent();
+                    (<HTMLElement>menuContext.children[i].children[j]).style.backgroundColor = Menu.defaultBg;
+                    (<HTMLElement>menuContext.children[i].children[j]).style.color = Menu.defaultFg;
+                    (<HTMLElement>menuContext.children[i].children[j]).style.border = 'none';
+                    (<HTMLElement>menuContext.children[i].children[j]).style.gridColumnEnd = (j+1).toString();
+                    (<HTMLElement>menuContext.children[i].children[j]).style.gridRowStart = i.toString();
+                    (<HTMLElement>menuContext.children[i].children[j]).style.gridRowEnd = (i+1).toString();
                 }
-            }
+    
+                // MenuOption
+                if(menu.rows[i][j] instanceof MenuOption) {
+                    let child = Window.createMenuOption(<MenuOption>menu.rows[i][j]);
+                    rowChild.appendChild(child);
+                    if (i == menu.selectedElement) {
+                        (<HTMLElement>menuContext.children[i].children[j]).innerHTML = (<MenuOption>menu.rows[i][j]).letter + '  -  ' + (<MenuOption>menu.rows[i][j]).name;
+                        // (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).name;
+                        (<HTMLElement>menuContext.children[i].children[j]).style.backgroundColor = Menu.defaultSelectedBg;
+                        (<HTMLElement>menuContext.children[i].children[j]).style.color = Menu.defaultSelectedFg;
+                        // (<HTMLElement>context.children[i+1]).style.border = 'dashed 1px black';
+                    }
+                    else {
+                        (<HTMLElement>menuContext.children[i].children[j]).innerHTML = (<MenuOption>menu.rows[i][j]).letter + '  -  ' + (<MenuOption>menu.rows[i][j]).name;
+                        // (<HTMLElement>context.children[i]).innerHTML = (<MenuOption>menu.elements[i]).name;
+                        (<HTMLElement>menuContext.children[i].children[j]).style.backgroundColor = Menu.defaultBg;
+                        (<HTMLElement>menuContext.children[i].children[j]).style.color = Menu.defaultFg;
+                        (<HTMLElement>menuContext.children[i].children[j]).style.border = 'none';
+                    }
+                    (<HTMLElement>menuContext.children[i].children[j]).style.gridColumnEnd = (j+1).toString();
+                    (<HTMLElement>menuContext.children[i].children[j]).style.gridRowStart = i.toString();
+                    (<HTMLElement>menuContext.children[i].children[j]).style.gridRowEnd = (i+1).toString();
+                }
 
-            // MenuTable
-            if (menu.elements[i] instanceof MenuTable) {
-                for (let j = 0; j < (<MenuTable>menu.elements[i]).elements.length; j++) {
-                    // context.children[i] -> MenuTable, .children[j] -> tr, .children[0] -> inner Div
-                    (<HTMLElement>context.children[i].children[j].children[0]).innerHTML = (<MenuTable>menu.elements[i]).elements[j].tile.ascii;
-                    (<HTMLElement>context.children[i].children[j].children[0]).style.color = (<MenuTable>menu.elements[i]).elements[j].tile.fg;
-                    (<HTMLElement>context.children[i].children[j].children[0]).style.backgroundColor = (<MenuTable>menu.elements[i]).elements[j].tile.bg;
+                // MenuTextInput
+                if (menu.rows[i][j] instanceof MenuTextInput) {
+                    let child = Window.createMenuTextInput(<MenuTextInput>menu.rows[i][j]);
+                    rowChild.appendChild(child);
+                    rowChild.style.margin = '5px';
+                    rowChild.appendChild(child);
+                }
+
+                // MenuCheckBox
+                if (menu.rows[i][j] instanceof MenuCheckBox) {
+                    let child = Window.createMenuCheckBox(<MenuCheckBox>menu.rows[i][j]);
+                    rowChild.appendChild(child);
+                    let label = Window.createMenuCheckBoxLabel(<MenuCheckBox>menu.rows[i][j]);
+                    rowChild.appendChild(label);
+                }
+
+                // MenuSubmit
+                if (menu.rows[i][j] instanceof MenuSubmit) {
+                    let child = Window.createMenuSubmit(<MenuSubmit>menu.rows[i][j]);
+                    rowChild.appendChild(child);
+                }
+    
+                // MenuTable
+                if (menu.rows[i][j] instanceof MenuTable) {
+                    for (let n = 0; n < (<MenuTable>menu.rows[i][j]).elements.length; n++) {
+                        // context.children[i] -> MenuTable, .children[j] -> tr, .children[0] -> inner Div
+                        (<HTMLElement>menuContext.children[i].children[n].children[0]).innerHTML = (<MenuTable>menu.rows[i][j]).elements[n].tile.ascii;
+                        (<HTMLElement>menuContext.children[i].children[n].children[0]).style.color = (<MenuTable>menu.rows[i][j]).elements[n].tile.fg;
+                        (<HTMLElement>menuContext.children[i].children[n].children[0]).style.backgroundColor = (<MenuTable>menu.rows[i][j]).elements[n].tile.bg;
+                    }
                 }
             }
         }
@@ -103,9 +151,38 @@ export class Renderer {
     }
 
     public renderArea(x: number, y: number, width: number, height: number, room: Room, context: HTMLElement) {
-        for (let i = x; i < x + width; i++) {
-            for (let j = y; j < y + height; j++) {
-                this.updateTile(i, j, room.getObject(i, j).getTile(), context);
+        for (let i = Math.max(0, x); i < Math.min(x + width, room.getWidth()); i++) {
+            for (let j = Math.max(0, y); j < Math.min(y + height, room.getHeight()); j++) {
+                
+                let obj = room.getObject(i, j);
+                if (obj instanceof Floor && (<Floor>obj).getOccupation() != null) {
+                    this.updateTile(i, j, (<Floor>obj).getOccupation().getTile(), context);    
+                } else {
+                    this.updateTile(i, j, obj.getTile(), context);
+                }
+                
+            }
+        }
+    }
+
+    public renderTurretCursor(turret: GameObject, room: Room, context: HTMLElement) {
+        // North/South
+        for (let i = Math.max(0, turret.x - Turret.range); i <= Math.min(turret.x + Turret.range, room.getWidth() - 1); i++) {
+            // if (i == turret.x) continue;
+            
+            let obj = room.getObject(i, turret.y);
+            if (obj instanceof Floor && (<Floor>obj).getOccupation() == null) {
+                this.updateTile(i, turret.y, new Tile('+', 'blue', 'black'), context);
+            }
+        } 
+
+        // East/West
+        for (let j = Math.max(0, turret.y - Turret.range); j <= Math.min(turret.y + Turret.range, room.getHeight() - 1); j++) {
+            // if (j == turret.y) continue;
+
+            let obj = room.getObject(turret.x, j);
+            if (obj instanceof Floor && (<Floor>obj).getOccupation() == null) {
+                this.updateTile(turret.x, j, new Tile('+', 'blue', 'black'), context);
             }
         }
     }
@@ -157,8 +234,8 @@ export class Renderer {
         for (let i = 0; i < window.localWidth; i++) {
             for (let j = 0; j < window.localHeight; j++) {
                 // FOG OF WAR:
-                this.updateTile(i, j, 
-                    new Tile(room.getObject(i, j).getTile().ascii, room.defaultFogFg, room.defaultFogBg), 
+                this.updateTile(i, j,
+                    new Tile(room.getObject(i, j).getTile().ascii, room.defaultFogFg, room.defaultFogBg),
                     context);
             }
         }
@@ -171,7 +248,7 @@ export class Renderer {
         }
 
         // TODO: note how this method is not efficient. We are first rendering the entire window as fog,
-        // then going back over the parts that are in view to render whats actually there. 
+        // then going back over the parts that are in view to render whats actually there.
         // It would be much better to only update the parts of fog that need to be updated.
     }*/
 
@@ -238,13 +315,50 @@ export class Renderer {
             // Render diagonals
             if (!(obj.x == 0 || obj.y == 0))
                 this.renderGameObject(room.getObject(obj.x - 1, obj.y - 1), context);
-            if (!(obj.x == room.getWidth() - 1|| obj.y == 0)) 
+            if (!(obj.x == room.getWidth() - 1|| obj.y == 0))
                 this.renderGameObject(room.getObject(obj.x + 1, obj.y - 1), context);
             if (!(obj.x == 0 || obj.y == room.getHeight() - 1))
                 this.renderGameObject(room.getObject(obj.x - 1, obj.y + 1), context);
-            if (!(obj.x == room.getWidth() - 1 || obj.y == room.getHeight() - 1)) 
+            if (!(obj.x == room.getWidth() - 1 || obj.y == room.getHeight() - 1))
                 this.renderGameObject(room.getObject(obj.x + 1, obj.y + 1), context);
         }
+    }
+
+    public renderObjectContextExtended(obj: GameObject, room: Room, context: HTMLElement) {
+
+        // Render in all 4 cardinal directions
+        if (!(obj.x == 0)) this.renderGameObject(room.getObject(obj.x - 1, obj.y), context);
+        if (!(obj.x == room.getWidth() - 1)) this.renderGameObject(room.getObject(obj.x + 1, obj.y), context);
+        if (!(obj.y == 0)) this.renderGameObject(room.getObject(obj.x, obj.y - 1), context);
+        if (!(obj.y == room.getHeight() - 1)) this.renderGameObject(room.getObject(obj.x, obj.y + 1), context);
+
+        // Render diagonals
+        if (!(obj.x == 0 || obj.y == 0))
+            this.renderGameObject(room.getObject(obj.x - 1, obj.y - 1), context);
+        if (!(obj.x == room.getWidth() - 1|| obj.y == 0))
+            this.renderGameObject(room.getObject(obj.x + 1, obj.y - 1), context);
+        if (!(obj.x == 0 || obj.y == room.getHeight() - 1))
+            this.renderGameObject(room.getObject(obj.x - 1, obj.y + 1), context);
+        if (!(obj.x == room.getWidth() - 1 || obj.y == room.getHeight() - 1))
+            this.renderGameObject(room.getObject(obj.x + 1, obj.y + 1), context);
+
+            // Go one further...
+
+        // Render in all 4 cardinal directions
+        if (!(obj.x == 1)) this.renderGameObject(room.getObject(obj.x - 2, obj.y), context);
+        if (!(obj.x == room.getWidth() - 2)) this.renderGameObject(room.getObject(obj.x + 2, obj.y), context);
+        if (!(obj.y == 1)) this.renderGameObject(room.getObject(obj.x, obj.y - 2), context);
+        if (!(obj.y == room.getHeight() - 2)) this.renderGameObject(room.getObject(obj.x, obj.y + 2), context);
+
+        // Render diagonals
+        if (!(obj.x == 1 || obj.y == 1))
+            this.renderGameObject(room.getObject(obj.x - 2, obj.y - 2), context);
+        if (!(obj.x == room.getWidth() - 2|| obj.y == 1))
+            this.renderGameObject(room.getObject(obj.x + 2, obj.y - 2), context);
+        if (!(obj.x == 1 || obj.y == room.getHeight() - 2))
+            this.renderGameObject(room.getObject(obj.x - 2, obj.y + 2), context);
+        if (!(obj.x == room.getWidth() - 2 || obj.y == room.getHeight() - 2))
+            this.renderGameObject(room.getObject(obj.x + 2, obj.y + 2), context);
     }
 
 

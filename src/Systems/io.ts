@@ -1,54 +1,35 @@
 import { KeyQueue } from '../util';
+import { Game } from '../Game';
 export class IO {
-    
-    public static validMenuControls: string[] = [
-        'ArrowUp',
-        'ArrowDown',
-        'ArrowLeft',
-        'ArrowRight',
-        'Enter',
-        'Escape',
-        'c',
-        's',
-        'a',
-        'q'
-        // 'e', 
-        // 'E'
+
+    public static gameControls: string[] = [
+        'f', // advance by one tic (essentially wait)
     ];
 
-    public static validLookControls: string[] = [
-        'ArrowUp',
-        'ArrowDown',
-        'ArrowRight',
-        'ArrowLeft',
-        'Escape',
+    public static shopControls: string[] = [
+        't', // change cursor to turret
+        'w', // change cursor to wall
+        'Escape', // clear the current cursor state
+        's'
     ];
 
-    public static validGameControls: string[] = [
-        
-        'w', // move up
-        'a', // move left
-        's', // move down
-        'd', // move right
+    public static defineMouseOver(elem: HTMLElement, func: Function, game: Game) {
+        elem.onmouseover = function(e) {
+            func(e, game);
+        }
+    }
 
-        'q', // diagonal up-left
-        'e', // diagonal up-right
-        'z', // diagonal down-left
-        'x', // diagonal down-right
+    public static defineMouseOut(elem: HTMLElement, func: Function, game: Game) {
+        elem.onmouseout = function(e) {
+            func(e, game);
+        }
+    }
 
-        ',', // pick up item
-        'P',
-
-        'E', // Equipt item
-
-        'L', // Look mode
-
-        'j', // wait
-        '>', // use door
-        'i', // change state to inventory
-        'Escape', // go to pause menu
-        '?', // go to help menu
-    ];
+    public static defineMouseClick(elem: HTMLElement, func: Function, game: Game) {
+        elem.onclick = function(e) {
+            func(e, game);
+        }
+    } 
 
     public static genericKeyBinding(func: Function) {
         document.addEventListener('keydown', function(event){
@@ -60,5 +41,9 @@ export class IO {
         document.addEventListener('keydown', function(e){
             keyQueue.enqueue(e.key);
         });
+    }
+
+    public static submitLogin(ev: Event) {
+        console.log('submit button pressed');
     }
 }

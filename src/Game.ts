@@ -2,12 +2,21 @@ import { KeyQueue } from './util';
 import { IO } from './Systems/io';
 import { Renderer } from './Systems/renderer';
 import { World } from './world';
+import { Menu } from './Systems/Menu/Menu';
+import { GameObject } from './GameObject';
 
 export abstract class Game {
 
     protected keyQueue: KeyQueue = new KeyQueue();
 
     protected algoVis = false;
+    public funds = 0;
+
+    public menus: Record<string, Menu> = {};
+
+
+    public selected : GameObject;
+
 
     constructor() {}
 

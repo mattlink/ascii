@@ -1,0 +1,86 @@
+{
+    "width": 45,
+    "height": 25,
+
+    "defaultFg": "white",
+    "defaultBg": "black",
+
+    "defaultSelectedFg": "black",
+    "defaultSelectedBg": "lightgrey",
+
+
+    "menus": [
+        {
+            "name": "start",
+            "title": "Orc Siege",
+            "options": [
+                {
+                    "letter": "s",
+                    "name": "Start",
+                    "toState": "Play"
+                },
+                {
+                    "letter": "?",
+                    "name": "How to Play",
+                    "toMenu": "about_game"
+                }
+            ]
+        },
+        {
+            "name": "about_game",
+            "title": "About Game (How to Play)",
+            "options": [
+                {
+                    "letter": "Escape",
+                    "name": "",
+                    "toMenu": "start",
+                    "hidden": true
+                }
+            ],
+            "infos": [
+                {
+                    "content": "Controls:"   
+                },
+                {
+                    "content": "Press 'f' to advance the game by one tick."
+                },
+                {
+                    "content": "Select a shop item by pressing its key binding. (t for turret, w for wall, etc)."
+                },
+                {
+                    "content": "Place an item by clicking on the space you want to put it."
+                },
+                {
+                    "content": "Press escape to clear the cursor."
+                },
+                {
+                    "content": "Using the default cursor, click an item to view it and then press 's' to sell it."
+                },
+                {
+                    "content": "-----------------------------------------------------------------------------------------"
+                },
+                {
+                    "content": "Gameplay:"
+                },
+                {
+                    "content": "Get money by killing Orcs. Kill Orcs with Turrets."
+                },
+                {
+                    "content": "You lose when the Orcs kill your Nexus."
+                },
+                {
+                    "content": "Orcs get increasingly stronger as you gain more money."
+                },
+                {
+                    "content": "See how long you can last, and how much money you can make."
+                },
+                {
+                    "content": "Oh no did the game break? Refresh the page to restart."
+                },
+                {
+                    "content": "(Press esc to go back)"
+                }
+            ]
+        }
+    ]
+}

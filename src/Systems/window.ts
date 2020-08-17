@@ -1,5 +1,5 @@
 import { Renderer } from './renderer';
-import { MenuInfo, MenuOption, MenuTitle } from './Menu/Menu';
+import { MenuInfo, MenuOption, MenuTitle, MenuTextInput, MenuSubmit, MenuCheckBox } from './Menu/Menu';
 
 // Think of Windows as rendering contexts
 
@@ -49,6 +49,9 @@ export class Window {
 
         if (this.isTiled) this.context.style.display = 'flex'; 
         else this.context.style.display = 'block';
+
+        // turn off user select:
+        this.context.className += 'noselect ';
 
         if (this.startX == -1 && this.startY == -1) {
             this.context.style.margin = 'auto';
@@ -125,6 +128,7 @@ export class Window {
         child.style.fontSize = '30px';
         child.style.fontStyle = 'italic';
         child.style.textAlign = 'center';
+        child.style.margin = 'auto';
         return child;
     }
 
@@ -132,24 +136,83 @@ export class Window {
         let child = document.createElement('div');
         child.style.height = Renderer.pxs(menuOption.rowSize * Renderer.elementSize);
         child.style.lineHeight = Renderer.pxs(menuOption.rowSize * Renderer.elementSize);
-        child.style.margin = 'auto';
         child.style.fontSize = '18px';
         child.style.textAlign = 'center';
         child.style.width = '300px';
         child.style.height = null;
         child.style.lineHeight = null;
+        if (menuOption.hidden) child.style.display = 'none';
+        return child;
+    }
+
+    public static createMenuTextInput(menuTextInput: MenuTextInput) {
+        let child = document.createElement('input');
+        child.type = 'text';
+        child.id = menuTextInput.shadowText;
+        child.placeholder = menuTextInput.shadowText;
+        child.name = menuTextInput.shadowText;
+        child.style.margin = 'auto';
+
+        if (menuTextInput.isPassword) {
+            child.type = 'password';
+        }
+
+        if (menuTextInput.isEmail) {
+            child.type = 'email';
+        }
+
+        return child;
+
+    }
+
+    public static createMenuCheckBox(menuCheckBox: MenuCheckBox) {
+        let child = document.createElement('input');
+        child.type = 'checkbox';
+        child.name = menuCheckBox.text;
+        child.checked = menuCheckBox.checked;
+
+        return child;
+    }
+
+    public static createMenuCheckBoxLabel(menuCheckBox: MenuCheckBox) {
+        let child = document.createElement('label');
+        // child.for = menuCheckBox.text;
+        child.innerHTML = menuCheckBox.text;
+        child.style.color = 'white';
+
+        return child;
+    }
+
+    public static createMenuSubmit(menuSubmit: MenuSubmit){
+        let child = document.createElement('button');
+        child.type = 'button';
+        child.value = menuSubmit.text;
+        child.textContent = menuSubmit.text;
+        child.style.margin = '5px'; 
+        child.onclick = menuSubmit.onSubmit;
+
         return child;
     }
 
     public static createMenuInfo(menuInfo: MenuInfo) {
         let child = document.createElement('div');
-        // child.style.height = Renderer.pxs(menuInfo.rowSize * Renderer.elementSize);
-        // child.style.lineHeight = Renderer.pxs(menuInfo.rowSize * Renderer.elementSize);
-        child.style.margin = 'auto';
         child.style.fontSize = '20px';
         child.style.textAlign = 'left';
         child.style.height = null;
         child.style.lineHeight = null;
+
+        // Check if this is a buffer info
+        if (menuInfo.content == '') {
+            child.style.margin = '5px';
+        }   
+
+        if (menuInfo.center) {
+            child.style.margin = 'auto';
+        }
+        if (menuInfo.italic) {
+            child.style.fontStyle = 'italic';
+            child.style.fontSize = '18px';
+        }
         return child;
     }
 

@@ -1,13 +1,15 @@
 import { Action, ActionDirection } from "./Action";
 import { Actor }  from "../Actors/Actor";
 import { Floor, Wall } from "../Rooms/Environment";
+import { Nexus } from '../TD/Nexus';
 import { Door, DoorType } from "../Rooms/Door";
+import { Menu, MenuInfo, MenuOption } from '../Systems/Menu/Menu';
 
 import { World } from "../world";
 import { DoorAction } from "./DoorAction";
 
 export class WalkAction extends Action {
-    
+
     private dir: ActionDirection;
 
     constructor(dir: ActionDirection, actor: Actor) {
@@ -38,9 +40,22 @@ export class WalkAction extends Action {
         if (this.dir == ActionDirection.DownRight) toObject = room.getObject(this.actor.x + 1, this.actor. y + 1);
 
 
-        if (!toObject.collides) {
+        if (!toObject.collides && !toObject.destructible) {
             if (fromObject instanceof Floor) {
                 (<Floor>room.objects[this.actor.x][this.actor.y]).removeOccupation();
+            }
+
+            if (toObject instanceof Nexus) {
+                (<Floor>room.objects[this.actor.x][this.actor.y]).removeOccupation();
+                room.getActors().splice(room.getActors().indexOf(this.actor), 1);
+                const nexus = world.getPlayer();
+                nexus.health -= 10;
+
+                if (world.getGame().selected == this.actor) {
+                    world.getGame().selected = null;
+                    world.getGame().draw();
+                }
+                return;
             }
 
             // Check if the actor just walked through a door:
@@ -58,7 +73,7 @@ export class WalkAction extends Action {
             if (this.dir == ActionDirection.Down) this.actor.y = this.actor.y + 1;
             if (this.dir == ActionDirection.Left) this.actor.x = this.actor.x - 1;
             if (this.dir == ActionDirection.Right) this.actor.x = this.actor.x + 1;
-            
+
             // diagonals:
             if (this.dir == ActionDirection.UpLeft) {
                 this.actor.x -= 1
@@ -81,6 +96,8 @@ export class WalkAction extends Action {
             if (toObject instanceof Floor) {
                 (<Floor>room.objects[this.actor.x][this.actor.y]).setOccupation(this.actor);
             }
+        } else if (toObject.destructible) {
+            // TODO Add attacking interaction
         } else {
             if (this.actor.debug) {
                 console.log('COLLISION: ', this.actor);

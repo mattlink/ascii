@@ -5,8 +5,10 @@ import { Mob } from '../Actors/Mob';
 import { World } from '../world';
 import { Door, DoorType } from './Door';
 import { Wall, Floor, Tree } from './Environment';
+import { Wall as TDWall } from '../TD/Wall';
 import { BSPTree, PathQueue } from '../util';
 import { Item } from '../Items/Item';
+import { Spawner } from '../TD/Spawner';
 import { Game } from '../Game';
 
 // An instance of Area represents some area of a Room, usually walled off
@@ -150,9 +152,9 @@ export class Room {
     }
 
     handleActorTurns(world: World) {
-        world.getPlayer().takeTurn(world);
         this.actors.forEach(actor => {
             if (actor instanceof Mob) actor.takeTurn(world);
+            if (actor instanceof Spawner) actor.takeTurn(world);
         });
     }
 
@@ -227,7 +229,6 @@ export class Room {
                     object.x = x;
                     object.y = y-d;
                     positionFound = true;
-                    console.log("Moved player to:", object.x, object.y);
                     break;
                 }
 
@@ -240,7 +241,6 @@ export class Room {
                     object.x = x;
                     object.y = y+d;
                     positionFound = true;
-                    console.log("Moved player to:", object.x, object.y);
                     break;
                 }
 
@@ -253,7 +253,6 @@ export class Room {
                     object.x = x+d;
                     object.y = y;
                     positionFound = true;
-                    console.log("Moved player to:", object.x, object.y);
                     break;
                 }
 
@@ -266,7 +265,6 @@ export class Room {
                     object.x = x -d;
                     object.y = y;
                     positionFound = true;
-                    console.log("Moved player to:", object.x, object.y);
                     break;
                 }
 
@@ -322,6 +320,33 @@ export class Room {
             }
         }
         return wallCount;
+    }
+
+    getNeighboringSpaces(x: number, y: number) {
+        let result = [];
+        const dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+
+        for(var dir of dirs) {
+            const nX = x + dir[0];
+            const nY = y + dir[1];
+
+            if (nX >= 0 && nY >= 0 && nX < this.width && nY < this.height) {
+                const neighbor = this.objects[nX][nY];
+                if (!neighbor.collides) {
+                    result.push(neighbor);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    movementCost(pos: GameObject): number {
+        if (pos instanceof TDWall) {
+            return 200;
+        }
+
+        return 1;
     }
 
     generateSymmetricBSPTreeVertical(iterationsLeft: number, tree: BSPTree<Area>) {

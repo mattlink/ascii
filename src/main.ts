@@ -1,25 +1,32 @@
-import { Importer } from "./importer";
 import { Game } from "./Game";
 import { World } from "./world";
 import { Renderer } from "./Systems/renderer";
-import { Player } from "./Actors/Player";
 import { IO } from "./Systems/io";
-import { Menu, MenuOption, MenuInfo, MenuTitle } from './Systems/Menu/Menu';
-import { InventoryMenu } from './Systems/Menu/InventoryMenu';
-import { GameObject } from './GameObject';
-import { Tile } from './tile';
-
-import * as worldConfig from "./world.json";
-import * as menusConfig from "./menus.json";
+import { Menu, MenuInfo, MenuOption, MenuTitle, MenuTextInput, MenuSubmit, MenuCheckBox } from './Systems/Menu/Menu';
+import { Tile } from "./tile";
 import { Floor } from "./Rooms/Environment";
-import { EquipAction } from "./Actions/EquipAction";
+import { GameObject } from "./GameObject";
+import { Turret } from "./TD/Turret";
+import { Wall } from "./TD/Wall";
+import { ShopItem } from "./TD/ShopItem";
+
+import { Orc } from "./Actors/Orc";
 
 enum GameState {
+    Start,
     Play,
-    Look,
-    Menu
+    Over
 }
+
+enum CursorState {
+    Default,
+    Turret,
+    Wall
+}
+
 class game extends Game {
+
+    gameState: GameState = GameState.Start;
 
     menus: Record<string, Menu> = {};
     activeMenu: string = null;
@@ -28,307 +35,414 @@ class game extends Game {
 
     world: World;
 
-    state: GameState;
-    lookCursor: GameObject;
+    cursor: GameObject;
+
+    cursorState: CursorState;
+
+    funds: number; // How much cash the player has available
+    cashMilestone: number = 0;
 
     load() {
 
         // TODO: Check for an existing save in localStorage
         this.renderer = new Renderer();
-        this.state = GameState.Menu;
-        
-        this.menus = Importer.importMenus(menusConfig);
 
         this.activeMenu = 'start';
 
-        this.lookCursor = new GameObject(0, 0, new Tile('X', 'white','black'));
+        // Create the world
+        const WORLD_HEIGHT = 30;
+        const WORLD_WIDTH = 50;
 
-        // Add windows for all the menus we imported
+        this.world = new World(this);
+        this.world.init(WORLD_WIDTH, WORLD_HEIGHT);
+
+        this.cursor = new GameObject(this.world.getRoom().getWidth() / 2, this.world.getRoom().getHeight() / 2, new Tile('X', 'red', 'white'));
+        this.cursorState = CursorState.Default;
+
+        this.funds = 30; // start with this much cash
+
+        // Create windows for each menu and the game itself
+        this.renderer.addWindow('start', this.world.getRoom().getWidth(), this.world.getRoom().getHeight());
+        this.renderer.addWindow('login', this.world.getRoom().getWidth(), this.world.getRoom().getHeight());
+        this.renderer.addWindow('create_account', this.world.getRoom().getWidth(), this.world.getRoom().getHeight());
+        this.renderer.addWindow('about_game', this.world.getRoom().getWidth(), this.world.getRoom().getHeight());
+        this.renderer.addWindow('gameinfo', this.world.getRoom().getWidth(), 4.5);
+        this.renderer.addWindow('game', this.world.getRoom().getWidth(), this.world.getRoom().getHeight(), true);
+        this.renderer.addWindow('selection', this.world.getRoom().getWidth(), 5);
+        this.renderer.addWindow('shop', this.world.getRoom().getWidth(), 8);
+        this.renderer.hideAllWindows();
+
+        // Create Menus 
+        this.menus['start'] = new Menu([
+            [new MenuTitle('Orc Siege')],
+            [new MenuOption('Start', 's', 'Play')],
+            [new MenuOption('Login', 'l', null, 'login')],
+            [new MenuOption('Create Account', 'c', null, 'create_account')],
+            [new MenuOption('How to Play', '?', null, 'about_game')]
+        ]);
+
+        this.menus['login'] = new Menu([
+            [new MenuTitle('Login')],
+            [new MenuInfo('Logging in allows your score to be recorded on the leaderboard', '', true, true)],
+            [new MenuInfo('')],
+            [new MenuTextInput('Username')],
+            [new MenuTextInput('Password', true)],
+            [new MenuCheckBox(true, 'Stay logged in')],
+            [new MenuSubmit('Login', IO.submitLogin)],
+            [new MenuOption('', 'Escape', null, 'start', true)],
+        ]);
+
+        this.menus['create_account'] = new Menu([
+            [new MenuTitle('Create Account')],
+            [new MenuTextInput('Username')],
+            [new MenuTextInput('Password', true)],
+            [new MenuTextInput('Repeat Passwprd', true)],
+            [new MenuSubmit('Create Account')],
+            [new MenuOption('', 'Escape', null, 'start', true)],
+        ])
+
+        this.menus['about_game'] = new Menu([
+            [new MenuTitle('About Game (How to Play)')],
+            [new MenuOption('', 'Escape', null, 'start', true)],
+                [new MenuInfo("Controls:"   )],
+                [new MenuInfo("Press 'f' to advance the game by one tick.")],
+                [new MenuInfo("Select a shop item by pressing its key binding. (t for turret, w for wall, etc).")],
+                [new MenuInfo("Place an item by clicking on the space you want to put it.")],
+                [new MenuInfo("Press escape to clear the cursor.")],
+                [new MenuInfo("Using the default cursor, click an item to view it and then press 's' to sell it.")],
+                [new MenuInfo("-----------------------------------------------------------------------------------------")],
+                [new MenuInfo("Gameplay:")],
+                [new MenuInfo("Get money by killing Orcs. Kill Orcs with Turrets.")],
+                [new MenuInfo("You lose when the Orcs kill your Nexus.")],
+                [new MenuInfo("Orcs get increasingly stronger as you gain more money.")],
+                [new MenuInfo("See how long you can last, and how much money you can make.")],
+                [new MenuInfo("Oh no did the game break? Refresh the page to restart.")],
+                [new MenuInfo("(Press esc to go back)")] 
+        ]);
+
+        this.menus['gameinfo'] = new Menu(
+            [
+                [new MenuInfo('Nexus Health: 100'),         new MenuInfo('Orcs Killed: 0')],
+                [new MenuInfo('$ 30'),                      new MenuInfo('Turns: 0')],
+                [new MenuInfo('')]
+            ], true
+        );
+
+        this.menus['selection'] = new Menu(
+            [
+                [new MenuInfo('SELECTED:')],
+                [new MenuInfo('Nothing selected')],
+                [new MenuInfo('')],
+                [new MenuInfo('')],
+            ], true
+        );
+        
+        this.menus['shop'] = new Menu(
+            [
+                [new MenuInfo('SHOP:')],
+                [new MenuOption('Turret $20', 't')],
+                [new MenuOption('Wall $5', 'w')],
+            ], true
+        );
+
+        // Render world and menus for the first time
+        this.renderer.renderRoom(this.world.getRoom(), 'game');
         for (let key in this.menus) {
-            this.renderer.addWindow(key, Menu.width, Menu.height);
+            this.renderer.renderMenu(this.menus[key], this.renderer.windows[key].getContext());
+        }
+        // Show all the windows
+        this.renderer.windows['start'].show();
+
+        this.world.appendMessage("Welcome to Orc Siege!");
+        this.world.appendMessage("Protect your Nexus with Walls and Turrets.");
+    }
+
+    // Bind basic mouse behavior to every tile
+    initMouse() {
+        let cols = Array.prototype.slice.call(this.renderer.windows['game'].getContext().children);
+        for (let i = 0; i < cols.length; i++) {
+            let colrows = Array.prototype.slice.call(cols[i].children);
+            for (let j = 0; j < colrows.length; j++) {
+                IO.defineMouseOver(colrows[j], function(e, game){
+                    game.cursor.x = i;
+                    game.cursor.y = j;
+                    if (game.cursorState == CursorState.Default) {
+                        game.cursor.tile.ascii = colrows[j].innerHTML;
+                        game.cursor.tile.fg = colrows[j].style.color;
+                        game.cursor.tile.bg = colrows[j].style.backgroundColor;
+                    }
+                    else if (game.cursorState == CursorState.Turret) {
+                        game.renderer.renderTurretCursor(game.cursor, game.world.getRoom(), game.renderer.windows['game'].getContext());
+                    }
+
+                    game.renderer.renderGameObject(game.cursor, game.renderer.windows['game'].getContext());
+                }, this);
+                IO.defineMouseOut(colrows[j], function(e, game) {
+                    let objs = game.world.getRoom().objects;
+                    if (objs[i][j] instanceof Floor && objs[i][j].getOccupation() != null) {
+                        let actor = objs[i][j].getOccupation();
+                        colrows[j].innerHTML = actor.getTile().ascii;
+                        colrows[j].style.color = actor.getTile().fg;
+                        colrows[j].style.backgroundColor = actor.getTile().bg;
+                    } else {
+                        colrows[j].innerHTML = (<Tile>objs[i][j].tile).ascii;
+                        colrows[j].style.color = (<Tile>objs[i][j].tile).fg;
+                        colrows[j].style.backgroundColor = (<Tile>objs[i][j].tile).bg;
+                        if (game.cursorState == CursorState.Turret) {
+                            game.renderer.renderArea(game.cursor.x - (Turret.range + 1), game.cursor.y - (Turret.range + 1), 2 * (Turret.range + 2), 2 * (Turret.range + 2), game.world.getRoom(), game.renderer.windows['game'].getContext());
+                        }
+                    }
+                }, this);
+                IO.defineMouseClick(colrows[j], function(e, game){
+                    let objs = game.world.getRoom().objects;
+                    switch(game.cursorState) {
+                        case CursorState.Turret:
+                            if (objs[i][j] instanceof Floor && objs[i][j].getOccupation() != null || objs[i][j] instanceof GameObject && !(objs[i][j] instanceof Floor)) break;
+                            game.placeShopItem(new Turret(i, j));
+                            break;
+                        case CursorState.Wall:
+                            if (objs[i][j] instanceof Floor && objs[i][j].getOccupation() != null || objs[i][j] instanceof GameObject && !(objs[i][j] instanceof Floor)) break;
+                            game.placeShopItem(new Wall(i, j));
+                            break;
+                        case CursorState.Default:
+                            let item = game.world.getActiveRoom().getObject(i, j);
+                            if (item instanceof Floor && item.getOccupation()) {
+                                item = item.getOccupation();
+                            }
+                            game.selected = item;
+                            game.draw();
+                            // item.tile.bg = 'blue';
+                            // game.renderer.renderGameObject(item, game.renderer.windows['game'].getContext());
+                            break;
+                        default:
+                            break;
+                    }
+                    game.renderer.renderGameObject(game.world.getRoom().objects[i][j], game.renderer.windows['game'].getContext());
+                }, this);
+            }
+        }
+    }
+
+    placeShopItem(item: ShopItem) {
+
+        // the object that we're trting to place the item on
+        let obj = this.world.getRoom().objects[item.x][item.y];
+
+        // check if we're trying to place this item on top of another item we've already placed
+        if (obj instanceof ShopItem) {
+
+            if (this.funds + obj.cost < item.cost) {
+                this.world.appendMessage("You don't have enough money for that.");
+                (<MenuInfo>this.menus['gameinfo'].rows[2][0]).content = this.world.getCurrentMessages().join(" ");
+                this.renderer.renderMenu(this.menus['gameinfo'], this.renderer.windows['gameinfo'].getContext());
+                this.world.clearMessage();
+                return;
+            }
+
+
+            // refund its value
+            this.funds += obj.cost;
+            // remove the the old item from the world
+            this.world.items.splice(this.world.items.indexOf(obj));
+
+           // replace the object with the new item
+           this.world.getRoom().objects[item.x][item.y] = item;
+
+           // charge the user for this item
+           this.funds -= item.cost;
         }
 
-        /* Set Up Game-time Menus & Windows */
-        this.renderer.addWindow('messagebox', Menu.width, 1);
-        this.renderer.addWindow('game', Menu.width, Menu.height, true);
-        this.renderer.addWindow('inventory', Menu.width, Menu.height);
-        this.renderer.addWindow('status_info', Menu.width);
-        
-        /**
-         * Load the world.
-         */
-        this.world = Importer.importWorld(worldConfig);
+        // otherwise just place the item and charge the user
+        else {
 
-        (<MenuTitle>this.menus['start'].elements[0]).title = `Saravá!`;
-        // (<MenuTitle>this.menus['start'].elements[0]).title = `Caves of Bartle`;
+            if (this.funds < item.cost) {
+                this.world.appendMessage("You don't have enough money for that.");
+                (<MenuInfo>this.menus['gameinfo'].rows[2][0]).content = this.world.getCurrentMessages().join(" ");
+                this.renderer.renderMenu(this.menus['gameinfo'], this.renderer.windows['gameinfo'].getContext());
+                this.world.clearMessage();
+                return;
+            }
 
-        // Create the message box
-        this.menus['messagebox'] = new Menu();
-        this.menus['messagebox'].addElement(new MenuInfo('You feel tired.', ''));
+            this.world.getRoom().objects[item.x][item.y] = item;
+            this.funds -= item.cost;
+        }
 
-        // Create the inventory menu
-        this.menus['inventory'] = new InventoryMenu('Inventory');
-        this.menus['inventory'].options['Escape'] = new MenuOption("Exit", "Escape");
-        this.menus['inventory'].options['Escape'].toState = 'Play';
+        // add the item to the world
+        this.world.items.push(item);
 
-        // Create status info bar 
-        this.menus['status_info'] = new Menu();
-        this.menus['status_info'].addElement(new MenuInfo('Turns: 0'));
-        this.menus['status_info'].addElement(new MenuInfo('Health: ' + this.world.getPlayer().health + '/100'));
-        this.menus['status_info'].addElement(new MenuInfo('Level: ' + this.world.getActiveLevel().depth));
-        
-        
-        this.renderer.hideAllWindows();
+        // update the display of currently available funds
+        (<MenuInfo>this.menus['gameinfo'].rows[1][0]).content = '$ ' + this.funds;
+        this.renderer.renderMenu(this.menus['gameinfo'], this.renderer.windows['gameinfo'].getContext());
+    }
 
-        // Pre-Render the game area for the first time, while still hidden
-        this.renderer.renderRoom(this.world.getActiveRoom(), 'game');
-        this.renderer.renderMenu(this.menus['start'], this.renderer.windows['start'].getContext());
-    
-        
-        // Show the start menu
-        this.renderer.hideAllWindows();
-        this.renderer.windows['start'].show();
+
+    updateCursor() {
+        switch(this.cursorState) {
+            case CursorState.Turret:
+                this.renderer.renderTurretCursor(this.cursor, this.world.getRoom(), this.renderer.windows['game'].getContext());
+                this.cursor.tile = Turret.tile;
+                break;
+            case CursorState.Wall:
+                this.renderer.renderArea(this.cursor.x - (Turret.range + 1), this.cursor.y - (Turret.range + 1), 2 * (Turret.range + 2), 2 * (Turret.range + 2), this.world.getRoom(), this.renderer.windows['game'].getContext());
+                this.cursor.tile = Wall.tile;
+                break;
+            default:
+                this.cursor.tile = new Tile('', 'black', 'black')
+                this.renderer.renderArea(this.cursor.x - (Turret.range + 1), this.cursor.y - (Turret.range + 1), 2 * (Turret.range + 2), 2 * (Turret.range + 2), this.world.getRoom(), this.renderer.windows['game'].getContext());
+                break;
+        }
+        this.renderer.renderGameObject(this.cursor, this.renderer.windows['game'].getContext());
 
     }
 
     update(key: string) {
 
-        /**
-         * Menu 
-         */
-        if (this.state == GameState.Menu) {
+        if (this.gameState == GameState.Play) {
+            if (!(IO.shopControls.indexOf(key) > -1) && !(IO.gameControls.indexOf(key) > -1)) return;
 
-            if (!(IO.validMenuControls.indexOf(key) > -1) && !(this.keyQueue.isHolding())) return;
-
-            // We're trying to equipt an item
-            if (this.keyQueue.isHoldingKey('E')) {
-
-                this.attemptEquip(key);
-            
-                this.keyQueue.releaseHold();
-
-                this.renderer.showWindows(['game', 'messagebox', 'status_info']);
-                this.state = GameState.Play;
-                this.activeMenu = null;
-
+            // Check if the nexus is dead
+            if (this.world.getPlayer().health <= 0) {
+                this.world.appendMessage("The Orcs destroyed your Nexus. Refresh page to try again.");
+                this.gameState = GameState.Over;
+                (<MenuInfo>this.menus['gameinfo'].rows[2][0]).content = this.world.getCurrentMessages().join(" ");
+                this.renderer.renderMenu(this.menus['gameinfo'], this.renderer.windows['gameinfo'].getContext());
                 return;
             }
 
+            if (key == 'f') this.world.takeTurn();
+
+            if (key == 'w') {
+                this.cursorState = CursorState.Wall;
+                this.updateCursor();
+            }
+
+            if (key == 't') {
+                // set the cursor to a turret
+                this.cursorState = CursorState.Turret;
+                this.updateCursor();
+            }
+
+            if (key == 'Escape') {
+                this.cursorState = CursorState.Default;
+                this.renderer.renderArea(this.cursor.x - (Turret.range + 1), this.cursor.y - (Turret.range + 1), 2 * (Turret.range + 2), 2 * (Turret.range + 2), this.world.getRoom(), this.renderer.windows['game'].getContext());
+                this.selected = null;
+                (<MenuInfo>this.menus['selection'].rows[2][0]).content = '';
+                this.updateCursor();
+            }
+
+            if (key == 's') {
+                const room = this.world.getActiveRoom();
+
+                if (this.selected && this.selected instanceof Turret) {
+                    const x = this.selected.x;
+                    const y = this.selected.y;
+
+                    this.world.items = this.world.items.filter(item => {
+                        return item != this.selected;
+                    });
+
+                    this.funds += this.selected.cost/2;
+
+                    room.objects[x][y] = new Floor(x, y, room.floorTile);
+                    this.renderer.renderGameObject(room.objects[x][y], this.renderer.windows['game'].getContext());
+                } else if (this.selected && this.selected instanceof Wall) {
+                    const x = this.selected.x;
+                    const y = this.selected.y;
+
+                    this.funds += this.selected.cost;
+
+                    room.objects[x][y] = new Floor(x, y, room.floorTile);
+                    this.renderer.renderGameObject(room.objects[x][y], this.renderer.windows['game'].getContext());
+                }
+
+                this.selected = null;
+                (<MenuInfo>this.menus['selection'].rows[2][0]).content = '';
+            }
+
+            // Check if we should scale difficulty of Orcs
+            if (this.funds - this.cashMilestone >= 50) {
+                Orc.maxHealth += 2;
+                this.cashMilestone += 50;
+                this.world.appendMessage("Orcs just got stronger.");
+            }
+        }
+
+        // Start menu logic
+        if (this.gameState == GameState.Start) {
             let i = Object.keys(this.menus[this.activeMenu].options).indexOf(key);
-            if (i > -1) {
+            if (i == -1) return;
 
-                // toMenu
-                if (this.menus[this.activeMenu].options[key].toMenu != null) {
-                    this.activeMenu = this.menus[this.activeMenu].options[key].toMenu;
-                    this.renderer.showWindows([this.activeMenu]);
-                    return;
-                }
-
-                // toState
-                let toState = this.menus[this.activeMenu].options[key].toState;
-                if (toState != null) {
-                    if (toState == 'Play') {
-                        this.state = GameState.Play;
-                        
-                        this.activeMenu = 'game';
-                        this.renderer.showWindows(['game', 'status_info', 'messagebox']);
-                        return;
-                    }
-                }
-            }
-
-        }
-
-        /** 
-         * Look Mode
-         */
-        if (this.state == GameState.Look) {
-            if (!(IO.validLookControls.indexOf(key) > -1)) return;
-
-            if (key == 'ArrowUp') {
-                if (this.lookCursor.y - 1 < 0) return;
-                this.lookCursor.y -= 1;
-            }
-
-            if (key == 'ArrowDown') {
-                if (this.lookCursor.y + 1 > this.world.getActiveRoom().getHeight() - 1) return;
-                this.lookCursor.y += 1;
-            }
-
-            if (key == 'ArrowRight') {
-                if (this.lookCursor.x + 1 > this.world.getActiveRoom().getWidth() - 1) return;
-                this.lookCursor.x += 1;
-            }
-
-            if (key == 'ArrowLeft') {
-                if (this.lookCursor.x - 1 < 0) return;
-                this.lookCursor.x -= 1;
-            }
-
-            if (key == 'Escape') {
-                this.renderer.renderGameObject(this.world.getActiveRoom().getObject(this.lookCursor.x, this.lookCursor.y), this.renderer.windows['game'].getContext());
-                this.state = GameState.Play;
+            // toMenu
+            if (this.menus[this.activeMenu].options[key].toMenu != null) {
+                this.activeMenu = this.menus[this.activeMenu].options[key].toMenu;
+                this.renderer.showWindows([this.activeMenu]);
                 return;
             }
 
-            let obj = this.world.getActiveRoom().getObject(this.lookCursor.x, this.lookCursor.y);
-            let name = obj.name;
-            if (obj instanceof Floor && (<Floor>obj).getOccupation() != null) {
-                name = (<Floor>obj).getOccupation().name;
-            }
+            // toState
+            let toState = this.menus[this.activeMenu].options[key].toState;
+            if (toState != null) {
+                if (toState == 'Play') {
+                    this.gameState = GameState.Play;
 
-            if (obj instanceof Floor && (<Floor>obj).getObjects().length > 0) {
-                name = (<Floor>obj).getObjects()[0].name;
-            }
-
-            (<MenuInfo>this.menus['messagebox'].elements[0]).content = name;
-
-        }
-
-        /**
-         * Play 
-         */
-        if (this.state == GameState.Play) {
-
-            if (!(IO.validGameControls.indexOf(key) > -1) && !(this.keyQueue.isHolding())) return;
-
-            /* Equipt Item */
-            if (key == 'E') {
-                this.world.clearMessage();
-                this.world.appendMessage("Which item would you like to equip? (choose letter) or [space] to view inventory.");
-                this.keyQueue.hold('E');
-                return;
-            }
-
-            if (this.keyQueue.isHoldingKey('E') ) {
-
-                // Open up inventory 
-                if (key == ' ') {
-                    this.renderer.showWindows(['inventory']);
-                    this.activeMenu = 'inventory';
-                    this.state = GameState.Menu;
-                    return;
-                }
-
-                if (!(key == undefined)) {
-                    this.attemptEquip(key);
-                
-                    this.keyQueue.releaseHold();
+                    this.activeMenu = 'game';
+                    this.renderer.showWindows(['gameinfo', 'game', 'selection', 'shop']);
                     return;
                 }
             }
-
-             // switch state to "viewing inventory"
-            if (key == 'i') {
-
-                this.renderer.showWindows(['inventory']);
-
-                this.activeMenu = 'inventory';
-                this.state = GameState.Menu;
-                return;
-            }
-
-            if (key == 'L') {
-                this.state = GameState.Look;
-                this.activeMenu = null;
-                this.lookCursor.x = this.world.getPlayer().x;
-                this.lookCursor.y = this.world.getPlayer().y;
-                return;
-            }
-
-            if (key == 'Escape') {
-                this.renderer.showWindows(['pause']);
-                this.activeMenu = 'pause';
-                this.state = GameState.Menu;
-                return;
-            }
-
-            if (key == '?') {
-                this.renderer.showWindows(['help']);
-                this.activeMenu = 'help',
-                this.state = GameState.Menu;
-                return;
-            }
-
-            this.world.getPlayer().receiveKeyInput(key);
-            this.world.takeTurn();
         }
     }
 
     draw() {
-
-        if (this.state == GameState.Menu) {
-            if (this.activeMenu == 'inventory') (<InventoryMenu>this.menus['inventory']).establishInventory(this.world.getPlayer().inventory);
-            this.renderer.renderMenu(this.menus[this.activeMenu], this.renderer.windows[this.activeMenu].getContext());
-        }
-
-        if (this.state == GameState.Look) {
-
-            // Render the look cursor's context
-            this.renderer.renderObjectContext(this.lookCursor, this.world.getActiveRoom(), this.renderer.windows['game'].getContext());
-
-            // Render every actor in the room
-            this.world.getActiveRoom().getActors().forEach(actor => {
-                this.renderer.renderGameObject(actor, this.renderer.windows['game'].getContext());    
-            });
-
-            // Render the actual look cursor
-            this.renderer.renderGameObject(this.lookCursor, this.renderer.windows['game'].getContext());
-
-            // Render the messagebox to display the look cursor info
-            this.renderer.renderMenu(this.menus['messagebox'], this.renderer.windows['messagebox'].getContext());
-
-        }
-
-
-        if (this.state == GameState.Play) {
-
-            // Update and render the world message box
-            (<MenuInfo>this.menus['messagebox'].elements[0]).content = this.world.getCurrentMessages().join(" ");            
-            this.renderer.renderMenu(this.menus['messagebox'], this.renderer.windows['messagebox'].getContext());
-
-            // If the active room has changed then we must render the entire room
-            if (this.world.getActiveLevel().getActiveRoomChanged()) {
-                this.renderer.renderRoom(this.world.getActiveRoom(), 'game');
-            }
-
+        if (this.gameState == GameState.Play) {
             // Draw everything around each actor (above, below, left, and right)
-            this.world.getActiveRoom().getActors().forEach(actor => {
-                this.renderer.renderObjectContext(actor, this.world.getActiveRoom(), this.renderer.windows['game'].getContext());
+            this.world.getRoom().getActors().forEach(actor => {
+                this.renderer.renderObjectContext(actor, this.world.getRoom(), this.renderer.windows['game'].getContext());
             });
 
             // Draw every actor (this drawing order makes sure actors contexts don't render over eachother)
-            this.world.getActiveRoom().getActors().forEach(actor => {
+            this.world.getRoom().getActors().forEach(actor => {
                 this.renderer.renderGameObject(actor, this.renderer.windows['game'].getContext());
             });
-            
 
-            // Update the status info and render it
-            (<MenuInfo>this.menus['status_info'].elements[0]).content = 'Turns: ' + this.world.getTurnsPassed();
-            (<MenuInfo>this.menus['status_info'].elements[1]).content = 'Health: ' + this.world.getPlayer().health + '/100';
-            (<MenuInfo>this.menus['status_info'].elements[2]).content = 'Level: ' + this.world.getActiveLevel().depth;
-            this.renderer.renderMenu(this.menus['status_info'], this.renderer.windows['status_info'].getContext());
+            // Update Menus' content
+            (<MenuInfo>this.menus['gameinfo'].rows[0][0]).content = 'Nexus Health: ' + this.world.getPlayer().health;
+            (<MenuInfo>this.menus['gameinfo'].rows[0][1]).content = 'Orcs Killed: ' + this.world.orcsKilled;
+            (<MenuInfo>this.menus['gameinfo'].rows[1][0]).content = '$ ' + this.funds;
+            (<MenuInfo>this.menus['gameinfo'].rows[1][1]).content = 'Turns: ' + this.world.turnsPassed;
+            (<MenuInfo>this.menus['gameinfo'].rows[2][0]).content = this.world.getCurrentMessages().join(" ");
 
+            if (this.selected) {
+                if (this.selected instanceof Orc) {
+                    (<MenuInfo>this.menus['selection'].rows[1][0]).content = `${this.selected.name} (HP: ${this.selected.health})`;
+                    (<MenuInfo>this.menus['selection'].rows[2][0]).content = '';
+                } else if (this.selected instanceof Turret) {
+                    (<MenuInfo>this.menus['selection'].rows[1][0]).content = this.selected.name;
+                    (<MenuInfo>this.menus['selection'].rows[2][0]).content = 's - Sell $10';
+                } else if (this.selected instanceof Wall) {
+                    (<MenuInfo>this.menus['selection'].rows[1][0]).content = this.selected.name;
+                    (<MenuInfo>this.menus['selection'].rows[2][0]).content = 's - Sell $5';
+                } else {
+                    (<MenuInfo>this.menus['selection'].rows[1][0]).content = this.selected.name;
+                    (<MenuInfo>this.menus['selection'].rows[2][0]).content = '';
+                }
+            } else {
+                (<MenuInfo>this.menus['selection'].rows[1][0]).content = 'Nothing selected';
+            }
+
+            // Render Menus
+            for (let key in this.menus) {
+                this.renderer.renderMenu(this.menus[key], this.renderer.windows[key].getContext());
+            }
         }
-        
     }
 
-    private attemptEquip(key: string) {
-        this.world.clearMessage();
-        let inventoryKeys = Object.keys(this.world.getPlayer().inventory);
-        if (!(inventoryKeys.indexOf(key) > -1)) {
-            this.world.appendMessage("Invalid item.");
-        } else {
-            let equipAction = new EquipAction(this.world.getPlayer(), this.world.getPlayer().inventory[key]);
-            equipAction.perform(this.world);
-        }
-    }
 }
 
 let g = new game();
 g.load();
+g.initMouse();
 IO.genericKeyBinding(function(key: string) {
     g.update(key);
     g.draw();
 });
-

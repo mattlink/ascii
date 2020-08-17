@@ -1,7 +1,3 @@
-import { Tile } from "../../tile";
-import { Game } from "../../Game";
-
-
 export abstract class MenuElement { 
 
     rowSize: number;
@@ -20,6 +16,38 @@ export class MenuTitle extends MenuElement {
     }
 }
 
+export class MenuTextInput extends MenuElement {
+    shadowText: string;
+    isPassword: boolean = false;
+    isEmail: boolean = false;
+    constructor(shadowText: string, isPassword?: boolean, isEmail?: boolean) {
+        super(1);
+        this.shadowText = shadowText;
+        this.isPassword = isPassword || false;
+        this.isEmail = isEmail || false;
+    }
+}
+
+export class MenuCheckBox extends MenuElement {
+    checked: boolean = true;
+    text: string = '';
+    constructor(checked: boolean, text: string) {
+        super(1);
+        this.checked = checked;
+        this.text = text;
+    }
+}
+
+export class MenuSubmit extends MenuElement {
+    text: string;
+    onSubmit: (this: GlobalEventHandlers, ev: MouseEvent) => any;
+    constructor(text: string, onSubmit?: (this: GlobalEventHandlers, ev: MouseEvent) => any) {
+        super(1);
+        this.text = text;
+        this.onSubmit = onSubmit;
+    }
+}
+
 export class MenuOption extends MenuElement {
     name: string;
     letter: string; // the letter used to select this option
@@ -27,21 +55,29 @@ export class MenuOption extends MenuElement {
 
     toMenu: string = null; // name of menu which selecting this option takes you to
     toState: string = null;
+    hidden: boolean = false;
 
-    constructor(name: string, letter: string) { 
+    constructor(name: string, letter: string, toState?: string, toMenu?: string, hidden?: boolean) { 
         super(1);
         this.name = name;
         this.letter = letter;
+        this.toState = toState || null;
+        this.toMenu = toMenu || null;
+        this.hidden = hidden || false;
     }
 }
 
 export class MenuInfo extends MenuElement {
     label: string = '';
     content: string = '';
-    constructor(content: string, label?: string) {
+    italic: boolean = false;
+    center: boolean = false;
+    constructor(content: string, label?: string, italic?: boolean, center?: boolean) {
         super(2);
         this.content = content;
         this.label = label || '';
+        this.italic = italic || false;
+        this.center = center || false;
     }
     getContent() {
         if (this.label != '') {
@@ -72,18 +108,25 @@ export class Menu {
     public name: string;
 
     public options: Record<string, MenuOption> = {};
-    public elements: MenuElement[] = [];
+    public rows = [];
     public selectedElement: number = -1;
+    public dontCenter: boolean = false;
 
-    constructor(elems?: MenuElement[]) {
-        if (!elems) return;
-        elems.forEach(elem => {
-            this.addElement(elem);
-        });
+    public formSubmit: (this: GlobalEventHandlers, ev: MouseEvent) => any;
+
+    constructor(rows, dontCenter?: boolean) {
+        this.rows = rows;
+        rows.forEach(row => {
+            for (let i = 0; i < row.length; i++) {
+                let element = row[i];
+                if (element instanceof MenuSubmit) this.formSubmit = element.onSubmit;
+                if (element instanceof MenuOption) this.options[element.letter] = element;
+            }
+        })
+        this.dontCenter = dontCenter || false;
     }
-
+    
     addElement(element: MenuElement) {
         if (element instanceof MenuOption) this.options[element.letter] = element;
-        this.elements.push(element);
     }
 }
